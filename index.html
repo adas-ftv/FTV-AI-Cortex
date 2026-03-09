@@ -1,4 +1,26 @@
-import { useState, useMemo } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FTV AI Cortex</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #07192E; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0C2340; }
+    ::-webkit-scrollbar-thumb { background: #1E3F6B; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2E5FA3; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
 
 const C = {
   bg:"#07192E", surface:"#0C2340", surfaceHi:"#112A4E",
@@ -2308,7 +2330,7 @@ const WorkflowDetail = ({ wf, onBack }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN APP
 // ─────────────────────────────────────────────────────────────────────────────
-export default function App() {
+function App() {
   const [tab, setTab]                 = useState("start-here");
   const [activeWorkflow, setActiveWorkflow] = useState(null);
   const [activeGuide, setActiveGuide] = useState(null);
@@ -2615,3 +2637,10 @@ export default function App() {
     </div>
   );
 }
+
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
