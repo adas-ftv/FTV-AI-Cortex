@@ -4,23 +4,22 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FTV AI Cortex</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #07192E; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0C2340; }
     ::-webkit-scrollbar-thumb { background: #1E3F6B; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #2E5FA3; }
+    ::-webkit-scrollbar-thumb:hover { background: #2A5590; }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useMemo } = React;
-
 
 const C = {
   bg:"#07192E", surface:"#0C2340", surfaceHi:"#112A4E",
@@ -196,6 +195,51 @@ const TOOLS_REGISTRY = [
     note:"FTV mandate fit evaluation.",
     tags:["ic","dd"],
     workflowIds:["ic-prep"],
+  },
+  {
+    id:"skill-expert-network",
+    type:"Skill", name:"expert-network", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Searches FTV expert call transcripts and interview notes for company, sector, or management insights. Triggers on: expert calls, expert network, what did experts say about X, expert diligence on Y, find me an expert in Z.",
+    note:"Auto-fires on expert call and transcript queries.",
+    tags:["dd","research","calls","expert"],
+    workflowIds:["expert-calls"],
+  },
+  {
+    id:"skill-dealcloud",
+    type:"Skill", name:"dealcloud", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Queries FTV's DealCloud CRM for companies, contacts, pipeline status, and coverage. Triggers on: looking up a company, priority status (Top Prospect, HQM, Monitor), last contact date, who covers X, sourcing activity.",
+    note:"Auto-fires on CRM and pipeline queries.",
+    tags:["sourcing","data","crm"],
+    workflowIds:["sourcing-outreach","general-admin"],
+  },
+  {
+    id:"skill-ppt-template",
+    type:"Skill", name:"ftv-ppt-template", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Applies FTV's 2023 PowerPoint brand guidelines — colors, typography, layouts, charts, and tables — to every presentation. Triggers on: presentation, slides, deck, PowerPoint, pptx, board materials, IC presentation.",
+    note:"Auto-fires whenever a presentation or deck is requested.",
+    tags:["ic","writing","ops"],
+    workflowIds:["ic-prep","general-admin"],
+  },
+  {
+    id:"skill-portfolio",
+    type:"Skill", name:"portfolio", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Looks up FTV portfolio company profiles, sectors, and capabilities. Triggers on: portfolio company questions, which portfolio companies do X, comparing portfolio companies, listing all FTV investments.",
+    note:"Auto-fires on portfolio company queries.",
+    tags:["research","sourcing","data"],
+    workflowIds:["sourcing-outreach","market-research"],
+  },
+  {
+    id:"skill-gpn",
+    type:"Skill", name:"gpn", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Surfaces FTV Global Partner Network contacts, bios, and relationship activity. Triggers on: GPN executive lookup, finding relevant GPN contacts for a deal, SAB members, past introductions, subject matter experts.",
+    note:"Auto-fires on GPN and partner network queries.",
+    tags:["sourcing","research","outreach"],
+    workflowIds:["sourcing-outreach","expert-calls"],
   },
 ];
 
@@ -859,11 +903,6 @@ Review and Edit Thoroughly:
 - Ensure the final prompt is clear, logically organized, and complete.
 - Remove any ambiguous or redundant instructions.` },
 
-  { id:8, category:"Deep Research", title:"Fintech VC Landscape Research", source:SP_BASE+"ed-VC.txt",
-    desc:"Detailed report on early-stage U.S. fintech-focused VC firms. Useful for LP mapping or competitive intelligence.",
-    labels:[{type:"topic",text:"VC Landscape"},{type:"topic",text:"Fintech"},{type:"output",text:"Firm Profiles"},{type:"metric",text:"AUM"},{type:"metric",text:"Check Size"},{type:"metric",text:"Fund Vintage"},{type:"stage",text:"Sourcing"},{type:"stage",text:"Market Research"}],
-    workflowIds:["market-research"],
-    text:`I'd like a detailed research report on U.S. venture capital firms that specialize in fintech investments with the following specific criteria: Target Firm Characteristics Focus on fintech investments (financial technology startups) Primary investment stages: Seed, Series A, and Series B Assets Under Management (AUM) less than $1 billion Currently on at least their second fund (established track record) Actively deploying capital from current fund(s) Located in the United States Information to Include Firm Profiles (for each qualifying firm): Firm name and founding date Headquarters location Total AUM across all funds Number of funds raised to date Current active fund size and vintage year Investment philosophy and thesis for fintech Key investment partners/decision makers Investment Strategy Analysis: Stage preferences within early-stage (seed vs. Series A vs. Series B) Average check size by stage Preferred valuation ranges Geographic preferences within the U.S. Fintech sub-sector focus (payments, lending, insurtech, wealthtech, etc.) Portfolio Analysis: Notable portfolio companies Success stories and exits Investment pace (deals per year) Follow-on investment patterns Co-investment partners Comparative Analysis: Rank firms by investment activity volume Highlight specialized vs. generalist approaches Compare investment theses and differentiation strategies Market Trends: Current fintech funding environment for early-stage companies Changes in investment focus over the past 2-3 years Emerging fintech sub-sectors gaining investor attention Data Visualization Requests Map showing geographic distribution of firms Table comparing key metrics across firms Charts showing investment activity over time Breakdown of investments by fintech sub-sector Additional Context Please cite all data sources used and note the recency of the information. For firms that don't publicly disclose complete information, provide best estimates based on available data and clearly indicate when information is estimated rather than confirmed.` },
 
   { id:9, category:"Due Diligence", title:"Financials — Projection Analysis", source:SP_LIST,
     desc:"Critically interrogate management/banker projection logic and sensitivities. Do NOT recreate projections.",
@@ -2338,8 +2377,12 @@ function App() {
   const [expanded, setExpanded]       = useState(null);
   const [activeTag, setActiveTag]     = useState(null);
   const [tagOpen, setTagOpen]         = useState(false);
-  const [ecoTagFilter, setEcoTagFilter] = useState("All");
-  const [ecoTagOpen, setEcoTagOpen]     = useState(false);
+  const [ecoTagFilter, setEcoTagFilter]           = useState("All");
+  const [ecoTagOpen, setEcoTagOpen]               = useState(false);
+  const [ecoTypeFilter, setEcoTypeFilter]         = useState("All");
+  const [ecoTypeOpen, setEcoTypeOpen]             = useState(false);
+  const [ecoWorkflowFilter, setEcoWorkflowFilter] = useState("All");
+  const [ecoWorkflowOpen, setEcoWorkflowOpen]     = useState(false);
 
   const q = search.toLowerCase();
 
@@ -2372,8 +2415,10 @@ function App() {
 
   const fEco = useMemo(() => TOOLS_REGISTRY.filter(t =>
     (ecoTagFilter === "All" || t.tags.includes(ecoTagFilter)) &&
+    (ecoTypeFilter === "All" || t.type === ecoTypeFilter) &&
+    (ecoWorkflowFilter === "All" || t.workflowIds.includes(ecoWorkflowFilter)) &&
     (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
-  ), [ecoTagFilter, q]);
+  ), [ecoTagFilter, ecoTypeFilter, ecoWorkflowFilter, q]);
 
   const ecoAllTags = useMemo(() => {
     const s = new Set();
@@ -2529,30 +2574,119 @@ function App() {
         {tab === "ecosystem" && (
           <div>
             <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Custom GPTs, connectors, Claude projects, and apps. A single tool can apply to multiple workflows — each card shows where it is used.</p>
-            <div style={{ marginBottom:20, position:"relative" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                <button onClick={() => setEcoTagOpen(o => !o)}
-                  style={{ fontSize:12, padding:"4px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`1px solid ${ecoTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ecoTagFilter!=="All"?C.surfaceHi:C.surface, color:ecoTagFilter!=="All"?C.goldLight:C.textSec }}>
+
+            {/* Three filter row */}
+            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, alignItems:"flex-start", position:"relative" }}>
+
+              {/* Filter by Tag */}
+              <div style={{ position:"relative" }}>
+                <button onClick={() => { setEcoTagOpen(o=>!o); setEcoTypeOpen(false); setEcoWorkflowOpen(false); }}
+                  style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
+                    border:`1px solid ${ecoTagFilter!=="All"?C.gold:C.border}`,
+                    backgroundColor:ecoTagFilter!=="All"?C.surfaceHi:C.surface,
+                    color:ecoTagFilter!=="All"?C.goldLight:C.textSec }}>
                   <span>🏷 {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTagOpen?"▲":"▼"}</span>
                 </button>
-                {ecoTagFilter !== "All" && <button onClick={() => setEcoTagFilter("All")} style={{ fontSize:12, color:C.textSec, background:"none", border:"none", cursor:"pointer" }}>✕ Clear</button>}
-              </div>
-              {ecoTagOpen && (
-                <div style={{ position:"absolute", top:"110%", left:0, zIndex:20, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:340, boxShadow:"0 8px 24px rgba(0,0,0,0.4)" }}>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, maxHeight:200, overflowY:"auto" }}>
-                    {ecoAllTags.filter(t => t !== "All").map(t => (
-                      <button key={t} onClick={() => { setEcoTagFilter(ecoTagFilter===t?"All":t); setEcoTagOpen(false); }}
-                        style={{ border:"none", cursor:"pointer", borderRadius:999, fontSize:11, padding:"3px 9px",
-                          fontWeight:ecoTagFilter===t?600:400, backgroundColor:ecoTagFilter===t?C.surfaceHi:C.surfaceHi,
-                          color:ecoTagFilter===t?C.gold:C.textSec, outline:ecoTagFilter===t?`1px solid ${C.gold}`:"none" }}>
-                        {t}
-                      </button>
-                    ))}
+                {ecoTagFilter !== "All" && (
+                  <button onClick={() => setEcoTagFilter("All")}
+                    style={{ position:"absolute", right:-20, top:5, fontSize:11, color:C.textMuted, background:"none", border:"none", cursor:"pointer" }}>✕</button>
+                )}
+                {ecoTagOpen && (
+                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:300, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:6, maxHeight:180, overflowY:"auto" }}>
+                      {ecoAllTags.filter(t=>t!=="All").map(t => (
+                        <button key={t} onClick={() => { setEcoTagFilter(ecoTagFilter===t?"All":t); setEcoTagOpen(false); }}
+                          style={{ border:"none", cursor:"pointer", borderRadius:999, fontSize:11, padding:"3px 10px",
+                            fontWeight:ecoTagFilter===t?600:400,
+                            backgroundColor:ecoTagFilter===t?C.gold:C.surfaceHi,
+                            color:ecoTagFilter===t?C.bg:C.textSec }}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+              </div>
+
+              {/* Filter by Tool Type */}
+              <div style={{ position:"relative" }}>
+                <button onClick={() => { setEcoTypeOpen(o=>!o); setEcoTagOpen(false); setEcoWorkflowOpen(false); }}
+                  style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
+                    border:`1px solid ${ecoTypeFilter!=="All"?C.gold:C.border}`,
+                    backgroundColor:ecoTypeFilter!=="All"?C.surfaceHi:C.surface,
+                    color:ecoTypeFilter!=="All"?C.goldLight:C.textSec }}>
+                  <span>⚙️ {ecoTypeFilter !== "All" ? ecoTypeFilter : "Filter by type"}</span>
+                  <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTypeOpen?"▲":"▼"}</span>
+                </button>
+                {ecoTypeFilter !== "All" && (
+                  <button onClick={() => setEcoTypeFilter("All")}
+                    style={{ position:"absolute", right:-20, top:5, fontSize:11, color:C.textMuted, background:"none", border:"none", cursor:"pointer" }}>✕</button>
+                )}
+                {ecoTypeOpen && (
+                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:240, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                      {["Custom GPT","Claude Project","Connector","Custom App","Skill","External"].map(type => (
+                        <button key={type} onClick={() => { setEcoTypeFilter(ecoTypeFilter===type?"All":type); setEcoTypeOpen(false); }}
+                          style={{ border:"none", cursor:"pointer", borderRadius:6, fontSize:12, padding:"6px 10px", textAlign:"left",
+                            fontWeight:ecoTypeFilter===type?600:400,
+                            backgroundColor:ecoTypeFilter===type?C.surfaceHi:"transparent",
+                            color:ecoTypeFilter===type?C.goldLight:C.textSec }}>
+                          <span style={{ display:"inline-block", width:10, height:10, borderRadius:3, marginRight:8,
+                            backgroundColor:TYPE_MAP[type]?.color||C.textMuted }}/>
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Filter by Workflow */}
+              <div style={{ position:"relative" }}>
+                <button onClick={() => { setEcoWorkflowOpen(o=>!o); setEcoTagOpen(false); setEcoTypeOpen(false); }}
+                  style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
+                    border:`1px solid ${ecoWorkflowFilter!=="All"?C.gold:C.border}`,
+                    backgroundColor:ecoWorkflowFilter!=="All"?C.surfaceHi:C.surface,
+                    color:ecoWorkflowFilter!=="All"?C.goldLight:C.textSec }}>
+                  <span>⚡ {ecoWorkflowFilter !== "All" ? WORKFLOWS.find(w=>w.id===ecoWorkflowFilter)?.label || ecoWorkflowFilter : "Filter by workflow"}</span>
+                  <span style={{ color:C.textMuted, fontSize:10 }}>{ecoWorkflowOpen?"▲":"▼"}</span>
+                </button>
+                {ecoWorkflowFilter !== "All" && (
+                  <button onClick={() => setEcoWorkflowFilter("All")}
+                    style={{ position:"absolute", right:-20, top:5, fontSize:11, color:C.textMuted, background:"none", border:"none", cursor:"pointer" }}>✕</button>
+                )}
+                {ecoWorkflowOpen && (
+                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:260, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                      {WORKFLOWS.map(wf => (
+                        <button key={wf.id} onClick={() => { setEcoWorkflowFilter(ecoWorkflowFilter===wf.id?"All":wf.id); setEcoWorkflowOpen(false); }}
+                          style={{ border:"none", cursor:"pointer", borderRadius:6, fontSize:12, padding:"6px 10px", textAlign:"left",
+                            fontWeight:ecoWorkflowFilter===wf.id?600:400,
+                            backgroundColor:ecoWorkflowFilter===wf.id?C.surfaceHi:"transparent",
+                            color:ecoWorkflowFilter===wf.id?wf.accent:C.textSec }}>
+                          {wf.icon} {wf.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Active filter count badge */}
+              {[ecoTagFilter, ecoTypeFilter, ecoWorkflowFilter].filter(f=>f!=="All").length > 0 && (
+                <button onClick={() => { setEcoTagFilter("All"); setEcoTypeFilter("All"); setEcoWorkflowFilter("All"); }}
+                  style={{ fontSize:11, color:C.textSec, background:"none", border:`1px solid ${C.border}`, borderRadius:6, cursor:"pointer", padding:"5px 10px" }}>
+                  Clear all filters
+                </button>
               )}
+
+              {/* Result count */}
+              <span style={{ fontSize:11, color:C.textMuted, alignSelf:"center", marginLeft:"auto" }}>
+                {fEco.length} of {TOOLS_REGISTRY.length} tools
+              </span>
             </div>
+
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:12 }}>
               {fEco.map(t => (
                 <div key={t.id} style={{ ...card, padding:20 }}>
@@ -2654,7 +2788,6 @@ function App() {
     </div>
   );
 }
-
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
