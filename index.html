@@ -2124,11 +2124,11 @@ const GUIDES = [
         "<strong>Risk Framework</strong> — Builds a structured risk and mitigant table. Triggers on: deal risks, bear case, risk analysis.",
         "<strong>IC Materials</strong> — Produces IC-ready slide content. Triggers on: creating IC slides or presentation materials.",
         "<strong>Investment Playbook</strong> — Applies FTV's investment framework to evaluate company fit. Triggers on: asking whether a company fits FTV's mandate.",
-        "<strong>expert-network</strong> — Searches FTV expert call transcripts and interview notes. Triggers on: expert calls, expert network, what did experts say about X, expert diligence on Y, find me an expert in Z.",
-        "<strong>dealcloud</strong> — Queries FTV's DealCloud CRM for companies, contacts, pipeline, and coverage. Triggers on: looking up a company, priority status (Top Prospect, HQM, Monitor), last contact, who covers X, sourcing activity.",
-        "<strong>ftv-ppt-template</strong> — Applies FTV's 2023 PowerPoint brand guidelines (colors, typography, layouts) to every presentation. Triggers on: any mention of presentation, slides, deck, PowerPoint, pptx, board materials, IC presentation.",
-        "<strong>portfolio</strong> — Looks up FTV portfolio company profiles, sectors, and capabilities. Triggers on: portfolio company questions, which portfolio companies do X, comparing portfolio companies, listing all FTV investments.",
-        "<strong>gpn</strong> — Surfaces FTV Global Partner Network contacts, bios, and relationship activity. Triggers on: GPN executive lookup, finding relevant GPN contacts for a deal, SAB members, past introductions, subject matter experts.",
+        "<strong>Expert Network</strong> — Searches FTV expert call transcripts and interview notes. Triggers on: expert calls, expert network, what did experts say about X, expert diligence on Y, find me an expert in Z.",
+        "<strong>DealCloud</strong> — Queries FTV's DealCloud CRM for companies, contacts, pipeline, and coverage. Triggers on: looking up a company, priority status (Top Prospect, HQM, Monitor), last contact, who covers X, sourcing activity.",
+        "<strong>FTV PPT Template</strong> — Applies FTV's 2023 PowerPoint brand guidelines (colors, typography, layouts) to every presentation. Triggers on: any mention of presentation, slides, deck, PowerPoint, pptx, board materials, IC presentation.",
+        "<strong>Portfolio</strong> — Looks up FTV portfolio company profiles, sectors, and capabilities. Triggers on: portfolio company questions, which portfolio companies do X, comparing portfolio companies, listing all FTV investments.",
+        "<strong>GPN</strong> — Surfaces FTV Global Partner Network contacts, bios, and relationship activity. Triggers on: GPN executive lookup, finding relevant GPN contacts for a deal, SAB members, past introductions, subject matter experts.",
       ]},
       { heading:"Managing skills", numbered:true, steps:[
         "Click <strong>Customize</strong> in the left sidebar, then select <strong>Skills</strong>.",
@@ -2339,6 +2339,7 @@ function App() {
   const [activeTag, setActiveTag]     = useState(null);
   const [tagOpen, setTagOpen]         = useState(false);
   const [ecoTagFilter, setEcoTagFilter] = useState("All");
+  const [ecoTagOpen, setEcoTagOpen]     = useState(false);
 
   const q = search.toLowerCase();
 
@@ -2417,7 +2418,7 @@ function App() {
                 <span style={{ fontSize:20, fontWeight:700 }}>FTV AI Cortex</span>
                 <span style={{ fontSize:11, padding:"2px 8px", borderRadius:999, backgroundColor:C.surfaceHi, color:C.textSec }}>Internal</span>
               </div>
-              <p style={{ fontSize:13, color:C.textSec, marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for the investment team</p>
+              <p style={{ fontSize:13, color:C.textSec, marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for FTV</p>
               <a href="https://adas-ftv.github.io/Claude-Usage-Tracker/" target="_blank" rel="noreferrer"
                 style={{ display:"inline-flex", alignItems:"center", gap:7, marginTop:8, marginLeft:50, fontSize:13, fontWeight:700, color:C.gold, textDecoration:"none", backgroundColor:"#1A2E10", border:"1px solid #4a8a20", borderRadius:8, padding:"6px 14px", letterSpacing:"0.01em" }}>
                 <span>📋</span> Click here to submit Claude use cases
@@ -2528,13 +2529,29 @@ function App() {
         {tab === "ecosystem" && (
           <div>
             <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Custom GPTs, connectors, Claude projects, and apps. A single tool can apply to multiple workflows — each card shows where it is used.</p>
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:20 }}>
-              {ecoAllTags.map(t => (
-                <button key={t} onClick={() => setEcoTagFilter(t)}
-                  style={{ fontSize:12, padding:"3px 12px", borderRadius:999, border:`1px solid ${ecoTagFilter===t?C.gold:C.border}`, backgroundColor:ecoTagFilter===t?C.gold:"transparent", color:ecoTagFilter===t?C.bg:C.textSec, cursor:"pointer", fontWeight:ecoTagFilter===t?600:400 }}>
-                  {t}
+            <div style={{ marginBottom:20, position:"relative" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                <button onClick={() => setEcoTagOpen(o => !o)}
+                  style={{ fontSize:12, padding:"4px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`1px solid ${ecoTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ecoTagFilter!=="All"?C.surfaceHi:C.surface, color:ecoTagFilter!=="All"?C.goldLight:C.textSec }}>
+                  <span>🏷 {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
+                  <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTagOpen?"▲":"▼"}</span>
                 </button>
-              ))}
+                {ecoTagFilter !== "All" && <button onClick={() => setEcoTagFilter("All")} style={{ fontSize:12, color:C.textSec, background:"none", border:"none", cursor:"pointer" }}>✕ Clear</button>}
+              </div>
+              {ecoTagOpen && (
+                <div style={{ position:"absolute", top:"110%", left:0, zIndex:20, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:340, boxShadow:"0 8px 24px rgba(0,0,0,0.4)" }}>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, maxHeight:200, overflowY:"auto" }}>
+                    {ecoAllTags.filter(t => t !== "All").map(t => (
+                      <button key={t} onClick={() => { setEcoTagFilter(ecoTagFilter===t?"All":t); setEcoTagOpen(false); }}
+                        style={{ border:"none", cursor:"pointer", borderRadius:999, fontSize:11, padding:"3px 9px",
+                          fontWeight:ecoTagFilter===t?600:400, backgroundColor:ecoTagFilter===t?C.surfaceHi:C.surfaceHi,
+                          color:ecoTagFilter===t?C.gold:C.textSec, outline:ecoTagFilter===t?`1px solid ${C.gold}`:"none" }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:12 }}>
               {fEco.map(t => (
