@@ -1,0 +1,2617 @@
+import { useState, useMemo } from "react";
+
+const C = {
+  bg:"#07192E", surface:"#0C2340", surfaceHi:"#112A4E",
+  border:"#1E3F6B", textPri:"#EAF2FF", textSec:"#8AAFD4",
+  textMuted:"#4A6A90", gold:"#C9A84C", goldLight:"#E8D5A0",
+};
+
+const TAG = {
+  topic:  { bg:"#0E2A4A", color:"#7EC2F3", border:"#1E5080" },
+  output: { bg:"#0D2A1C", color:"#5DC994", border:"#1A5038" },
+  metric: { bg:"#2A1E08", color:"#E8D5A0", border:"#7A5A18" },
+  stage:  { bg:"#1E1030", color:"#C0A0F0", border:"#5030A0" },
+};
+
+const TYPE_MAP = {
+  "Custom GPT":     { bg:"#1E1030", color:"#C0A0F0" },
+  "Claude Project": { bg:"#0E2A4A", color:"#7EC2F3" },
+  "Connector":      { bg:"#2A1E08", color:"#E8D5A0" },
+  "Custom App":     { bg:"#0D2A1C", color:"#5DC994" },
+  "Skill":          { bg:"#1a2040", color:"#93b4ff" },
+  "External":       { bg:"#243050", color:"#93b4ff" },
+};
+
+const SP_BASE = "https://ftvcapital1.sharepoint.com/sites/AI/Shared%20Documents/Deep%20Research/Deep%20Research%20Prompts/";
+const SP_LIST  = "https://ftvcapital1.sharepoint.com/sites/AI/Lists/List/AllItems.aspx";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COPY HELPER — works inside sandboxed iframes (no clipboard API needed)
+// ─────────────────────────────────────────────────────────────────────────────
+function copyText(text) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;top:-9999px;left:-9999px;opacity:0;white-space:pre;";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    return true;
+  } catch(e) {
+    try { navigator.clipboard.writeText(text); return true; } catch(_) { return false; }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TOOLS REGISTRY — single source of truth
+// Add a new tool here + list workflowIds → it auto-appears everywhere
+// ─────────────────────────────────────────────────────────────────────────────
+const TOOLS_REGISTRY = [
+  {
+    id:"expert-gpt",
+    type:"Custom GPT", name:"Expert Network Agent", platform:"ChatGPT",
+    badge:"Active", link:"https://chatgpt.com/g/g-67a9471c3a4481918d686436bd52c2f8-expert-network-agent",
+    desc:"Search historical FTV expert call transcripts for company, sector, or management insights. Best used before management meetings or reference calls.",
+    note:"Best used before management meetings or reference calls.",
+    tags:["dd","research","calls"],
+    workflowIds:["expert-calls"],
+  },
+  {
+    id:"cimba",
+    type:"Custom GPT", name:"CIMBA — CIM Analyzer", platform:"ChatGPT",
+    badge:"Active", link:"https://chatgpt.com/g/g-68fa559e9c6c81919ddc36789c9ac2fc-cimba",
+    desc:"Upload a CIM for an instant structured DD checklist with pass/fail screening snapshot. All facts cited to CIM page numbers.",
+    note:"All facts cited to CIM page numbers.",
+    tags:["dd","cim","ic"],
+    workflowIds:["cim-diligence"],
+  },
+  {
+    id:"employee-gpt",
+    type:"Custom GPT", name:"Employee Resources", platform:"ChatGPT",
+    badge:"Active", link:"https://chatgpt.com/g/g-67843cc8535c81919a6196780e7f01ee-employee-resources",
+    desc:"HR policies, benefit questions, and internal firm information.",
+    note:"",
+    tags:["ops","hr","admin"],
+    workflowIds:["general-admin"],
+  },
+  {
+    id:"initial-profile-project",
+    type:"Claude Project", name:"Initial Profile Content Creation", platform:"Claude",
+    badge:"Active", link:"https://claude.ai/project/019c6d35-b59b-7379-bb6e-f9611697e23d",
+    desc:"Claude Project pre-loaded with FTV instructions for company profiles and sourcing content creation.",
+    note:"Pre-loaded context and instructions for Initial Profiles.",
+    tags:["research","sourcing","writing"],
+    workflowIds:["initial-profile"],
+  },
+  {
+    id:"pitchbook",
+    type:"Connector", name:"PitchBook", platform:"Claude + ChatGPT",
+    badge:"Active", link:"#",
+    desc:"Live PitchBook Premium data: company lookups, deal comps, investor profiles, market sizing.\n\nEnable in Claude: Customize → Connectors → PitchBook → Connect.\nEnable in ChatGPT: Profile → Settings → Connectors → PitchBook → Connect.",
+    note:"Enable in Claude: Customize → Connectors → PitchBook. In ChatGPT: Profile → Settings → Connectors.",
+    tags:["research","data","sourcing","dd"],
+    workflowIds:["initial-profile","market-research","cim-diligence","sourcing-outreach"],
+  },
+  {
+    id:"microsoft365",
+    type:"Connector", name:"Microsoft 365", platform:"Claude + ChatGPT",
+    badge:"Active", link:"#",
+    desc:"Connects Claude and ChatGPT to Outlook, Teams, Calendar, and SharePoint. Enables direct VDR access for deal diligence.\n\nEnable in Claude: Customize → Connectors → Microsoft 365 → Connect with FTV credentials.\nEnable in ChatGPT: Profile → Settings → Connectors → Microsoft → Connect.",
+    note:"Enable in Claude: Customize → Connectors → Microsoft 365. In ChatGPT: Profile → Settings → Connectors.",
+    tags:["ops","data","dd","admin"],
+    workflowIds:["cim-diligence","general-admin"],
+  },
+  {
+    id:"outreach-app",
+    type:"Custom App", name:"FTV Outreach Generator", platform:"Microsoft",
+    badge:"Active", link:"https://launcher.myapps.microsoft.com/api/signin/5b0f18f4-6c70-48af-b13b-bbbcf1af108e?tenantId=5d499720-ad8d-4e33-bf72-ec145ee39ad6",
+    desc:"Generates personalized sourcing emails at scale using GPN relationships and portfolio context.",
+    note:"Full outreach workflow with GPN data.",
+    tags:["sourcing","outreach","email"],
+    workflowIds:["sourcing-outreach"],
+  },
+  {
+    id:"alphasense",
+    type:"External", name:"AlphaSense", platform:"AlphaSense",
+    badge:"Core Tool", link:"#",
+    desc:"Market intelligence, earnings transcripts, and expert call analysis. Used for pattern tracking and competitive research.",
+    note:"Used for expert calls and competitive research.",
+    tags:["research","dd","calls"],
+    workflowIds:["expert-calls","market-research"],
+  },
+  {
+    id:"skill-ic-diligence",
+    type:"Skill", name:"IC Diligence", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Produces FTV-format Initial Profiles from CIMs, VDRs, and financial models. Auto-fires on deal analysis requests.",
+    note:"Auto-fires on deal analysis requests.",
+    tags:["ic","dd","research"],
+    workflowIds:["initial-profile","cim-diligence"],
+  },
+  {
+    id:"skill-sourcing",
+    type:"Skill", name:"Sourcing Outreach", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Drafts personalized CEO/CRO cold outreach in FTV's voice. Auto-fires when drafting sourcing emails.",
+    note:"Auto-fires when drafting outreach.",
+    tags:["sourcing","outreach","email"],
+    workflowIds:["sourcing-outreach"],
+  },
+  {
+    id:"skill-rtw",
+    type:"Skill", name:"Right to Win", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Structures a right-to-win competitive positioning assessment for a specific deal.",
+    note:"Competitive positioning assessment.",
+    tags:["ic","dd"],
+    workflowIds:["ic-prep"],
+  },
+  {
+    id:"skill-risk",
+    type:"Skill", name:"Risk Framework", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Builds a structured risk and mitigant table. Auto-fires on risk/bear case requests.",
+    note:"Auto-fires on risk/bear case requests.",
+    tags:["ic","dd"],
+    workflowIds:["cim-diligence","ic-prep"],
+  },
+  {
+    id:"skill-ic-materials",
+    type:"Skill", name:"IC Materials", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Produces IC-ready slide content in FTV format. Auto-fires on IC slide requests.",
+    note:"Auto-fires on IC slide requests.",
+    tags:["ic"],
+    workflowIds:["ic-prep"],
+  },
+  {
+    id:"skill-playbook",
+    type:"Skill", name:"Investment Playbook", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Applies FTV's investment framework to evaluate company mandate fit.",
+    note:"FTV mandate fit evaluation.",
+    tags:["ic","dd"],
+    workflowIds:["ic-prep"],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROMPTS REGISTRY — add a prompt here + workflowIds → appears everywhere
+// ─────────────────────────────────────────────────────────────────────────────
+const PROMPTS_REGISTRY = [
+  { id:1, category:"Deep Research", title:"Commercial Due Diligence (CDD)", source:SP_BASE+"CDD_Prompt.docx",
+    desc:"Full CDD assessment: market overview, competitive landscape, target positioning, and growth outlook.",
+    labels:[{type:"topic",text:"Market Sizing"},{type:"topic",text:"Competitive Landscape"},{type:"output",text:"Board Deck"},{type:"output",text:"Exec Summary"},{type:"metric",text:"TAM / SAM"},{type:"metric",text:"CAGR"},{type:"metric",text:"Market Share"},{type:"metric",text:"NPS"},{type:"stage",text:"Pre-LOI"},{type:"stage",text:"IC Prep"}],
+    workflowIds:["cim-diligence","ic-prep"],
+    text:`
+## 🧭 **Commercial Due Diligence Framework – Growth Equity / Software Focus**
+
+**Objective:**
+Develop a comprehensive **commercial due diligence (CDD) assessment** tailored to the **sector, market, and competitive dynamics** in which the target operates. The goal is to combine **deep analytical narrative** with **slide-ready visuals**, mirroring top-tier consulting and investor-style deliverables.
+All analysis and benchmarks should be **specific to the target’s sector**, drawing on ecosystem dynamics, competitor positioning, customer behavior, and technology trends.
+
+---
+
+### **I. Market Overview**
+
+1. **Market Definition & Segmentation**
+
+   * Define the relevant market and its boundaries.
+   * Identify sub-segments by **customer size, vertical, geography, or product use case**.
+
+2. **Market Size (TAM/SAM/SOM)**
+
+   * Quantify total and served addressable markets.
+   * Include penetration estimates and share of wallet analysis.
+
+3. **Growth Trends & Drivers**
+
+   * Calculate historical and 5-year forward CAGR.
+   * Describe demand drivers, headwinds, and regulatory or funding influences.
+   * Highlight **macro adoption patterns** (e.g., digitization, workflow automation, AI enablement).
+
+4. **Technology & Innovation Impact**
+
+   * Assess how emerging technologies (AI, automation, analytics, integration ecosystems) are influencing market structure, competitive dynamics, and product evolution.
+
+5. **Adoption & Opportunity Analysis (“At-Bats”)**
+
+   * Quantify contestable market by opportunity type:
+
+     * **New logo (greenfield)**
+     * **Replacement / switcher**
+     * **Renewal / upsell**
+   * Estimate renewal cycles, average contract lengths, and churn rates.
+
+**Recommended Visuals:**
+
+* TAM-to-SAM waterfall chart
+* Market growth and forecast chart
+* Buyer segment matrix (e.g., by spend tier or use case)
+* “At-bat” opportunity table
+
+---
+
+### **II. Competitive Landscape**
+
+1. **Competitor Mapping**
+
+   * Identify key player archetypes: platforms, point solutions, specialists, and substitutes.
+
+2. **Competitive Positioning**
+
+   * Compare across business models, pricing structures, integration ecosystems, and core segments.
+
+3. **Market Share & Momentum**
+
+   * Estimate relative scale and growth trajectory of key competitors.
+   * Highlight any **emerging challengers** or consolidation trends.
+
+4. **Key Purchasing Criteria (KPCs)**
+
+   * Define and rank the top customer decision factors (e.g., functionality, ease of integration, TCO, support, brand trust).
+
+5. **Buying Behavior & Procurement**
+
+   * Describe buyer journey, stakeholder roles, procurement cycles, and switching behavior.
+   * Identify drivers of adoption and churn.
+
+6. **Barriers to Entry & Defensibility**
+
+   * Evaluate switching costs, data lock-in, integration dependencies, IP moats, and network effects.
+
+**Recommended Visuals:**
+
+* Competitor landscape or quadrant map
+* KPC heatmap comparing top players
+* Market share visualization
+* Buyer decision flow diagram
+
+---
+
+### **III. Target Positioning**
+
+1. **Product & Service Offering**
+
+   * Outline the solution suite, modules, and differentiators.
+   * Identify proprietary capabilities or integration advantages.
+
+2. **Feature & Capability Benchmarking**
+
+   * Compare against peers by functionality, integration coverage, AI use, and usability.
+
+3. **Customer Adoption & Usage**
+
+   * Assess usage depth, attach rates, and engagement metrics.
+   * Identify key usage drivers and friction points.
+
+4. **Customer Sentiment & Advocacy**
+
+   * Summarize NPS, CSAT, or retention survey results.
+   * Include “voice of customer” insights highlighting satisfaction themes or gaps.
+
+5. **Differentiation & Right-to-Win**
+
+   * Analyze competitive strengths relative to key purchasing criteria.
+   * Identify core market niches or product verticals where the company is advantaged.
+
+**Recommended Visuals:**
+
+* Product feature comparison radar chart
+* NPS / CSAT comparison bar chart
+* Voice-of-customer quote or summary slide
+* SWOT or differentiation matrix
+
+---
+
+### **IV. Growth Outlook & Strategic Pathways**
+
+1. **Growth Plan Decomposition**
+
+   * Break down management’s revenue plan into new logos, upsells, pricing, and product launches.
+
+2. **Feasibility Assessment**
+
+   * Benchmark assumptions against market growth, historical execution, and sales efficiency metrics.
+
+3. **Adjacency & Expansion Opportunities**
+
+   * Identify 2–3 growth adjacencies (e.g., new geographies, verticals, or product lines).
+   * Evaluate right-to-win and capital requirements.
+
+4. **Scenario & Sensitivity Analysis**
+
+   * Develop base, upside, and downside cases driven by key variables (win rates, retention, pricing power, TAM expansion).
+
+5. **Unit Economics & Margin Outlook**
+
+   * Evaluate revenue quality, gross margin durability, CAC payback, and scalability of opex.
+
+6. **Technology Enablement as a Growth Lever**
+
+   * Examine how AI, automation, or integrations can accelerate monetization or efficiency.
+
+**Recommended Visuals:**
+
+* Revenue bridge (current to Year 5)
+* Scenario / sensitivity table
+* Adjacency opportunity matrix
+* Margin evolution and pricing power chart
+* Risk framework (market / operational / technology)
+
+---
+
+### **V. Deliverables & Output Structure**
+
+**Deliverable Format:** Board- or IC-ready report or slide deck structured as follows:
+
+1. **Executive Summary** – 3–5 key insights on market, competition, positioning, and growth outlook.
+2. **Market Context & Size** – TAM/SAM, growth, adoption dynamics.
+3. **Competitive Landscape** – Mapping, key purchasing criteria, share trends.
+4. **Company Positioning** – Feature benchmarking, customer sentiment, differentiation.
+5. **Growth Outlook** – Scenario modeling, adjacencies, and risk summary.
+6. **Appendix** – Supporting data, benchmarking tables, and source references.
+
+**Formatting Guidance:**
+
+* Use **professional business English**, appropriate for investor or board audiences.
+* Combine **quantitative rigor** (data, charts, metrics) with **qualitative insight** (market dynamics, behavior, risks).
+* Use **sector-agnostic terminology** (“customers,” “solutions,” “segments,” “modules”) for adaptability.
+* Prioritize **clarity, structure, and visual storytelling** with well-labeled charts and tables.
+
+---
+
+` },
+
+  { id:2, category:"Deep Research", title:"Market Segmentation Landscape", source:SP_BASE+"Market Segmentation_Prompt.docx",
+    desc:"In-depth sector landscape identifying high-growth sub-sectors, leading players, and investment opportunities.",
+    labels:[{type:"topic",text:"Sector Landscape"},{type:"topic",text:"Investment Thesis"},{type:"output",text:"Market Map"},{type:"output",text:"Exec Summary"},{type:"metric",text:"TAM"},{type:"metric",text:"CAGR"},{type:"metric",text:"Revenue Multiples"},{type:"stage",text:"Sourcing"},{type:"stage",text:"Thesis Development"}],
+    workflowIds:["market-research"],
+    text:`Market Segmentation Deep Research Report
+Objective:
+Conduct an in-depth landscape analysis of the [Market or Sub-Sector]. The goal is to identify high-growth sub-sectors, leading players, and investment opportunities aligned with secular trends and FTV Capital’s thematic focus areas.
+Deliverable:
+Produce a structured summary that helps a private-equity investor quickly digest the market and form an investment thesis. Organize the findings under the sections below.
+1. Market Overview & Secular Drivers
+Describe the size, growth rate, and structure of the market.
+Identify macro and secular tailwinds (e.g., digital transformation, regulatory shifts, AI adoption, cloud migration).
+Note any headwinds or structural risks.
+Highlight emerging demand pockets or customer pain points that are driving innovation or spending.
+2. Sub-Sector Segmentation
+Break down the market into logical sub-sectors or functional categories (e.g., by customer size, use case, or delivery model).
+Identify which sub-sectors exhibit the highest growth rates or most attractive unit economics.
+Highlight recent trends in product differentiation, technology adoption, and distribution channels.
+3. Competitive Landscape
+For each key company or product identified, summarize:
+Company Name & Description
+Product / Feature Offering – What core problems are solved? What makes the solution distinct?
+Pricing & Packaging – Especially relevant for SMB or mid-market offerings (e.g., per-seat, per-transaction, tiered plans).
+Customer Ratings & Rankings – Include data from G2, Gartner, Capterra, TrustRadius, etc.
+Customer Review Quotes – Pull direct excerpts that illustrate customer sentiment, product strengths, or pain points.
+Target Customer Segments – SMB, mid-market, enterprise, or vertical focus.
+Recent Funding / M&A Activity – Include deal values and strategic rationale where possible.
+Present this section in a tabular format where possible.
+4. Market Dynamics & Differentiation
+Analyze competitive differentiation (product breadth, UX, integrations, pricing flexibility, GTM execution).
+Identify moats (switching costs, ecosystem depth, data network effects).
+Outline patterns in go-to-market or channel partnerships.
+Highlight whitespace or unmet customer needs where new entrants are gaining share.
+5. Investment Insights
+Which sub-sectors appear most attractive given secular tailwinds and TAM expansion?
+Which companies are emerging category leaders or potential platform plays?
+What are the valuation and growth dynamics (revenue multiples, profitability inflection points, growth vs. burn tradeoffs)?
+Suggest 2–3 thematic investment ideas or new thesis areas within the space.
+Note potential value creation levers post-investment (e.g., pricing optimization, cross-sell, channel expansion).
+6. Summary Dashboard (Optional Output)
+Create a concise visual/table summary with:
+Sub-sector growth rates
+Top 10 companies by size / momentum
+Average customer satisfaction (CSAT/NPS proxy)
+Example review quotes
+Pricing tiers or packaging benchmarks
+Tone & Style:
+Analytical, investor-oriented, data-driven.
+Avoid fluff; focus on actionable insight and investor relevance.
+Where information is unavailable, flag gaps transparently and infer directionally from adjacent markets or company proxies.
+Output Format:
+Present findings in clean markdown sections with clear headers, concise tables, and short narrative summaries.
+Conclude with a 1-page executive summary outlining the most compelling sub-sector and investment rationale.` },
+
+  { id:3, category:"Deep Research", title:"CIM Analysis and Screening", source:SP_BASE+"CIM Analysis_Prompt.docx",
+    desc:"Source-grounded CIM checklist with pass/fail screening snapshot. All facts cited to CIM page numbers.",
+    labels:[{type:"topic",text:"CIM Review"},{type:"topic",text:"DD Checklist"},{type:"output",text:"Pass/Fail Table"},{type:"output",text:"IC Appendix"},{type:"metric",text:"ARR / Revenue"},{type:"metric",text:"Gross Margin"},{type:"metric",text:"Growth Rate"},{type:"metric",text:"Recurring Revenue %"},{type:"stage",text:"CIM Stage"},{type:"stage",text:"Pre-LOI"}],
+    workflowIds:["cim-diligence"],
+    text:`Objective: Produce a single, source-grounded assessment of [COMPANY] using only the uploaded/linked CIM. Your deliverable has (1) a Main Table "Checklist” that maps to CIM content and (2) Supplementary Analyses that deepens the assessment. Absolutely no hallucinations: if the CIM or checklist doesn’t contain a fact, mark it Not Available and do not infer from outside knowledge.
+Global rules (apply everywhere)
+Sources: Use only the uploaded CIM and checklist. Do not use external data.
+Citations: After each fact/metric, include inline source pointers as [CIM p.X], [Appendix p.Y], or [Checklist p.Z]. If page numbers aren’t available, reference the nearest section/figure/table name exactly as written.
+No guesswork: If an item is missing or ambiguous, write “Not Available” and explain what would be needed to confirm it. Do not estimate.
+Numerics: Recompute metrics directly from CIM data where possible. Show each formula once per section (briefly), then present results. Keep units and time bases consistent (e.g., LTM vs FY).
+Consistency: Use the checklist item names verbatim. Treat each check independently.
+Formatting: Return the entire output in Markdown. Use tables where specified.
+QC pass: Before finalizing, re-read the CIM sections cited and confirm each “✔️/❌” is correct.
+1) Main Table (required)
+Create a single table with 4 columns and exactly these row labels (in this order):
+Company Overview
+Investment Highlights
+Historical Financials
+Projected Financials
+Balance Sheet Statement
+Cash Flow Statement
+Detailed Capex Breakdown
+Revenue Breakdown by Product
+Customer Concentration
+Market and Industry Analysis
+Competitive Landscape
+Growth Strategy
+Management Team
+Operational Capabilities
+Sales and Marketing Strategy
+Technology and IP
+Table columns (exactly):
+Due Diligence Checklist Item
+2–3 Confirming Facts (or “Not Available”) — short, declarative bullets only from CIM/checklist
+Cited Source(s) — e.g., [CIM p.12, Table 3], [Checklist p.2]
+Included in CIM (✔️/❌) — ✔️ if the CIM contains sufficient primary content; ❌ if not
+If the CIM provides partial coverage (e.g., mentions topic but lacks data), include the best facts you can cite and still mark ❌. Document the gap briefly in column 2.
+2) Screening Snapshot (required, table)
+Create a pass/fail screening table using only CIM values:
+Revenue (LTM or run-rate) ≥ $8,000,000 
+Growth rate:
+If revenue < $20,000,000 → ≥ 20%, or
+If revenue > $25,000,000 → ≥ 30%
+Recurring & retention revenue ≥ 50%
+Gross margin ≥ 40%
+Profitability: profitable or approaching breakeven
+Columns: Metric | Company Value | Threshold | Pass/Fail | Source. Use [CIM p.X]. If “Not Available,” mark Fail (data unavailable).
+3) Supplementary Analyses (source-grounded)
+Every subsection must cite specific CIM pages/figures. If a requested metric is not in the CIM, write Not Available and do not infer.
+A. Company History & Evolution
+Founding details, key milestones, and business model evolution.
+(1) Transformational milestones; (2) current product/service portfolio with revenue contributions; (3) quantifiable competitive advantages (e.g., market share, margin profile).
+Cite each item.
+B. Products & Services
+Primary offerings, key features, target customers, buying triggers, differentiation.
+Map each product/service to its revenue share and gross margin if available.
+C. Industry Position & Competitive Dynamics
+Market size and 5-year CAGR as stated in the CIM.
+Company market share (if provided), positioning vs. competitors, and competitive intensity.
+Competitive matrix (table): Company vs Top 3 Competitors across
+market share, product capabilities, pricing power, customer satisfaction metrics, technological advantages. Include only CIM-sourced datapoints.
+D. Financials (3–5 years)
+Income statement, balance sheet, cash flows; display trend tables with YoY growth, gross margin, EBITDA margin.
+Ratios: working capital efficiency, cash conversion cycle, leverage, interest coverage.
+Flag and explain YoY variances >10% with direct citations.
+E. Forward View
+Projected Financials: revenue, margins, capex, cash flows as provided.
+Bridge charts/tables showing drivers of margin change and growth (only if CIM provides).
+5-year analysis: quarterly trends for key metrics, return on capital employed (if data available), debt service coverage.
+F. Operational Capabilities
+Process flow/efficiency, footprint (geographies/facilities), major assets and any proprietary technologies.
+Supply chain overview and capacity constraints, all CIM-sourced.
+G. Management & Organization
+Key executives: years of relevant experience, notable achievements with metrics, equity ownership (if in CIM), and succession readiness score (1–5) — score only if explicitly provided; otherwise Not Available (no scoring).
+Organizational structure and talent model.
+H. Customers & Suppliers
+Top 10 customers & suppliers: revenue/spend concentration %, contract terms & duration, switching costs (in dollars), and risk mitigations for any entity >15%.
+Customer concentration summary table.
+I. Pricing Power (by segment)
+Price realization rates, customer price sensitivity metrics, margin impact of price changes, competitive pricing dynamics, and specific examples of successful price increases — only if explicitly in CIM. Otherwise mark Not Available by sub-item.
+J. End-Markets >10% of Revenue
+For each such end-market: market size, 5-year CAGR, company penetration rate, and noted growth catalysts/headwinds.
+K. Technology & IP
+Number of active patents, revenue protected by IP, R&D % of sales, brand value metrics, and examples of IP enforcement success (if present).
+L. Cost Structure
+Break down costs by category: % of revenue, fixed vs variable, cost-reduction initiatives with targeted savings, and benchmarks against industry leaders (include only if the CIM itself provides benchmarks).
+M. Risks & Mitigations
+Map critical operational, financial, and market risks. For each:
+Probability score, potential financial impact ($), mitigation strategies, and any historical analogs cited in the CIM.
+If probability/impact are not quantified in the CIM, mark Not Available.
+N. M&A History (last 5 years)
+For each acquisition: purchase price multiples, synergy realization vs targets, integration costs, revenue contribution, and capabilities gained with quantified impact.
+O. Growth Strategy
+Market expansion, new products, new geographies; link to anticipated industry trends/opportunities as cited.
+Top 5 market trends (table): trend, market size affected, expected impact on revenue/margins, timeline, and the company’s specific response initiatives.
+P. Revenue Architecture
+Revenue by segment: exact percentages, gross margins by segment, revenue recognition policies, customer concentration, and YoY growth per segment.
+Q. Investment Thesis (quantitative)
+(1) Specific growth rates vs industry average (as stated in CIM)
+(2) Margin expansion opportunities with exact targets (only if CIM provides)
+(3) Defensible positions with supporting data
+(4) Catalysts for value creation with timelines
+Include a final thesis table: pillar | supporting evidence (with citations) | timing | risks/mitigations.
+4) Appendices
+Formulas & Methods: Briefly list formulas used (e.g., CAGR, penetration rate, CCC, ROIC, DSCR) and where each input was sourced in the CIM.
+Assumptions Register: Only administrative assumptions (e.g., rounding, calendar alignment). No business assumptions unless explicitly stated by the CIM.
+Reference List: Consolidate all page/figure/table citations used.
+Output structure:
+Executive Summary (bulleted, ≤10 bullets, all cited)
+Main Table (Checklist ↔ CIM)
+Screening Snapshot (Pass/Fail)
+Supplementary Analyses A–Q (with the tables specified)
+Appendices (Formulas, Assumptions, References)
+Calculation notes (use only CIM data)
+Growth: YoY % = (Current − Prior) / Prior. CAGR (5-yr): [(End/Start)^(1/5) − 1].
+Penetration rate: Company revenue in end-market ÷ Addressable market revenue (as defined in CIM).
+Working capital efficiency: NWC / Revenue; CCC: DSO + DIO − DPO.
+ROIC: NOPAT ÷ Invested Capital (only if both are in CIM).
+DSCR: EBITDA or CFO ÷ Debt service (as defined in CIM).
+Margin bridges: show only if CIM provides driver splits.
+Final QA checklist (do before submitting)
+Every fact has a [CIM …] or [Checklist …] citation.
+Every checklist row has 2–3 concise facts or Not Available, plus ✔️/❌.
+All thresholds in the Screening Snapshot show Company Value, Threshold, Pass/Fail, and Source.
+All requested tables are present; any missing data labeled Not Available (no external estimates).
+No contradictions across sections; numbers reconcile to the CIM.
+Begin now using only the uploaded CIM and checklist. If the CIM lacks a requested metric, state “Not Available” and proceed — do not infer or supplement with external information.` },
+
+  { id:4, category:"Deep Research", title:"Target Company Research (General)", source:SP_BASE+"general-initial.txt",
+    desc:"Template for building a comprehensive deep research prompt on a specific target company.",
+    labels:[{type:"topic",text:"Company Profile"},{type:"topic",text:"Market Context"},{type:"output",text:"Research Report"},{type:"metric",text:"Business Model"},{type:"metric",text:"Revenue Trends"},{type:"stage",text:"Sourcing"},{type:"stage",text:"Initial Diligence"}],
+    workflowIds:["initial-profile","sourcing-outreach"],
+    text:`Use the best practices provided below and the initial context I shared to create a deep research prompt on the following topic:
+
+Context:
+I am a private equity investor who wants to better understand the business HRSoft (https://hrsoft.com). I need you to make sure you deeply research a few things, at least, though you will find more things that are important -
+- The business model and company performance/team/past/outlook
+- the overall market they operate in, with general headwinds/tailwinds, legal/compliance/regulation outlook, etc.
+- The company's competitors and the history of their competitive space
+- Any insights I can speak to that would make me seem knowledgeable about their business and the market
+
+I need the final report to be as comprehensive and thorough as possible. It should be soundly rooted in business strategy, academic research, and data-driven. But it also needs to use industry blogs and other sources, too. Even reviews are ok.
+
+Please build a prompt using the following guidelines:
+
+Define the Objective:
+- Clearly state the main research question or task.
+- Specify the desired outcome (e.g., detailed analysis, comparison, recommendations).
+
+Gather Context and Background:
+- Include all relevant background information, definitions, and data.
+- Specify any boundaries (e.g., scope, timeframes, geographic limits).
+
+Use Specific and Clear Language:
+- Provide precise wording and define key terms.
+- Avoid vague or ambiguous language.
+
+Provide Step-by-Step Guidance:
+- Break the task into sequential steps or sub-tasks.
+- Organize instructions using bullet points or numbered lists.
+
+Specify the Desired Output Format:
+- Describe how the final answer should be organized (e.g., report format, headings, bullet points, citations).
+Include any specific formatting requirements.
+
+Balance Detail with Flexibility:
+- Offer sufficient detail to guide the response while allowing room for creative elaboration.
+- Avoid over-constraining the prompt to enable exploration of relevant nuances.
+
+Incorporate Iterative Refinement:
+- Build in a process to test the prompt and refine it based on initial outputs.
+- Allow for follow-up instructions to adjust or expand the response as needed.
+
+Apply Proven Techniques:
+- Use methods such as chain-of-thought prompting (e.g., “think step by step”) for complex tasks.
+- Encourage the AI to break down problems into intermediate reasoning steps.
+
+Set a Role or Perspective:
+- Assign a specific role (e.g., “act as a market analyst” or “assume the perspective of a historian”) to tailor the tone and depth of the analysis.
+
+Avoid Overloading the Prompt:
+- Focus on one primary objective or break multiple questions into separate parts.
+- Prevent overwhelming the prompt with too many distinct questions.
+
+Request Justification and References:
+- Instruct the AI to support its claims with evidence or to reference sources where possible.
+- Enhance the credibility and verifiability of the response.
+
+Review and Edit Thoroughly:
+- Ensure the final prompt is clear, logically organized, and complete.
+- Remove any ambiguous or redundant instructions.` },
+
+  { id:5, category:"Deep Research", title:"In-Process Deal Research (IP)", source:SP_BASE+"IP-initial.txt",
+    desc:"Deep research prompt builder for an active deal with IC team questions across revenue quality, customers, and deal structure.",
+    labels:[{type:"topic",text:"Revenue Quality"},{type:"topic",text:"Deal Structure"},{type:"output",text:"Diligence Report"},{type:"output",text:"IC Memo Input"},{type:"metric",text:"NDR / GDR"},{type:"metric",text:"EBITDA"},{type:"metric",text:"Exit Multiple"},{type:"stage",text:"Active Diligence"},{type:"stage",text:"IC Prep"}],
+    workflowIds:["initial-profile","ic-prep"],
+    text:`Use the best practices provided below and the initial context I shared to create a deep research prompt on the following topic:
+
+Context:
+I am a growth equity investor who wants to better understand a business we are actively reviewing for a potential deal - Bridewell (https://www.bridewell.com/us/). I need you to make sure you deeply research a few things, at least, though you will find more things that are important -
+- The business model and company performance/team/past/outlook
+- the overall market they operate in, with general headwinds/tailwinds, legal/compliance/regulation outlook, etc.
+- The company's competitors and the history of their competitive space
+- Any risks, concerns, weaknesses, etc.
+- Answer the following key questions that were raised by our team:
+
+Revenue Quality & Product Lines:
+KV: Are we seeing revenue recurrence across all customers in the consulting revenue stream? Is the recurrence within the consulting business across all customers? Are a handful of customers driving the growth of recurring revenue?
+AFM: Do we have data that shows what % of MSS deals came from consulting? Do we have a dynamic similar to folks like Accenture that source MSS projects through their consulting business?
+KG: How does NDR/GDR analysis on repeatable and repeatable + recurring revenue benchmark against other services businesses we have invested in and how does NDR/GDR track across our various revenue streams?
+KG: Can you map gross margin and EBITDA contribution to the different revenue streams? It would be beneficial to compare EBITDA contribution based on revenue stream, large projects and revenue quality.
+AS: How does the quality of revenue and gross margin of Bridewell compare to some of the other Cyber Servicers / MDR business that we've done diligence on in the past?
+
+Customers:
+AFM: How sticky and stable are the top 5 customers? How do we think about GTM muscle and stability of the customer base outside of the top 5 customers? Do we expect to grow/nature other customers into similar profiles of the top 5?
+KV: Given the 2022 cohort has grown the most, what needs to happen to penetrate the existing base as fast as MoJ and MHCLG? Are there any restrictions to that? Why haven't other cohorts grown faster?
+AFM: Do we have the contribution margin by customer or large project?
+BB: Is there any transfer of liability here? Does Bridewell take on any risk in the advice / consulting reports they are generating? Do they need any insurance in what they are doing?
+BB: Is having a third-party do this work important for companies to have them put their stamp on it? Is it important to get an independent opinion on cyber services?
+
+Market & Expansion Opportunities:
+AFM: A lot of what the business has built is around specializing (within consulting and MSS) which has allowed them to win in certain areas which is great, but how difficult will it be to expand outside of this specialization / what these guys do today from a logo, market and geography perspective? Is geographic expansion needed for our underwriting case?
+BF: Given some of the constraints on market size / niche approach; how do you get comfortable with the multiple we are proposing to pay here and the market / focus constraints in the near term?
+RA: How do you think about the risk of some of these customers starting to insource this service? Is it possible that these workflows begin to occur at such a regular cadence that they start to bring this in house?
+BB: To what extent will you be able to further diligence the pipeline to further understand its composition?
+
+Financials / Deal:
+KV: We are underwriting a meaningful uptick in the consulting business as well as MSS. Since we need to believe consulting business grows from £25m to £60m in our holding period, do we have ability to say these 200 customers will buy more consulting, or do we need to believe in new logos coming in? Why are the existing logos not buying more consulting? How does this growth in the consulting business occur if only a few customers are driving the revenue?
+KV: On returns, are we looking at it as a 5 or 6 year hold and what is fiscal year end? What multiples are you anchoring off of and are we assuming multiple uplift on an LTM basis at exit?
+AS: How recurring do we think business will be at exit?
+BB: Is Oakley looking at this as an add-on to i-tracing or standalone?
+TT: Is M&A required in the underwriting base case? Is this a day one priority or will it be opportunistic? Can the organic case stand on its own?
+AS: On the EBITDA exit multiple we are underwriting, what do we need to believe in terms of profile at exit across US expansion, gross margins and revenue composition?
+BB: How does quantum of debt impact the returns analysis at various levels?
+
+I need the final report to be as comprehensive and thorough as possible. It should be soundly rooted in business strategy, academic research, and data-driven. But it also needs to use industry blogs and other sources, too. Even reviews are ok.
+
+Please build a prompt using the following guidelines:
+
+Define the Objective:
+- Clearly state the main research question or task.
+- Specify the desired outcome (e.g., detailed analysis, comparison, recommendations).
+
+Gather Context and Background:
+- Include all relevant background information, definitions, and data.
+- Specify any boundaries (e.g., scope, timeframes, geographic limits).
+
+Use Specific and Clear Language:
+- Provide precise wording and define key terms.
+- Avoid vague or ambiguous language.
+
+Provide Step-by-Step Guidance:
+- Break the task into sequential steps or sub-tasks.
+- Organize instructions using bullet points or numbered lists.
+
+Specify the Desired Output Format:
+- Describe how the final answer should be organized (e.g., report format, headings, bullet points, citations).
+Include any specific formatting requirements.
+
+Balance Detail with Flexibility:
+- Offer sufficient detail to guide the response while allowing room for creative elaboration.
+- Avoid over-constraining the prompt to enable exploration of relevant nuances.
+
+Incorporate Iterative Refinement:
+- Build in a process to test the prompt and refine it based on initial outputs.
+- Allow for follow-up instructions to adjust or expand the response as needed.
+
+Apply Proven Techniques:
+- Use methods such as chain-of-thought prompting (e.g., “think step by step”) for complex tasks.
+- Encourage the AI to break down problems into intermediate reasoning steps.
+
+Set a Role or Perspective:
+- Assign a specific role (e.g., “act as a market analyst” or “assume the perspective of a historian”) to tailor the tone and depth of the analysis.
+
+Avoid Overloading the Prompt:
+- Focus on one primary objective or break multiple questions into separate parts.
+- Prevent overwhelming the prompt with too many distinct questions.
+
+Request Justification and References:
+- Instruct the AI to support its claims with evidence or to reference sources where possible.
+- Enhance the credibility and verifiability of the response.
+
+Review and Edit Thoroughly:
+- Ensure the final prompt is clear, logically organized, and complete.
+- Remove any ambiguous or redundant instructions.` },
+
+  { id:6, category:"Deep Research", title:"Sector Landscape & Market Map", source:SP_BASE+"Market Segmentation_Prompt.docx",
+    desc:"Broad sector landscape for sourcing: sub-sectors, leading players, market maps, and thematic investment ideas.",
+    labels:[{type:"topic",text:"Sector Landscape"},{type:"output",text:"Market Map"},{type:"metric",text:"TAM"},{type:"metric",text:"CAGR"},{type:"stage",text:"Sourcing"},{type:"stage",text:"Thesis Development"}],
+    workflowIds:["market-research","sourcing-outreach"],
+    text:`Use the best practices provided below and the initial context I shared to create a deep research prompt on the following topic:
+
+Context:
+I am a growth equity investor who wants to better understand the area of Transportation and Logistics (T&L) and Freight payments. I need you to make sure you deeply research a few things, at least, though you will find more things that are important -
+- The overall market with general headwinds/tailwinds, legal/compliance/regulation outlook, growth, etc.
+- Any trends or market dynamics to help me better understand the space, with news, research, analytics, etc.
+- How companies in the space differ in the positioning, pricing, customers, contracts, operations, strengths, weaknesses etc.
+- Any active investors in the space and any relevant deals including M&A
+- The key players that would be relevant for potential investment (with reasoning), segmented by sub-category to create a market map. We write checks anywhere from ~30-300M USD, so please consider that when you look at previous funding, company scale, etc. Do not provide illustrative examples, but only real companies. I care less about whether you know the company is actively raising, but that they're within our investment mandate and within the appropriate sector. List as many companies as you can as long as they are relevant, and make sure to segment them into specific areas of the market.
+
+I need the final report to be as comprehensive and thorough as possible. It should be soundly rooted in business strategy, academic research, and data-driven. But it also needs to use industry blogs and other sources, too. Even reviews are ok.
+
+Please build a prompt using the following guidelines:
+
+Define the Objective:
+- Clearly state the main research question or task.
+- Specify the desired outcome (e.g., detailed analysis, comparison, recommendations).
+
+Gather Context and Background:
+- Include all relevant background information, definitions, and data.
+- Specify any boundaries (e.g., scope, timeframes, geographic limits).
+
+Use Specific and Clear Language:
+- Provide precise wording and define key terms.
+- Avoid vague or ambiguous language.
+
+Provide Step-by-Step Guidance:
+- Break the task into sequential steps or sub-tasks.
+- Organize instructions using bullet points or numbered lists.
+
+Specify the Desired Output Format:
+- Describe how the final answer should be organized (e.g., report format, headings, bullet points, citations).
+Include any specific formatting requirements.
+
+Balance Detail with Flexibility:
+- Offer sufficient detail to guide the response while allowing room for creative elaboration.
+- Avoid over-constraining the prompt to enable exploration of relevant nuances.
+
+Incorporate Iterative Refinement:
+- Build in a process to test the prompt and refine it based on initial outputs.
+- Allow for follow-up instructions to adjust or expand the response as needed.
+
+Apply Proven Techniques:
+- Use methods such as chain-of-thought prompting (e.g., “think step by step”) for complex tasks.
+- Encourage the AI to break down problems into intermediate reasoning steps.
+
+Set a Role or Perspective:
+- Assign a specific role (e.g., “act as a market analyst” or “assume the perspective of a historian”) to tailor the tone and depth of the analysis.
+
+Avoid Overloading the Prompt:
+- Focus on one primary objective or break multiple questions into separate parts.
+- Prevent overwhelming the prompt with too many distinct questions.
+
+Request Justification and References:
+- Instruct the AI to support its claims with evidence or to reference sources where possible.
+- Enhance the credibility and verifiability of the response.
+
+Review and Edit Thoroughly:
+- Ensure the final prompt is clear, logically organized, and complete.
+- Remove any ambiguous or redundant instructions.` },
+
+  { id:7, category:"Deep Research", title:"Competitive Analysis Deep Dive", source:SP_BASE+"CDD_Prompt.docx",
+    desc:"Head-to-head competitive positioning: features, GTM, pricing, customer feedback, and win/loss dynamics.",
+    labels:[{type:"topic",text:"Competitive Landscape"},{type:"output",text:"Positioning Table"},{type:"output",text:"Win/Loss Analysis"},{type:"metric",text:"Market Share"},{type:"metric",text:"NPS"},{type:"stage",text:"Pre-LOI"},{type:"stage",text:"IC Prep"}],
+    workflowIds:["market-research","ic-prep"],
+    text:`Use the best practices provided below and the initial context I shared to create a deep research prompt on the following topic:
+
+Context:
+I am a growth equity investor who wants to better understand the competitors of the company PaymentWorks (https://www.paymentworks.com/). I need you to make sure you deeply research a few things, at least, though you will find more things that are important -
+- The overall market the business operates in, with general headwinds/tailwinds, legal/compliance/regulation outlook, etc.
+- The company's competitors and the history of their competitive space
+- How companies differ in the positioning, pricing, customers, contracts, operations, strengths, weaknesses etc.
+- Obvious and non obvious competitors
+- Potential buyers or acquisition targets with clear reasoning
+- Why we should pick this company over the others for maximum ROI, if the check size is kept relatively consistent
+- Any active investors in the space
+
+I need the final report to be as comprehensive and thorough as possible. It should be soundly rooted in business strategy, academic research, and data-driven. But it also needs to use industry blogs and other sources, too. Even reviews are ok.
+
+Please build a prompt using the following guidelines:
+
+Define the Objective:
+- Clearly state the main research question or task.
+- Specify the desired outcome (e.g., detailed analysis, comparison, recommendations).
+
+Gather Context and Background:
+- Include all relevant background information, definitions, and data.
+- Specify any boundaries (e.g., scope, timeframes, geographic limits).
+
+Use Specific and Clear Language:
+- Provide precise wording and define key terms.
+- Avoid vague or ambiguous language.
+
+Provide Step-by-Step Guidance:
+- Break the task into sequential steps or sub-tasks.
+- Organize instructions using bullet points or numbered lists.
+
+Specify the Desired Output Format:
+- Describe how the final answer should be organized (e.g., report format, headings, bullet points, citations).
+Include any specific formatting requirements.
+
+Balance Detail with Flexibility:
+- Offer sufficient detail to guide the response while allowing room for creative elaboration.
+- Avoid over-constraining the prompt to enable exploration of relevant nuances.
+
+Incorporate Iterative Refinement:
+- Build in a process to test the prompt and refine it based on initial outputs.
+- Allow for follow-up instructions to adjust or expand the response as needed.
+
+Apply Proven Techniques:
+- Use methods such as chain-of-thought prompting (e.g., “think step by step”) for complex tasks.
+- Encourage the AI to break down problems into intermediate reasoning steps.
+
+Set a Role or Perspective:
+- Assign a specific role (e.g., “act as a market analyst” or “assume the perspective of a historian”) to tailor the tone and depth of the analysis.
+
+Avoid Overloading the Prompt:
+- Focus on one primary objective or break multiple questions into separate parts.
+- Prevent overwhelming the prompt with too many distinct questions.
+
+Request Justification and References:
+- Instruct the AI to support its claims with evidence or to reference sources where possible.
+- Enhance the credibility and verifiability of the response.
+
+Review and Edit Thoroughly:
+- Ensure the final prompt is clear, logically organized, and complete.
+- Remove any ambiguous or redundant instructions.` },
+
+  { id:8, category:"Deep Research", title:"Fintech VC Landscape Research", source:SP_BASE+"ed-VC.txt",
+    desc:"Detailed report on early-stage U.S. fintech-focused VC firms. Useful for LP mapping or competitive intelligence.",
+    labels:[{type:"topic",text:"VC Landscape"},{type:"topic",text:"Fintech"},{type:"output",text:"Firm Profiles"},{type:"metric",text:"AUM"},{type:"metric",text:"Check Size"},{type:"metric",text:"Fund Vintage"},{type:"stage",text:"Sourcing"},{type:"stage",text:"Market Research"}],
+    workflowIds:["market-research"],
+    text:`I'd like a detailed research report on U.S. venture capital firms that specialize in fintech investments with the following specific criteria: Target Firm Characteristics Focus on fintech investments (financial technology startups) Primary investment stages: Seed, Series A, and Series B Assets Under Management (AUM) less than $1 billion Currently on at least their second fund (established track record) Actively deploying capital from current fund(s) Located in the United States Information to Include Firm Profiles (for each qualifying firm): Firm name and founding date Headquarters location Total AUM across all funds Number of funds raised to date Current active fund size and vintage year Investment philosophy and thesis for fintech Key investment partners/decision makers Investment Strategy Analysis: Stage preferences within early-stage (seed vs. Series A vs. Series B) Average check size by stage Preferred valuation ranges Geographic preferences within the U.S. Fintech sub-sector focus (payments, lending, insurtech, wealthtech, etc.) Portfolio Analysis: Notable portfolio companies Success stories and exits Investment pace (deals per year) Follow-on investment patterns Co-investment partners Comparative Analysis: Rank firms by investment activity volume Highlight specialized vs. generalist approaches Compare investment theses and differentiation strategies Market Trends: Current fintech funding environment for early-stage companies Changes in investment focus over the past 2-3 years Emerging fintech sub-sectors gaining investor attention Data Visualization Requests Map showing geographic distribution of firms Table comparing key metrics across firms Charts showing investment activity over time Breakdown of investments by fintech sub-sector Additional Context Please cite all data sources used and note the recency of the information. For firms that don't publicly disclose complete information, provide best estimates based on available data and clearly indicate when information is estimated rather than confirmed.` },
+
+  { id:9, category:"Due Diligence", title:"Financials — Projection Analysis", source:SP_LIST,
+    desc:"Critically interrogate management/banker projection logic and sensitivities. Do NOT recreate projections.",
+    labels:[{type:"topic",text:"Financial Projections"},{type:"topic",text:"Sensitivity Analysis"},{type:"output",text:"Red Team Findings"},{type:"output",text:"Diligence Questions"},{type:"metric",text:"Revenue Growth"},{type:"metric",text:"Gross Margin"},{type:"metric",text:"EBITDA Margin"},{type:"metric",text:"Retention Rate"},{type:"stage",text:"Active Diligence"},{type:"stage",text:"IC Prep"}],
+    workflowIds:["cim-diligence","ic-prep"],
+    text:`You are a senior growth equity investment professional at FTV Capital, conducting due diligence on a software company.
+Your task is to critically analyze the financial projections and assumptions underlying management or banker-provided financial models.
+You are not recreating projections, but rather interrogating the logic, assumptions, and sensitivities embedded in them to identify risks, dependencies, and diligence priorities.
+Use all available SharePoint materials (management presentations, banker models, MD&A, and commentary) to ground your analysis.
+
+1. Objective
+
+Your goal is to:
+
+Understand how the company expects to grow and scale, as represented in the model.
+
+Deconstruct what assumptions must be true for the projections to hold.
+
+Identify the key sensitivities and diligence questions that arise from those assumptions.
+
+Highlight potential red flags, over-optimism, or execution risks implicit in the forecast.
+
+2. Data Retrieval & Review
+
+Search connected SharePoint sources for:
+
+Banker or management financial models
+
+Projection summaries and supporting commentary
+
+Assumption schedules (growth, pricing, retention, headcount, margins, capex, working capital)
+
+MD&A or board materials describing business drivers
+Focus on extracting:
+
+Forward-looking data (3–5 years)
+
+Historical context (last 2–3 years)
+
+Embedded formulas or narrative logic (if available)
+
+3. Projection Assumption Analysis
+
+Provide a structured breakdown of the key assumptions underpinning the model.
+For each area, explain the logic, dependencies, and reasonableness of the projection — not the numeric outcome.
+
+a. Revenue & Growth Drivers
+
+How are growth rates derived (e.g., price increases, volume, customer expansion, new products)?
+
+Are assumptions consistent with historical performance or market benchmarks?
+
+What reliance exists on unproven go-to-market channels or new product introductions?
+
+What would have to go right for these growth rates to materialize?
+
+b. Margin Evolution
+
+What cost efficiencies or scale benefits are assumed (e.g., sales efficiency, R&D leverage)?
+
+Are gross margin improvements tied to volume scaling, pricing, or product mix shifts?
+
+What operating leverage assumptions are embedded, and how realistic are they given hiring plans?
+
+c. Customer Metrics & Retention
+
+What churn or retention rates are assumed?
+
+How do those compare with best-in-class peers?
+
+What assumptions are made about upsell velocity, net retention, and logo growth?
+
+d. Expense Scaling & Hiring
+
+How do headcount and operating expenses scale relative to revenue?
+
+Are SG&A and R&D growth assumptions internally consistent with hiring plans and margins?
+
+Does the model implicitly assume improved efficiency or hiring slowdowns?
+
+e. Working Capital & Cash Conversion
+
+What assumptions are embedded around AR/AP days, deferred revenue, or contract terms?
+
+Are changes consistent with business model dynamics (e.g., prepayment, expansion, collections)?
+
+f. Capital Intensity & Reinvestment
+
+How are CapEx and R&D capitalization assumptions treated?
+
+Do projections rely on lower capital intensity than historical trends?
+
+4. Sensitivity Analysis
+
+Perform a qualitative and directional sensitivity review (not recalculating numbers).
+Explain which assumptions most materially affect outcomes and why.
+
+Variable	Direction Tested	Expected Impact	Commentary
+Revenue Growth	±10–20%	High	Top-line drives EBITDA and cash flow disproportionately
+Gross Margin	±200 bps	Medium	Influences cash conversion and valuation multiples
+Opex Ratios	±5–10%	High	Impacts operating leverage and FCF margins
+Retention Rate	±3–5 pts	Very High	Non-linear effect on ARR and lifetime value
+CapEx Intensity	±1–2% of revenue	Medium	Affects FCF and reinvestment needs
+
+Include commentary on which assumptions are most fragile and which deserve diligence testing (e.g., “If retention slips by 5 points, cash generation falls materially”).
+
+5. Red-Team Review
+
+Critically evaluate the credibility of the model:
+
+Identify optimistic, inconsistent, or unsubstantiated assumptions.
+
+Highlight execution dependencies (e.g., hiring ramp, market expansion pace).
+
+Point out where the model assumes perfect execution or linear scaling inconsistent with typical software company experience.
+
+Surface the top 5 diligence questions we should ask management or the banker.
+
+Deliver a structured section titled “Red Team Findings” with:
+
+Key risks or over-optimism
+
+Missing context or sensitivity gaps
+
+Data points needing validation in diligence
+
+6. Output & Presentation
+
+Produce your output in clear Markdown format with the following sections:
+
+Key Projection Assumptions (structured by category)
+
+Sensitivity Overview (table + commentary)
+
+Red Team Findings (risks + key questions)
+
+Summary Takeaways (what’s credible vs. what needs testing)
+
+Tone should be:
+
+Analytical and objective — suitable for inclusion in a deal memo appendix
+
+Forward-looking, focusing on projection risk and diligence implications
+
+Concise but insightful, balancing quantitative logic and qualitative reasoning
+
+Optional Parameters (Replace or Keep Generic)
+
+Company Name: [Insert Target Company]
+
+Deal Type: Software growth investment
+
+Files to Analyze: [SharePoint models, decks, and MD&A materials]
+
+Time Horizon: Next 3–5 years of projections
+
+7. Deliverable
+
+A single, cohesive report that:
+
+Explains how the company expects to achieve its plan,
+
+Identifies what assumptions drive that outcome, and
+
+Flags what must be validated or stress-tested in diligence.` },
+
+  { id:10, category:"Due Diligence", title:"Financials — 3-Statement Model", source:SP_LIST,
+    desc:"Extract historical 3-statement financials from VDR into Excel-compatible tables with debt schedule, AR/AP, and financial health summary.",
+    labels:[{type:"topic",text:"Income Statement"},{type:"topic",text:"Balance Sheet"},{type:"topic",text:"Cash Flow"},{type:"output",text:"Excel Tables"},{type:"output",text:"Financial Summary"},{type:"metric",text:"Gross Margin %"},{type:"metric",text:"EBITDA"},{type:"metric",text:"DSO / DPO"},{type:"metric",text:"FCF"},{type:"stage",text:"Active Diligence"},{type:"stage",text:"IC Prep"}],
+    workflowIds:["cim-diligence"],
+    text:`You are a senior investment professional at **FTV Capital** analyzing the historical **3-statement financial model** and financial statements of a **software company**.
+Your goal is to digest the **actual reported financials** from the provided SharePoint materials and summarize them in clean, Excel-compatible tables, followed by a structured financial health assessment.
+
+Use the SharePoint link(s) I provide to locate the official financial statements, notes, and related management commentary.
+Do **not** use or reference any internal “FTV Analysis” files or derived models — rely only on **company-provided data**.
+
+---
+
+### **1. Income Statement (Last 3 Fiscal Years)**
+
+Extract the company’s **Income Statement** data from the most recent official financial statement and present it in a flat, Excel-ready table.
+
+**Table format:**
+
+| Fiscal Year | Revenue | Cost of Revenue | Gross Profit | Gross Margin % | R&D | Sales & Marketing | G&A | Operating Income | EBITDA | Interest Expense | Net Income |
+| ----------- | ------- | --------------- | ------------ | -------------- | --- | ----------------- | --- | ---------------- | ------ | ---------------- | ---------- |
+
+**Guidelines:**
+
+* Include all major operating expense categories relevant to software companies (R&D, S&M, G&A).
+* If EBITDA isn’t provided, compute it as *Operating Income + D&A* (and cite the D&A source).
+* Ensure consistent classification of items like stock-based compensation (note if capitalized or included within functional expenses).
+
+---
+
+### **2. Balance Sheet (Last 3 Fiscal Years)**
+
+Extract the **Balance Sheet** data in table format, focusing on the most material line items for software businesses.
+
+**Table format:**
+
+| Fiscal Year | Cash & Equivalents | Accounts Receivable | Deferred Contract Costs | PP&E (net) | Capitalized Software / Intangibles | Goodwill | Total Assets | Accounts Payable | Deferred Revenue | Debt (Short-Term) | Debt (Long-Term) | Total Liabilities | Shareholders’ Equity |
+| ----------- | ------------------ | ------------------- | ----------------------- | ---------- | ---------------------------------- | -------- | ------------ | ---------------- | ---------------- | ----------------- | ---------------- | ----------------- | -------------------- |
+
+**Guidelines:**
+
+* Highlight **Deferred Revenue** (critical for subscription software).
+* Note any **goodwill or capitalized software** items and provide brief commentary on their trend or significance.
+
+---
+
+### **3. Cash Flow Statement (Last 3 Fiscal Years)**
+
+Extract the **Cash Flow Statement** and format as follows:
+
+**Table format:**
+
+| Fiscal Year | Net Income | D&A | Stock-Based Compensation | Change in A/R | Change in A/P | Change in Deferred Revenue | Other WC | CFO | CapEx | Capitalized Software | CFI | Debt Issued/(Repaid) | Equity Issued/(Repurchased) | CFF | Net Change in Cash | Ending Cash |
+| ----------- | ---------- | --- | ------------------------ | ------------- | ------------- | -------------------------- | -------- | --- | ----- | -------------------- | --- | -------------------- | --------------------------- | --- | ------------------ | ----------- |
+
+**Guidelines:**
+
+* Distinguish between **CapEx** and **Capitalized Software** (if disclosed).
+* Clearly show **Cash from Operations (CFO)**, **Cash from Investing (CFI)**, and **Cash from Financing (CFF)** totals.
+* Ensure the ending cash matches the balance sheet.
+
+---
+
+### **4. Debt Schedule Summary**
+
+Locate and extract the company’s **debt schedule** from the notes to the financial statements or credit agreements. Summarize in a clear table.
+
+**Table format:**
+
+| Instrument / Facility | Principal Outstanding | Interest Rate / Spread | Rate Type (Fixed/Floating) | Maturity Date | Amortization Profile | Covenants / Leverage Tests | Remarks |
+| --------------------- | --------------------- | ---------------------- | -------------------------- | ------------- | -------------------- | -------------------------- | ------- |
+
+**Guidelines:**
+
+* Include all outstanding instruments (term loans, revolvers, notes, lease liabilities).
+* If possible, link **interest expense** in the Income Statement to debt balances for validation.
+
+---
+
+### **5. Accounts Receivable & Accounts Payable Analysis**
+
+Extract data from the notes and perform quick **turnover and aging** analysis.
+
+**Include:**
+
+* A/R and A/P balances for each year (from Balance Sheet).
+* Any disclosed **aging schedules** or turnover ratios.
+* Compute the following (if data is available):
+
+  * **DSO (Days Sales Outstanding):** ( \\frac{Average A/R}{Revenue} \\times 365 )
+  * **DPO (Days Payables Outstanding):** ( \\frac{Average A/P}{Relevant Expense Base} \\times 365 )
+
+**Tables:**
+
+**A/R Aging**
+
+| Bucket | Amount |
+| ------ | -----: |
+
+**A/P Aging**
+
+| Bucket | Amount |
+| ------ | -----: |
+
+**Turnover Metrics**
+
+| Fiscal Year | Avg A/R | DSO (days) | Avg A/P | DPO (days) |
+| ----------- | ------: | ---------: | ------: | ---------: |
+
+Provide concise commentary on trends (e.g., collection cycle improvement, deferred revenue mix, payment policy shifts).
+
+---
+
+### **6. CapEx and Capitalized Software**
+
+Extract **CapEx** from the Cash Flow Statement and any **forward-looking commentary** (e.g., R&D tools, cloud infrastructure, product platform investments).
+
+**Table format:**
+
+| Fiscal Year | CapEx | Capitalized Software | CapEx % of Revenue | Capitalized Software % of Revenue |
+| ----------- | ----- | -------------------- | ------------------ | --------------------------------- |
+
+Provide a short note on how these investments align with the company’s growth stage or product roadmap.
+
+---
+
+### **7. Linkage & Reconciliation Review**
+
+Confirm that the **three statements properly link and balance**:
+
+* **Income → Cash Flow:** Net Income + Non-Cash Items ± Working Capital = CFO.
+* **Cash Flow → Balance Sheet:** Beginning Cash + Net Change = Ending Cash.
+* **CapEx & Capitalized Software:** Flow from CFI to PP&E / Intangibles.
+* **Debt & Equity movements:** Tie financing activity to changes in liabilities and equity.
+  If you detect any inconsistencies, identify them and briefly explain possible causes (e.g., rounding, missing line item, reclassifications).
+
+---
+
+### **8. Financial Health & Performance Summary (Last 3 Years)**
+
+Based on the extracted data, provide a concise narrative covering:
+
+* **Growth:** Revenue CAGR, margin expansion/contraction, scalability of operations.
+* **Profitability:** Gross and EBITDA margin trajectory.
+* **Cash generation:** CFO and FCF trends, conversion ratio (CFO/EBITDA).
+* **Balance sheet health:** Net debt/EBITDA, liquidity, covenant headroom.
+* **Risks:** Customer concentration, working capital efficiency, debt structure, or capitalized software trends.
+
+The analysis should be **objective, fact-based**, and grounded in the reported figures.
+
+---
+
+### **Output Formatting**
+
+* Present all numerical tables as **flat, Excel-compatible Markdown tables**.
+* Cite the **document name and note number or section** for each extraction.
+* Keep commentary concise, using institutional-style prose suitable for an IC appendix.
+
+
+` },
+
+  { id:11, category:"Due Diligence", title:"Customer and Revenue Analysis", source:SP_LIST,
+    desc:"Integrate customer cube with GTM docs to assess revenue quality, concentration, retention, CAC, and sales efficiency.",
+    labels:[{type:"topic",text:"Revenue Quality"},{type:"topic",text:"Customer Concentration"},{type:"topic",text:"Retention and Churn"},{type:"output",text:"Customer Tables"},{type:"output",text:"Cohort Analysis"},{type:"metric",text:"NRR"},{type:"metric",text:"GDR"},{type:"metric",text:"CAC Payback"},{type:"metric",text:"LTV/CAC"},{type:"stage",text:"Active Diligence"}],
+    workflowIds:["cim-diligence"],
+    text:`
+## 🧩 **FTV Capital — Revenue & Customer Diligence Prompt**
+
+### **Context**
+
+You are a senior growth equity investor at **FTV Capital**, conducting a **revenue and customer analysis diligence workstream** for a **software company**.
+Your goal is to integrate **quantitative insights from customer-level data** (e.g., customer cube or flat file in Excel) with **qualitative context** from sales, marketing, and strategy documents.
+You are analyzing **how the company grows, retains, and monetizes customers** — and assessing **revenue quality, concentration risk, and scalability**.
+
+Use the SharePoint links I provide (customer cube, CRM exports, contracts, GTM decks, banker model, etc.).
+Focus only on company-provided data and documentation.
+
+---
+
+### **1. Revenue Composition & Growth Dynamics**
+
+**Objective:** Understand where revenue comes from, how it’s evolving, and what that implies for growth durability.
+
+**Tasks:**
+
+* From financials or the customer cube, extract **revenue by source** (new vs. existing customers) for the last **8 quarters**.
+* Compute and present:
+
+  * **Net Revenue Retention (NRR)**
+  * **Expansion Revenue %**
+  * **New vs. Existing Customer Mix**
+  * **YoY and QoQ Growth Trends**
+
+**Output Table:**
+| Quarter | Total Revenue | Existing Customer Revenue | New Customer Revenue | Expansion % | NRR % | YoY Growth % |
+|----------|----------------|-----------------------------|-----------------------|-------------|----------------|
+
+Provide concise commentary on:
+
+* The **balance between expansion and new bookings**,
+* Any inflection points in growth,
+* Cohort or product-level revenue concentration trends.
+
+---
+
+### **2. Market Segmentation & GTM Alignment**
+
+**Objective:** Understand how the company segments its market and aligns product, pricing, and marketing strategies.
+
+**Tasks:**
+
+* Identify segmentation dimensions (size, industry, geography, behavior, ARR tier, etc.) from GTM or marketing documents.
+* Quantify **segment size, revenue contribution, growth rates, and margin differences**.
+* Summarize how product, pricing, and marketing differ by segment.
+
+**Output Table:**
+
+| Segment | % of Customers | % of Revenue | YoY Growth | Avg Contract Value | Churn % | Pricing Model | Go-To-Market Motion |
+| ------- | -------------- | ------------ | ---------- | ------------------ | ------- | ------------- | ------------------- |
+
+Provide qualitative insight into:
+
+* Which segments are driving growth vs. contraction,
+* Whether segment strategy aligns with scalable, efficient growth,
+* Comparison to known software GTM patterns (SMB, mid-market, enterprise motion).
+
+---
+
+### **3. Customer Concentration & Diversification**
+
+**Objective:** Evaluate revenue concentration risk and management’s diversification efforts.
+
+**Tasks:**
+
+* Identify **top 10 customers** and compute:
+
+  * Revenue per customer (last fiscal year),
+  * % of total revenue,
+  * Year-over-year growth,
+  * Industry and relationship tenure.
+* Compute **% of revenue from top 5 customers** and note any **single customer >10% of revenue**.
+* Extract from risk, board, or strategy materials any **plans to diversify** or mitigate customer concentration.
+
+**Output Table:**
+
+| Customer | Industry | Annual Revenue | % of Total | YoY Growth | Relationship Length (yrs) | Key Notes |
+| -------- | -------- | -------------- | ---------- | ---------- | ------------------------- | --------- |
+
+Provide commentary on:
+
+* Dependence on key accounts,
+* Exposure by sector or geography,
+* Diversification trajectory (improving, stable, worsening).
+
+---
+
+### **4. Contract Structure & Key Terms**
+
+**Objective:** Assess revenue visibility and risk through contract terms.
+
+**Tasks:**
+
+* Locate top customer contracts, MSAs, and major agreements.
+* Extract key terms:
+
+  * Duration and renewal mechanics
+  * Minimum commitments
+  * Termination clauses
+  * Pricing structure (fixed, usage-based, hybrid)
+  * SLAs and exclusivity provisions
+
+**Output Table:**
+
+| Customer / Contract | Term Length | Renewal Type | Pricing Model | Min Commitment | Termination | Exclusivity | SLA / Uptime | Notes |
+| ------------------- | ----------- | ------------ | ------------- | -------------- | ----------- | ----------- | ------------ | ----- |
+
+Provide qualitative interpretation of:
+
+* Contractual **renewal quality (auto-renew vs. manual)**,
+* **Risk exposure** (short-term contracts, outsized commitments),
+* **Commercial flexibility** (price escalation, termination for convenience, etc.).
+
+---
+
+### **5. Sales Cycle & Conversion Efficiency**
+
+**Objective:** Quantify and understand the company’s sales motion efficiency.
+
+**Tasks:**
+
+* From CRM or sales process documents, map the **sales funnel**: lead → qualified → opportunity → close.
+* Extract:
+
+  * **Average sales cycle length** (days)
+  * **Stage-by-stage conversion rates**
+  * **Variations by customer size, product, or channel**
+* Identify **factors extending or shortening cycles**.
+
+**Output Table:**
+
+| Stage | Conversion Rate | Avg Duration (Days) | Notes |
+| ----- | --------------- | ------------------- | ----- |
+
+Provide commentary on:
+
+* Efficiency vs. benchmarked SaaS/software sales cycles,
+* Dependence on high-touch vs. inbound leads,
+* Whether cycles align with pricing tiers.
+
+---
+
+### **6. Customer Satisfaction & Success Metrics**
+
+**Objective:** Evaluate how customer health and satisfaction are tracked and managed.
+
+**Tasks:**
+
+* Extract **NPS, CSAT, CES**, or similar metrics from customer success documents.
+* Summarize **measurement methodology**, **historical trend (≥8 quarters)**, and **benchmark comparisons**.
+* Extract **initiatives** aimed at improving satisfaction and their outcomes.
+
+**Output Table:**
+
+| Metric | Latest Score | 8-Quarter Trend | Benchmark | Methodology | Initiatives & Results |
+| ------ | ------------ | --------------- | --------- | ----------- | --------------------- |
+
+Add commentary on:
+
+* Correlation between satisfaction and retention,
+* Whether tracking cadence and sample size are robust,
+* Management’s effectiveness in acting on feedback.
+
+---
+
+### **7. CAC, Payback, and Sales Efficiency**
+
+**Objective:** Assess the efficiency of customer acquisition and scalability of GTM.
+
+**Tasks:**
+
+* From marketing analytics or P&L data, extract **fully loaded CAC by channel and customer segment**, including:
+
+  * CAC methodology,
+  * CAC payback period,
+  * Trends over time.
+* Compare to internal unit economics targets and external benchmarks.
+
+**Output Table:**
+
+| Segment / Channel | CAC | CAC Payback (Months) | LTV/CAC | Trend vs. Prior Year | Benchmark Range | Notes |
+| ----------------- | --: | -------------------: | ------: | -------------------: | --------------- | ----- |
+
+Provide insights into:
+
+* Efficiency of acquisition channels,
+* Scalability of current GTM spend,
+* Relationship between CAC, retention, and expansion.
+
+---
+
+### **8. Retention & Churn Analysis**
+
+**Objective:** Quantify customer stickiness and identify drivers of attrition.
+
+**Tasks:**
+
+* Extract **churn, NRR, GDR, and cohort-based retention curves** from customer cube or retention reports.
+* Calculate:
+
+  * Gross churn rate,
+  * Net revenue retention (NRR),
+  * Expansion vs. contraction revenue,
+  * Retention by segment or cohort.
+
+**Output Table:**
+
+| Quarter | Gross Churn % | Net Retention % | Expansion % | Contraction % | Comments |
+| ------- | ------------- | --------------- | ----------- | ------------- | -------- |
+
+Include analysis of:
+
+* Cohort behavior (early vs. mature customers),
+* Drivers of churn (pricing, competition, product gaps),
+* Effectiveness of retention initiatives.
+
+---
+
+### **9. Pricing & Win/Loss Insights**
+
+**Objective:** Understand pricing strategy, elasticity, and competitive positioning.
+
+**Tasks:**
+
+* Review pricing strategy, win/loss, and customer research documents.
+* Identify:
+
+  * Price elasticity across segments,
+  * Key purchase decision drivers (features, integration, service, price),
+  * Frequency and impact of **competitive displacement wins/losses**.
+
+**Output Table:**
+
+| Segment | Primary Pricing Model | Price Sensitivity | Top Decision Factors | Competitive Win Rate % | Comments |
+| ------- | --------------------- | ----------------- | -------------------- | ---------------------- | -------- |
+
+Add qualitative insights on:
+
+* Whether pricing power aligns with customer value perception,
+* How pricing strategy supports retention and upsell.
+
+---
+
+### **10. Holistic Assessment (Synthesis)**
+
+Conclude with an integrated view of:
+
+* **Revenue quality** (recurring mix, durability, expansion health)
+* **Customer quality** (diversification, satisfaction, stickiness)
+* **Sales efficiency and scalability** (CAC, payback, conversion)
+* **Risk areas** (concentration, contract structure, churn)
+* **Growth potential and GTM execution** (new logo velocity, retention flywheel strength)
+
+Keep tone **analytical and balanced**, focusing on implications for **investment durability and upside**.
+
+---
+
+### **Output Format**
+
+* Present all tables in **flat Markdown format (Excel-compatible)**.
+* Include concise commentary beneath each section.
+* Use professional, data-driven language suitable for an **investment committee memo**.
+* If possible, cite document names or tabs from SharePoint (e.g., “CustomerCube_FY24Q2.xlsx – Revenue by Customer Tab”).
+
+---
+
+
+` },
+
+  { id:12, category:"Due Diligence", title:"Commercial DD — Market, Competitive and Growth", source:SP_LIST,
+    desc:"Consulting-style CDD covering market sizing, competitive landscape, target positioning, and growth outlook.",
+    labels:[{type:"topic",text:"Market Sizing"},{type:"topic",text:"Growth Strategy"},{type:"topic",text:"Unit Economics"},{type:"output",text:"IC-Ready Report"},{type:"output",text:"Slide Deck"},{type:"metric",text:"TAM / SAM"},{type:"metric",text:"CAGR"},{type:"metric",text:"CAC Payback"},{type:"stage",text:"Active Diligence"},{type:"stage",text:"IC Prep"}],
+    workflowIds:["cim-diligence","ic-prep"],
+    text:`Commercial Due Diligence Research Prompt
+Find & replace [Target Company] with Target Name
+SharePoint Link: [if you’d like to supplement your research with a VDR/management deck, insert the specific folder links here and enable the SharePoint connector]
+Objective:
+Develop a comprehensive commercial due diligence assessment for [Target Company], tailored specifically to the sector/market it operates in and competitive landscape. The output should combine deep analytical narrative with slide-ready visualizations, mirroring top-tier consulting-style diligence deliverables. All analysis, benchmarks, and visualizations should be specific to [Target Company]’s sector and market context, drawing on the relevant ecosystem dynamics, competitors, customer segments, and technology trends.
+I. Market Overview
+Market Definition & Segmentation – Define the relevant market for [Target Company], its sub-segments (by customer size, vertical, geography), and boundary conditions.
+Market Size (TAM/SAM) – Quantify the Total Addressable Market (TAM) and Served Addressable Market (SAM) with segmentation and penetration analysis.
+Growth Trends – Calculate historical and 5-year forward CAGR; describe key demand drivers, headwinds, and regulatory or funding influences.
+Technology / AI Impact – Assess how emerging technologies (AI, automation, analytics) are shaping market structure, competition, and disruption.
+Adoption & Opportunity Analysis (“At-Bats”) – Quantify annual contestable revenue:
+Number and dollar value of new logo (greenfield) opportunities.
+Number and dollar value of replacement (switcher) opportunities.
+Estimate renewal cycles, average contract length, and churn rates.
+Visuals to include:
+Market TAM-to-SAM waterfall chart
+Market growth forecast graph
+Buyer-segment matrix (e.g., tiers by spend or size)
+Jump-ball / at-bat opportunity table
+II. Competitive Landscape
+Competitor Mapping – Identify key archetypes (full-suite platforms, point solutions, service specialists, substitutes) and list major players.
+Competitive Positioning – Compare by business model, product breadth, pricing, and focus segments.
+Market Share & Momentum – Estimate share of top players, relative scale, and growth trajectory.
+Key Purchasing Criteria (KPCs) – Rank and define top customer decision factors (e.g., functionality, integration, cost, service).
+Buying Behavior – Describe the buyer journey, stakeholders, procurement cycle, switching frequency, and drivers of churn or adoption.
+Barriers & Defensibility – Analyze switching costs, IP moats, network effects, and risks from new entrants or adjacencies.
+Visuals to include:
+Competitor landscape map or matrix
+KPC importance heatmap comparing [Target Company] vs. peers
+Market-share bar/pie chart
+Buying-process flow or decision-maker hierarchy
+III. Target Company Positioning
+Product / Service Offering – Detail modules, services, or capabilities; note proprietary or unique differentiators.
+Feature & Capability Benchmarking – Compare features, integrations, AI maturity, and performance vs. peers.
+Customer Adoption & Usage – Assess usage depth, attach rates, retention, and stickiness indicators.
+Customer Satisfaction / NPS – Present NPS or comparable advocacy ratings vs. competitors, with “Voice of Customer” commentary.
+Differentiation & Right-to-Win – Synthesize how [Target Company] outperforms or underperforms on top KPCs, identifying its strongest competitive niches.
+Visuals to include:
+Product feature comparison table or radar chart
+NPS bar chart vs. peers
+Voice-of-Customer quote slide
+SWOT or differentiation matrix
+IV. Growth Outlook & Strategic Pathways
+Management Growth Plan – Decompose the 5-year revenue plan (new logos, upsells, pricing, product launches).
+Feasibility Assessment – Evaluate assumptions, benchmark against market growth and historic execution.
+Adjacency & Expansion Opportunities – Identify and size 2-3 adjacent growth areas (new geos, customer segments, product lines) and evaluate right-to-win.
+Scenario / Sensitivity Analysis – Build base, upside, and downside cases using variables like win rates, churn, and TAM expansion.
+Unit Economics & Margin Outlook – Assess margin sustainability, pricing power, and scalability of the model.
+AI / Tech Enablement as Growth Lever – Examine how AI or automation could enhance differentiation, monetization, or operational efficiency.
+Visuals to include:
+Growth bridge (revenue waterfall from current to Year 5)
+Scenario / sensitivity table
+Adjacency opportunity matrix
+Margin and pricing dynamics chart
+Risk framework (market / operational / technology / regulatory)
+V. Deliverables & Output Structure
+Deliver as a board-ready report or slide deck structured as follows:
+Executive Summary – 3–5 key insights on market, competition, positioning, and growth outlook.
+A. Market Context & Size – Charts and narrative on TAM/SAM, trends, and adoption.
+B. Competitive Landscape – Competitor mapping, KPC analysis, and share dynamics.
+C. Target Positioning – Feature benchmarking, NPS, customer sentiment.
+D. Growth Outlook – Scenario modeling, adjacencies, and risk assessment.
+Appendix – Data sources, survey/interview excerpts, and detailed assumptions.
+Formatting guidance:
+Professional business English, suitable for investor or board audiences.
+Combine qualitative insight with quantitative visuals.
+Use neutral, sector-agnostic language (“customers,” “buyers,” “solutions,” “modules”) adaptable to any industry.
+Prioritize clarity, structure, and data visualization.` },
+
+  { id:13, category:"Due Diligence", title:"Credit Agreement Analysis", source:SP_LIST,
+    desc:"Full credit agreement extraction and assessment: economic terms, financial covenants, negative covenants, events of default.",
+    labels:[{type:"topic",text:"Credit Agreement"},{type:"topic",text:"Covenant Analysis"},{type:"output",text:"Term Sheet Table"},{type:"output",text:"Lender Assessment"},{type:"metric",text:"Leverage Ratio"},{type:"metric",text:"Interest Coverage"},{type:"metric",text:"Spread / Floor"},{type:"stage",text:"Active Diligence"},{type:"stage",text:"Post-LOI"}],
+    workflowIds:["cim-diligence","ic-prep"],
+    text:`## 🧭 **Credit Agreement Analysis – Institutional Investor Format**
+
+### **Objective**
+
+You are a **credit expert** reviewing a **complex credit agreement** that is being evaluated as a potential investment opportunity by an **alternative credit or private equity firm**.
+You will extract, summarize, and analyze the **economic, structural, and legal terms** in a **standardized format** suitable for an investment memo or internal credit file.
+
+The **primary source** is the **credit agreement text**, supplemented where necessary with relevant **regulations, market standards, and current credit practice** (via web research).
+
+---
+
+### **1. Key Term Extraction – Structured Summary**
+
+Read the entire agreement carefully and extract each of the following key items **exactly as written**, without generalization.
+For each, include:
+
+* **Precise wording** of the term
+* **Section reference** and **page number(s)** where found
+* Any **defined term cross-references**
+
+Use the following standardized table format (Excel-compatible):
+
+| Category                   | Key Term                                              | Description / Definition (verbatim where relevant) | Section / Page Ref |
+| -------------------------- | ----------------------------------------------------- | -------------------------------------------------- | ------------------ |
+| Borrower                   | Name and Legal Entity                                 |                                                    |                    |
+| Lender(s)                  | Names / Syndicate Composition                         |                                                    |                    |
+| Facility Type              | Term Loan / Revolver / Delayed Draw / Bridge          |                                                    |                    |
+| Facility Amount(s)         | Total and Component Facilities                        |                                                    |                    |
+| Interest Rate              | Base Rate, Index, Spread                              |                                                    |                    |
+| Applicable Margin(s)       | For Base, Eurodollar, SOFR, ARR, or PIK Loans         |                                                    |                    |
+| Rate Adjustment Mechanisms | Step-ups / Grid Pricing / Ratchet Triggers            |                                                    |                    |
+| Fees                       | Commitment / Agency / Arrangement / Prepayment Fees   |                                                    |                    |
+| Maturity Date              | Final maturity                                        |                                                    |                    |
+| Amortization               | Schedule, frequency, mandatory vs. voluntary          |                                                    |                    |
+| Prepayment                 | Voluntary vs. Mandatory, premium/penalty details      |                                                    |                    |
+| Financial Covenants        | Definitions, thresholds, and test frequency           |                                                    |                    |
+| Negative Covenants         | Restricted payments, investments, indebtedness, liens |                                                    |                    |
+| Security / Collateral      | Type, jurisdiction, perfection details                |                                                    |                    |
+| Guarantees                 | List of guarantors and structure                      |                                                    |                    |
+| Use of Proceeds            | Purpose and limitations                               |                                                    |                    |
+| Events of Default          | Triggers, cure periods, remedies                      |                                                    |                    |
+| Amendment & Waiver         | Consent requirements (% of lenders)                   |                                                    |                    |
+| Assignability              | Lender transfer/syndication rights                    |                                                    |                    |
+| Governing Law              | State or country, jurisdiction of disputes            |                                                    |                    |
+
+---
+
+### **2. Financial Covenant Analysis**
+
+Focus specifically on the **quantitative covenants and ratios** that govern financial performance.
+For each covenant, describe the **metric**, **threshold**, **frequency of testing**, and **implications for financial health**.
+
+**Table Format:**
+
+| Covenant                | Formula / Definition                    | Threshold / Test Level | Testing Frequency                           | Implications / Comments                                |
+| ----------------------- | --------------------------------------- | ---------------------- | ------------------------------------------- | ------------------------------------------------------ |
+| Total Leverage Ratio    | (Total Debt / EBITDA)                   | ≤ X.XXx                | Quarterly                                   | Indicates leverage ceiling; assess compliance headroom |
+| Interest Coverage Ratio | (EBITDA / Interest Expense)             | ≥ X.XXx                | Quarterly                                   | Measures debt service cushion                          |
+| Minimum Liquidity       | Cash + Revolver Availability ≥ $X       | Monthly                | Liquidity floor; ensures operational buffer |                                                        |
+| Fixed Charge Coverage   | (EBITDA – CapEx) / Debt Service ≥ X.XXx | Quarterly              | Gauges true coverage capacity               |                                                        |
+
+**Additional Guidance:**
+
+* Specify **testing mechanics** (e.g., “tested quarterly on LTM basis,” “tested only when revolver is ≥35% drawn”).
+* Note any **carveouts** or “equity cure” provisions.
+* Identify if covenant ratios rely on **Adjusted EBITDA definitions**—quote exact addbacks.
+* Comment on **when covenants would be tripped** given expected performance trends.
+
+---
+
+### **3. Credit Facilities Overview**
+
+Summarize the structure and purpose of all facilities.
+
+**Table Format:**
+
+| Facility Type | Amount | Purpose / Use of Proceeds | Term / Tenor | Repayment Schedule | Interest Rate Type | Collateral / Security | Comments |
+| ------------- | ------ | ------------------------- | ------------ | ------------------ | ------------------ | --------------------- | -------- |
+
+Example:
+
+* **Term Loan B:** $150M, 1% annual amortization, 5-year maturity, LIBOR+400bps, 0.75% floor, secured by all assets.
+* **Revolver:** $25M, for working capital, commitment fee 0.50%, 5-year co-terminous maturity.
+
+---
+
+### **4. Pricing, Interest Rates, and Fees**
+
+Extract all **economic terms** precisely.
+
+**Include:**
+
+* **Base Rate Definitions:** SOFR, EURIBOR, Prime, etc.
+* **Applicable Margin Grid:** leverage-linked pricing or flat margins.
+* **Floor Rates:** minimum benchmark thresholds.
+* **PIK / ARR Loans:**
+
+  * Define “Adjusted Revenue” (ARR) or profitability test references.
+  * Extract structuring (e.g., 8% PIK-only interest, payable at maturity).
+* **Associated Fees:** commitment, utilization, upfront, agency, prepayment, ticking.
+
+**Table Format:**
+
+| Loan Type | Benchmark | Margin / Spread | Floor | Interest Period | PIK / Cash Split | Other Fees | Notes |
+| --------- | --------- | --------------- | ----- | --------------- | ---------------- | ---------- | ----- |
+
+---
+
+### **5. Amortization, Prepayment, and Repayment Terms**
+
+**Summarize:**
+
+* Amortization % per year and repayment frequency.
+* Voluntary prepayment conditions (notice period, minimums, fees).
+* Mandatory prepayments (asset sale, excess cash flow, insurance proceeds).
+* Any restrictions or **“soft call” protections**.
+
+**Example:**
+
+> “1% annual amortization payable quarterly; voluntary prepayment at par after 12 months; 101% soft call in Year 1.”
+
+If applicable, highlight:
+
+* **PIC-only or non-cash pay structures** (especially for ARR loans).
+* **Profitability and repayment covenants** tied to such loans.
+
+---
+
+### **6. Negative Covenants Summary**
+
+Extract all restrictions under “Negative Covenants” sections.
+
+**Table Format:**
+
+| Category            | Description                        | Limitations / Exceptions                  | Section Ref |
+| ------------------- | ---------------------------------- | ----------------------------------------- | ----------- |
+| Additional Debt     | Prohibited unless permitted basket | Up to $X or 2.0x EBITDA                   |             |
+| Restricted Payments | Dividends and buybacks             | None until leverage < 3.0x                |             |
+| Investments         | New JVs or M&A                     | Permitted up to $Y or with lender consent |             |
+| Asset Dispositions  | Sale of core assets                | Requires 100% reinvestment or prepayment  |             |
+
+Comment on how restrictive or flexible the covenant package is relative to market practice.
+
+---
+
+### **7. Events of Default & Remedies**
+
+List and describe **all events of default** (EoDs), including:
+
+* Non-payment, breach of covenant, misrepresentation, insolvency, cross-default, judgment, change of control, etc.
+  For each, summarize **grace periods, cure rights, and remedies**.
+
+Assess which EoDs are **tight (lender-friendly)** vs. **permissive (borrower-friendly)**.
+Include details on **acceleration clauses** and **default interest rates**.
+
+---
+
+### **8. Amendments, Waivers & Assignability**
+
+Summarize:
+
+* **Voting thresholds** for amending key provisions (e.g., majority lenders = >50%, all lenders for pricing/maturity).
+* **Waiver mechanics** and how they can alter credit flexibility or risk allocation.
+* **Assignment rights:** whether lenders can freely assign, need borrower consent, or face transfer restrictions.
+* Comment on **implications for syndication and portfolio liquidity.**
+
+---
+
+### **9. Security, Guarantees, and Collateral**
+
+Provide a high-level summary of all **security interests and guarantees**.
+
+**Table Format:**
+
+| Collateral Type       | Jurisdiction       | Perfection Method | Notes                           |
+| --------------------- | ------------------ | ----------------- | ------------------------------- |
+| All Assets Pledge     | U.S.               | UCC Filings       | Blanket lien on all property    |
+| IP Pledge             | U.S.               | UCC + IP Filings  | Includes patents and trademarks |
+| Subsidiary Guarantees | List of guarantors |                   |                                 |
+
+Comment on **enforceability**, **jurisdictional coverage**, and **ranking of claims** (senior secured, pari passu, subordinated, etc.).
+
+---
+
+### **10. Governing Law & Jurisdiction**
+
+* Extract **governing law clause** and **venue of dispute resolution**.
+* Discuss implications for **enforceability**, **lender remedies**, and **common law protections**.
+* Highlight if arbitration, federal jurisdiction, or specific courts (e.g., New York Supreme Court, Delaware Chancery) are designated.
+
+---
+
+### **11. Assessment Section – Economic Evaluation**
+
+Provide a concise assessment from the **lender’s perspective**:
+
+| Category                      | Assessment Summary                                               |
+| ----------------------------- | ---------------------------------------------------------------- |
+| Economic Terms                | Are rates and spreads compensatory for risk profile?             |
+| Covenant Tightness            | Are protections adequate relative to leverage and industry risk? |
+| Repayment Profile             | Assess amortization vs. balloon risk                             |
+| Prepayment / Call Flexibility | Evaluate reinvestment risk                                       |
+| Security Package              | Evaluate coverage, rank, and enforceability                      |
+| Borrower Friendliness         | Overall commercial tilt (lender vs. borrower favorable)          |
+
+Conclude with a **one-paragraph summary**:
+
+> “The facility is moderately lender-friendly with strong collateral coverage, conventional covenant thresholds, and limited flexibility for additional debt. Pricing aligns with mid-market senior secured structures (~SOFR + 450 bps).”
+
+---
+
+### **12. Final Review – Legal & Structural Deviations**
+
+In a separate section, identify **non-standard or unusual terms** relative to market norms, such as:
+
+* Excessively lenient definitions (e.g., EBITDA addbacks)
+* Uncapped baskets or undefined ratios
+* Weak cross-default or change-of-control protection
+* Opaque amendment procedures
+* Non-standard PIK / ARR definitions or deferred interest mechanics
+
+Explain **why** these terms deviate and **how they impact risk or valuation**.
+
+---
+
+### **13. Supplementary Context (External Research)**
+
+If necessary, use **public or regulatory sources** to:
+
+* Confirm **market-standard definitions** for key ratios.
+* Reference **common-law interpretations** under the specified governing law.
+* Provide **benchmarks** for current mid-market or syndicated loan pricing and covenant terms.
+
+---
+
+### **Output Requirements**
+
+* Present all tables in **flat, Excel-compatible Markdown** format.
+* Use **concise institutional language** suitable for an internal investment committee or portfolio memo.
+* Reference **section numbers and page citations** precisely.
+* End with two clear summaries:
+
+  * **Economic Assessment (Lender View)**
+  * **Legal & Structural Review (Deviation Analysis)**
+
+---
+
+### ✅ **Why This Version Works**
+
+| Improvement                             | Why It Matters                                             |
+| --------------------------------------- | ---------------------------------------------------------- |
+| Adds structured extraction tables       | Allows direct plug-in to deal models / covenant trackers   |
+| Emphasizes lender-side assessment       | Matches how PE credit / direct lending firms evaluate risk |
+| Introduces standard commentary sections | Supports investment memos or data room reviews             |
+| Includes ARR / PIK-specific logic       | Reflects current software and venture debt market trends   |
+| Balances precision and readability      | Avoids over-legalization while maintaining rigor           |
+
+---
+
+` },
+
+  { id:14, category:"Due Diligence", title:"Contract Analysis", source:SP_LIST,
+    desc:"Standardized extraction of key legal and commercial terms from contracts. Excel-compatible for diligence trackers.",
+    labels:[{type:"topic",text:"Contract Review"},{type:"topic",text:"Legal Diligence"},{type:"output",text:"Extraction Table"},{type:"output",text:"Risk Flags"},{type:"metric",text:"Liability Cap"},{type:"metric",text:"Contract Term"},{type:"metric",text:"Governing Law"},{type:"stage",text:"Active Diligence"},{type:"stage",text:"Post-LOI"}],
+    workflowIds:["cim-diligence"],
+    text:`## 🧾 **Contract Analysis Prompt — Institutional Format**
+
+### **Objective**
+
+You are a **contracts and legal diligence expert** analyzing the text of one or more **commercial agreements**.
+Your goal is to extract and standardize key legal and commercial terms to support **contract-level risk assessment** and **portfolio-level tracking**.
+
+The **primary source documents** are those available in the **VDR or SharePoint**, but you may also reference **publicly available laws, regulations, or common practice** to provide context or validate standard interpretations.
+
+---
+
+### **1. Instructions**
+
+Carefully read the **entire contract text**.
+Extract each of the specified data points in the requested format — **verbatim where relevant**, or **in standardized structured form** as instructed.
+Do **not summarize** beyond what is explicitly requested unless asked to clarify market context.
+
+---
+
+### **2. Extraction Requirements**
+
+Use the following standardized structure for your output.
+Each data point should appear as a labeled field or table row.
+If any information is **not found**, return \`'Not specified'\`.
+
+---
+
+### **Output Table**
+
+| Field                         | Extraction Rule                                           | Output Format                                                                               | Example Output                             |
+| ----------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| **Governing Law**             | Extract the governing law jurisdiction from the contract. | Return only the **state or country name**.                                                  | \`Delaware\`                                 |
+| **Limits of Liability**       | Extract any liability cap or limitation description.      | Return specific **dollar amount** or **limitation type**.                                   | \`$1,000,000\` / \`contract value\` / \`no cap\` |
+| **Indemnification Scope**     | Determine whether indemnification is mutual or one-sided. | Return one of: \`Mutual\`, \`One-way\`, \`None\`.                                                 | \`Mutual\`                                   |
+| **Survival Provisions**       | Identify if any provisions survive termination.           | Return one of: \`Yes - specific provisions\`, \`Yes - general survival\`, \`No survival clause\`. | \`Yes - specific provisions\`                |
+| **Termination Triggers**      | Identify the main grounds for termination.                | Return a **comma-separated list** of triggers.                                              | \`breach, insolvency, convenience\`          |
+| **Contracting Parties**       | Extract full legal names of all counterparties.           | Return only the names.                                                                      | \`Acme Software Inc.; ClientCo LLC\`         |
+| **Contract Term Length**      | Extract initial term duration.                            | Use format: \`Initial Term: [DURATION]\`.                                                     | \`Initial Term: 3 years\`                    |
+| **Effective Date**            | Extract effective date from the agreement.                | Use format: \`Effective Date: [DATE]\`.                                                       | \`Effective Date: January 1, 2025\`          |
+| **Amendment Provision**       | Identify amendment approval requirements.                 | Return one of: \`Written only\`, \`Mutual consent required\`, \`Not specified\`.                  | \`Mutual consent required\`                  |
+| **Dispute Resolution Method** | Identify the primary mechanism for dispute resolution.    | Return one of: \`Arbitration\`, \`Mediation\`, \`Litigation\`, \`Not specified\`.                   | \`Arbitration\`                              |
+| **Force Majeure Clause**      | Determine whether a force majeure provision is present.   | Return \`Yes\` or \`No\`.                                                                       | \`Yes\`                                      |
+
+---
+
+### **3. Additional Contextual Analysis (Optional, if applicable)**
+
+If relevant and supported by the text, include **brief commentary** (1–2 sentences max per topic) for context on how the term compares to common commercial practice:
+
+* **Limits of Liability:** Note if the liability cap aligns with industry norms (e.g., “Typical 12-month fee cap for SaaS”).
+* **Indemnification:** Clarify if scope covers IP infringement, third-party claims, or negligence.
+* **Termination:** Indicate if “termination for convenience” is unusually broad or limited.
+* **Dispute Resolution:** Comment on enforceability under the governing law if atypical (e.g., arbitration under NY law).
+
+This commentary should be clearly labeled as **“Context (Optional)”** so it is distinct from extracted values.
+
+---
+
+### **4. Output Formatting**
+
+* Use **plain Markdown tables** for structured outputs.
+* Maintain one table per contract analyzed.
+* Ensure outputs are **Excel-compatible** (no merged cells, no bullet points inside cells).
+* Use concise, consistent terminology.
+
+---
+
+### **5. Supplementary Legal Reference**
+
+If needed, you may use reputable sources (e.g., Cornell LII, state statutes, international arbitration associations) to confirm **governing law norms**, **force majeure enforceability**, or **market-standard liability caps**.
+Briefly cite the relevant principle or jurisdictional standard if helpful for context (no footnotes required).
+
+---
+
+### **Example of Expected Output**
+
+| Field                     | Extracted Value                     |
+| ------------------------- | ----------------------------------- |
+| Governing Law             | New York                            |
+| Limits of Liability       | Contract value                      |
+| Indemnification Scope     | Mutual                              |
+| Survival Provisions       | Yes - specific provisions           |
+| Termination Triggers      | Breach, insolvency, convenience     |
+| Contracting Parties       | Alpha Systems Inc.; Beta Global LLC |
+| Contract Term Length      | Initial Term: 2 years               |
+| Effective Date            | Effective Date: April 15, 2024      |
+| Amendment Provision       | Written only                        |
+| Dispute Resolution Method | Arbitration                         |
+| Force Majeure Clause      | Yes                                 |
+
+**Context (Optional):**
+
+* The limitation of liability to “contract value” is consistent with enterprise SaaS norms.
+* Arbitration under New York law is enforceable; no unusual dispute venue.
+
+---
+
+### ✅ **Why This Version Is Stronger**
+
+| Improvement                              | Why It Matters                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------- |
+| Fully standardized structure             | Enables direct upload to contract databases / diligence trackers |
+| Single listing of each key clause        | Eliminates duplicates and ensures clarity                        |
+| Controlled vocabulary for outputs        | Makes results comparable across multiple contracts               |
+| Optional market context                  | Adds analytical value without clutter                            |
+| Readable, Excel-compatible formatting    | Suitable for board / IC-level deliverables                       |
+| Incorporates optional regulatory context | Allows augmentation with legal best practice                     |
+
+---
+
+
+` },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WORKFLOWS
+// ─────────────────────────────────────────────────────────────────────────────
+const WORKFLOWS = [
+  {
+    id:"sourcing-outreach", icon:"📨", label:"Sourcing Outreach",
+    desc:"Personalized CEO/CRO emails using GPN and portfolio context",
+    accent:"#C0A0F0",
+    toolIds:["skill-sourcing","outreach-app","pitchbook"],
+    promptIds:[4,6],
+    tip:"Enable GPN and Portfolio connectors first for the most personalized output. The Outreach Generator app layers in GPN relationship data automatically.",
+  },
+  {
+    id:"initial-profile", icon:"🏢", label:"Initial Profile Creation",
+    desc:"IC-ready company briefs from websites, CIMs, or VDRs",
+    accent:"#7EC2F3",
+    toolIds:["initial-profile-project","skill-ic-diligence","pitchbook"],
+    promptIds:[4,5],
+    tip:"Upload a CIM or link a SharePoint VDR alongside the prompt for grounded output. The Initial Profile Claude Project has the right context pre-loaded.",
+  },
+  {
+    id:"market-research", icon:"🗺", label:"Market & Sector Research",
+    desc:"Sector landscapes, market maps, and competitive analysis",
+    accent:"#5DC994",
+    toolIds:["pitchbook","alphasense"],
+    promptIds:[2,6,7,8],
+    tip:"Use Deep Research mode in Claude Opus or ChatGPT for the most comprehensive output. PitchBook connector adds live company data automatically.",
+  },
+  {
+    id:"cim-diligence", icon:"📋", label:"CIM & VDR Diligence",
+    desc:"Structured analysis from CIMs, data rooms, and financial documents",
+    accent:"#E8D5A0",
+    toolIds:["cimba","microsoft365","skill-risk","skill-ic-diligence"],
+    promptIds:[3,9,10,11,12,13,14],
+    tip:"Link your SharePoint VDR folder URL directly in the conversation for grounded analysis. CIMBA is best for initial CIM pass/fail screening.",
+  },
+  {
+    id:"ic-prep", icon:"📊", label:"IC Prep",
+    desc:"Investment thesis, risk sections, and IC presentation materials",
+    accent:"#C0A0F0",
+    toolIds:["skill-ic-materials","skill-rtw","skill-playbook","skill-risk"],
+    promptIds:[1,5,7,9,12,13],
+    tip:"Combine with the CIM Diligence workflow first — use those outputs as input here. Skills fire automatically; just describe your task.",
+  },
+  {
+    id:"expert-calls", icon:"📞", label:"Expert & Customer Calls",
+    desc:"Surface insights from historical call transcripts and expert sessions",
+    accent:"#5DC994",
+    toolIds:["expert-gpt","alphasense"],
+    promptIds:[],
+    tip:"Before a management meeting or reference call, run the Expert Network Agent first to surface prior context and identify gaps to fill.",
+  },
+  {
+    id:"general-admin", icon:"⚙️", label:"General & Admin",
+    desc:"HR, ops, and firm-wide resources and internal tools",
+    accent:"#8AAFD4",
+    toolIds:["employee-gpt","microsoft365"],
+    promptIds:[],
+    tip:"The Employee Resources GPT handles most HR and policy questions. Use the Microsoft 365 connector to access Outlook, Calendar, and SharePoint directly in conversation.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CLAUDE GUIDES
+// ─────────────────────────────────────────────────────────────────────────────
+const GUIDES = [
+  {
+    id:"getting-started", title:"Getting Started with Claude", icon:"🚀",
+    desc:"Log in via MyApps, configure connectors and skills, try your first prompts.",
+    sections:[
+      { heading:"Step 1 — Log in", numbered:true, steps:[
+        "Open the <strong>MyApps SSO portal</strong> and find <strong>Claude</strong> in your app list.",
+        "Click to launch — you will be signed in automatically using your FTV credentials.",
+        "If you have a <strong>Claude license</strong>, you will be automatically provisioned under the FTV Capital organization. Don't see Claude in MyApps or missing a license? Contact IT.",
+      ]},
+      { heading:"Step 2 — Configure your settings", numbered:true, steps:[
+        "Click <strong>Customize</strong> in the left sidebar.",
+        "Under <strong>Capabilities</strong>, enable <strong>Code execution and file creation</strong> — required for Excel, PowerPoint, and Word skills.",
+        "Under <strong>Connectors</strong>, enable <strong>PitchBook</strong>, <strong>Microsoft 365</strong>, <strong>GPN</strong>, and <strong>Portfolio MCP</strong> — sign in with your FTV credentials when prompted.",
+        "Under <strong>Skills</strong>, confirm FTV org-level skills are on: IC Diligence, Sourcing Outreach, Right to Win, Risk Framework, IC Materials, Investment Playbook.",
+      ]},
+      { heading:"Step 3 — Try it on real work", numbered:true, steps:[
+        "<strong>Research a company:</strong> Research [Company] and produce a structured Initial Profile in FTV's format.",
+        "<strong>Analyze a CIM:</strong> Upload a PDF and ask Claude to produce a DD checklist and flag any gaps.",
+        "<strong>Draft outreach:</strong> Draft a cold email to the CEO of [Company] using relevant GPN and portfolio context.",
+        "<strong>Build something:</strong> Create an Excel tracker for my conference targets with columns for company, contact, sector, and status.",
+      ]},
+      { heading:"Step 4 — Key resources", numbered:true, steps:[
+        "<strong>AI Cortex Hub</strong> — Prompt library, tools, connectors, and custom GPTs.",
+        "<strong>SharePoint AI Site</strong> — Deep research prompts, trackers, and AI updates.",
+      ]},
+      { heading:"🛠 Having issues?", numbered:false, steps:[
+        "<strong>Excel / PowerPoint / Word skills not working</strong> — Contact IT to ensure Code execution is enabled at the org level.",
+        "<strong>Cowork not launching</strong> — Requires a separate install. Contact IT for the download link and setup.",
+      ]},
+      { heading:"💡 Tips to get better immediately", numbered:false, steps:[
+        "<strong>Be specific about format.</strong> Say as a table, as a Word doc, or as a slide deck — Claude defaults to prose otherwise.",
+        "<strong>Attach your sources.</strong> Upload a CIM, paste notes, or link a SharePoint VDR for grounded output.",
+        "<strong>Use the Prompt Library.</strong> Pre-built prompts for CDD, CIM analysis, customer diligence, credit agreements, and more.",
+        "<strong>Iterate in the same conversation.</strong> Ask Claude to refine, add columns, or reformat — no need to start over.",
+        "<strong>Use Projects for active deals.</strong> Upload CIM, VDR docs, and call notes so every conversation has full context.",
+        "<strong>Skills fire automatically.</strong> Just describe your task naturally — Claude applies the right FTV skill on its own.",
+      ]},
+    ]
+  },
+  {
+    id:"connectors", title:"Using Connectors", icon:"🔌",
+    desc:"Enable PitchBook, Microsoft 365, and other connectors to give Claude access to your real data.",
+    sections:[
+      { heading:"What is a connector?", numbered:false, steps:[
+        "A connector is a one-time setup that links Claude to an external data source. Once enabled, reference that data <strong>directly in conversation</strong> without copy-pasting anything.",
+      ]},
+      { heading:"PitchBook — How to enable", numbered:true, steps:[
+        "Click <strong>Customize</strong> in the left sidebar, then select <strong>Connectors</strong>.",
+        "Click the <strong>+ button</strong> to open the connector directory.",
+        "Find <strong>PitchBook</strong> and click <strong>Connect</strong>.",
+        "Sign in with your <strong>PitchBook credentials</strong> when prompted.",
+        "Done — PitchBook is now available in any Claude conversation. Try: <em>Pull the PitchBook profile for [Company] and summarize their funding history.</em>",
+      ]},
+      { heading:"Microsoft 365 — How to enable", numbered:true, steps:[
+        "Click <strong>Customize</strong> in the left sidebar, then select <strong>Connectors</strong>.",
+        "Click the <strong>+ button</strong> to open the connector directory.",
+        "Find <strong>Microsoft 365</strong> and click <strong>Connect</strong>.",
+        "Sign in with your <strong>FTV Microsoft account</strong> when prompted.",
+        "Done — Claude can now access emails, SharePoint files, Teams, and Calendar.",
+        "If Microsoft 365 is not visible, it may need org-level activation — contact the AI and Data team.",
+      ]},
+      { heading:"DealCloud MCP — How to enable", numbered:true, steps:[
+        "Click <strong>Customize</strong> in the left sidebar, then select <strong>Connectors</strong>.",
+        "Click the <strong>+ button</strong> to open the connector directory.",
+        "Find <strong>DealCloud MCP</strong> and click <strong>Connect</strong>.",
+        "Authenticate with your <strong>FTV DealCloud credentials</strong> when prompted.",
+        "Done — Claude can now query DealCloud for company records, contacts, priority status, coverage, and activity history.",
+        "Try: <em>Show me our Top Prospects in fintech</em> or <em>When did we last speak to [Company]?</em>",
+        "If DealCloud MCP is not visible in the connector directory, contact the AI and Data team.",
+      ]},
+      { heading:"Expert Network MCP — How to enable", numbered:true, steps:[
+        "Click <strong>Customize</strong> in the left sidebar, then select <strong>Connectors</strong>.",
+        "Click the <strong>+ button</strong> to open the connector directory.",
+        "Find <strong>Expert Network MCP</strong> and click <strong>Connect</strong>.",
+        "Authenticate when prompted.",
+        "Done — Claude can now search historical FTV expert call transcripts and interview notes directly in conversation.",
+        "Try: <em>What did experts say about [Company]?</em> or <em>Find me expert calls on payments fraud.</em>",
+        "If Expert Network MCP is not visible, contact the AI and Data team.",
+      ]},
+      { heading:"💡 Best practices", numbered:false, steps:[
+        "<strong>Enable once, use everywhere.</strong> Connectors stay active across all conversations.",
+        "<strong>Layer your connectors.</strong> Combine PitchBook and Microsoft 365 to cross-reference VDR data with live market benchmarks.",
+        "<strong>Be specific with file references.</strong> Paste a SharePoint folder URL to scope Claude's search to the right deal.",
+        "<strong>Test first.</strong> Ask <em>what files do you see in this SharePoint folder</em> before running a full analysis.",
+        "<strong>Data stays secure.</strong> Connectors use your existing FTV credentials — Claude only accesses what you already have permission to see.",
+        "See a connector you want? The directory has 50+ integrations — reach out to the AI and Data team.",
+      ]},
+    ]
+  },
+  {
+    id:"artifacts", title:"Using Artifacts", icon:"⚡",
+    desc:"Generate structured documents, tables, dashboards, and interactive tools directly from conversation.",
+    sections:[
+      { heading:"What is an Artifact?", numbered:false, steps:[
+        "When you ask Claude to produce something substantial, it renders the output in a <strong>separate panel</strong> alongside the chat. Unlike a regular reply, you can <strong>iterate on it directly</strong>, copy it cleanly, or share it without starting over.",
+      ]},
+      { heading:"Three types of artifacts", numbered:false, steps:[
+        "<strong>Documents and Reports</strong> — IC memos, market overviews, diligence summaries. Clean prose ready to paste into a deck or email.",
+        "<strong>Tables and Trackers</strong> — Competitor matrices, HQT lists, enrichment outputs. Export directly to Excel or paste into DealCloud.",
+        "<strong>Interactive Apps</strong> — Dashboards, scoring tools, pipeline views. The AI Cortex hub itself is an artifact.",
+      ]},
+      { heading:"FTV use cases", numbered:false, steps:[
+        "<strong>Logo Scrubbing and Enrichment</strong> — Upload a logo map, attendee list, or sector report. Claude extracts every company and enriches with PitchBook data into an Excel-ready table.",
+        "<strong>Initial Profile Generation</strong> — Point Claude at a website, CIM, or VDR. Get a fully formatted IC-ready Initial Profile in FTV's format in minutes.",
+        "<strong>VDR Analysis by Workstream</strong> — Link a SharePoint VDR and specify a workstream. Claude extracts and structures the relevant data, cited to source documents.",
+        "<strong>Dashboards and Interactive Tools</strong> — Build filterable sourcing dashboards, scoring tools, and pipeline visualizations — no engineering required.",
+      ]},
+      { heading:"How to create — 4 steps", numbered:true, steps:[
+        "<strong>Start a conversation</strong> — Describe what you want. Be specific about format: as a table, as a formatted document, as an interactive dashboard.",
+        "<strong>Attach your sources</strong> — Upload a PDF, paste notes, or enable a connector so Claude has the right context.",
+        "<strong>Artifact appears in the side panel</strong> — View, scroll, and copy it independently from the chat.",
+        "<strong>Iterate and refine</strong> — Ask Claude to update sections, add columns, or reformat. It edits the artifact directly.",
+      ]},
+      { heading:"💡 Tips", numbered:false, steps:[
+        "<strong>Specify format upfront.</strong> Claude defaults to prose if you do not specify.",
+        "<strong>Use the Prompt Library.</strong> CDD, CIM, and Customer Analysis prompts are pre-built to generate clean artifact outputs.",
+        "<strong>Pair with connectors.</strong> Artifacts grounded in live PitchBook or SharePoint data are significantly more powerful.",
+        "Have an idea for a tool or dashboard? Reach out to the AI and Data team.",
+      ]},
+    ]
+  },
+  {
+    id:"skills", title:"Using Skills", icon:"🧠",
+    desc:"FTV-specific skills that Claude applies automatically — IC format, sourcing outreach, right-to-win, and more.",
+    sections:[
+      { heading:"What is a Skill?", numbered:false, steps:[
+        "A Skill is a <strong>packaged set of instructions</strong> Claude loads automatically when it detects a relevant task. Unlike a prompt, you do not invoke it manually — Claude detects the context and applies it on its own.",
+      ]},
+      { heading:"FTV skills enabled at the org level", numbered:false, steps:[
+        "<strong>IC Diligence</strong> — Produces FTV-format Initial Profiles from CIMs, VDRs, and financial models. Triggers on: deal analysis, Initial Profile, IC prep.",
+        "<strong>Sourcing Outreach</strong> — Drafts personalized CEO/CRO cold outreach in FTV's voice. Triggers on: drafting sourcing or outreach emails.",
+        "<strong>Right to Win</strong> — Structures a right-to-win competitive assessment. Triggers on: competitive positioning or right-to-win analysis.",
+        "<strong>Risk Framework</strong> — Builds a structured risk and mitigant table. Triggers on: deal risks, bear case, risk analysis.",
+        "<strong>IC Materials</strong> — Produces IC-ready slide content. Triggers on: creating IC slides or presentation materials.",
+        "<strong>Investment Playbook</strong> — Applies FTV's investment framework to evaluate company fit. Triggers on: asking whether a company fits FTV's mandate.",
+        "<strong>expert-network</strong> — Searches FTV expert call transcripts and interview notes. Triggers on: expert calls, expert network, what did experts say about X, expert diligence on Y, find me an expert in Z.",
+        "<strong>dealcloud</strong> — Queries FTV's DealCloud CRM for companies, contacts, pipeline, and coverage. Triggers on: looking up a company, priority status (Top Prospect, HQM, Monitor), last contact, who covers X, sourcing activity.",
+        "<strong>ftv-ppt-template</strong> — Applies FTV's 2023 PowerPoint brand guidelines (colors, typography, layouts) to every presentation. Triggers on: any mention of presentation, slides, deck, PowerPoint, pptx, board materials, IC presentation.",
+        "<strong>portfolio</strong> — Looks up FTV portfolio company profiles, sectors, and capabilities. Triggers on: portfolio company questions, which portfolio companies do X, comparing portfolio companies, listing all FTV investments.",
+        "<strong>gpn</strong> — Surfaces FTV Global Partner Network contacts, bios, and relationship activity. Triggers on: GPN executive lookup, finding relevant GPN contacts for a deal, SAB members, past introductions, subject matter experts.",
+      ]},
+      { heading:"Managing skills", numbered:true, steps:[
+        "Click <strong>Customize</strong> in the left sidebar, then select <strong>Skills</strong>.",
+        "FTV-provisioned skills appear with a <strong>team indicator</strong> — toggle any on or off. Your preference saves across all future conversations.",
+        "For built-in skills (Excel, PowerPoint, Word) to work, ensure <strong>Code execution and file creation</strong> is enabled under Customize → Capabilities.",
+      ]},
+      { heading:"Creating new skills", numbered:true, steps:[
+        "A skill is a folder with a <strong>SKILL.md</strong> file containing a short description and your instructions. Claude reads it to know when to activate.",
+        "Zip the folder and upload via <strong>Customize → Skills → Upload skill</strong>. Personal skills are private to your account.",
+        "To share a skill firm-wide, reach out to the AI and Data team — we will test and provision it org-wide.",
+        "<strong>Shortcut:</strong> Ask Claude to build the skill for you — describe the workflow and Claude generates a ready-to-upload SKILL.md.",
+      ]},
+      { heading:"💡 Skill ideas for the investment team", numbered:false, steps:[
+        "<strong>Reference Check Formatter</strong> — Auto-structures reference call notes into FTV's standard format with scoring.",
+        "<strong>Management Meeting Prep</strong> — Generates a structured question list based on FTV's diligence priorities.",
+        "<strong>Competitive Snapshot</strong> — Produces a structured competitor comparison table.",
+        "<strong>DealCloud Entry Formatter</strong> — Formats research output into DealCloud field-ready structured data.",
+        "Have a repetitive workflow? That is a skill candidate — reach out to the AI and Data team.",
+      ]},
+    ]
+  },
+];
+
+// External Tools (not workflow-linked)
+const EXTERNAL_TOOLS = [
+  { id:"capsa",      name:"Capsa",      tags:["sourcing","research"], badge:"Active Pilot", desc:"AI-powered deal sourcing and market intelligence for automated company discovery and enrichment.", link:"#" },
+  { id:"quikirr",    name:"QuikIRR",    tags:["financials","modeling"], badge:"Active Pilot", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#" },
+  { id:"alphasense-ext", name:"AlphaSense", tags:["research","dd"], badge:"Core Tool", desc:"Market intelligence and earnings transcript analysis. Used for pattern tracking and expert calls.", link:"#" },
+  { id:"upslide",    name:"Upslide",    tags:["ops","writing"], badge:"Active Pilot", desc:"PowerPoint and Excel productivity add-in. Automates slide formatting, brand compliance, and data linking.", link:"#" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMPONENTS
+// ─────────────────────────────────────────────────────────────────────────────
+const TagEl = ({ type, text }) => (
+  <span style={{ backgroundColor:TAG[type].bg, color:TAG[type].color, border:`1px solid ${TAG[type].border}`, borderRadius:999, fontSize:11, padding:"2px 8px", fontWeight:500 }}>{text}</span>
+);
+
+const TypeBadge = ({ type }) => {
+  const s = TYPE_MAP[type] || { bg:C.surface, color:C.textSec };
+  return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:999, fontWeight:600, backgroundColor:s.bg, color:s.color }}>{type}</span>;
+};
+
+const StatusBadge = ({ label }) => {
+  const m = { "Core Tool":{ bg:"#0E2A4A", color:"#7EC2F3" }, "Active Pilot":{ bg:"#0D2A1C", color:"#5DC994" }, "Active":{ bg:"#0D2A1C", color:"#5DC994" } };
+  const s = m[label] || { bg:"#1A1A2E", color:"#8888CC" };
+  return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:999, fontWeight:500, backgroundColor:s.bg, color:s.color, whiteSpace:"nowrap" }}>{label}</span>;
+};
+
+// CopyBtn uses textarea execCommand fallback — works in sandboxed iframes
+const CopyBtn = ({ text, small }) => {
+  const [state, setState] = useState("idle"); // idle | ok | err
+  const handleClick = (e) => {
+    e.stopPropagation();
+    const ok = copyText(text);
+    setState(ok ? "ok" : "err");
+    setTimeout(() => setState("idle"), 2000);
+  };
+  const bg   = state === "ok" ? "#0D2A1C" : state === "err" ? "#3a1010" : "#1E3F6B";
+  const col  = state === "ok" ? "#4CAF82" : state === "err" ? "#f87171" : C.textPri;
+  const label = state === "ok" ? "✓ Copied" : state === "err" ? "✗ Failed" : "Copy";
+  return (
+    <button onClick={handleClick}
+      style={{ fontSize:small?10:11, padding:small?"2px 9px":"4px 12px", borderRadius:6, border:"none", cursor:"pointer", whiteSpace:"nowrap", flexShrink:0, backgroundColor:bg, color:col, transition:"all 0.15s", fontWeight:500 }}>
+      {label}
+    </button>
+  );
+};
+
+const PromptRow = ({ p, expanded, onToggle }) => (
+  <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+    <div style={{ padding:"13px 16px", cursor:"pointer" }}
+      onMouseOver={e=>e.currentTarget.style.backgroundColor=C.surfaceHi}
+      onMouseOut={e=>e.currentTarget.style.backgroundColor=""}
+      onClick={()=>onToggle(p.id)}>
+      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12 }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:13, fontWeight:700, color:C.textPri, marginBottom:3 }}>{p.title}</div>
+          <div style={{ fontSize:11, color:C.textSec, lineHeight:1.5 }}>{p.desc}</div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginTop:7 }}>
+            {p.labels.map((l,i) => <TagEl key={i} type={l.type} text={l.text}/>)}
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, marginTop:2 }}>
+          <CopyBtn text={p.text} small/>
+          <span style={{ color:C.textMuted, fontSize:11 }}>{expanded ? "▲" : "▼"}</span>
+        </div>
+      </div>
+    </div>
+    {expanded && (
+      <div style={{ borderTop:`1px solid ${C.border}`, padding:"12px 16px 16px" }}>
+        <pre style={{ margin:0, fontSize:11, color:"#C8D8F0", backgroundColor:C.bg, borderRadius:8, padding:14, whiteSpace:"pre-wrap", lineHeight:1.65, fontFamily:"'Consolas','Monaco',monospace", maxHeight:320, overflowY:"auto" }}>{p.text}</pre>
+      </div>
+    )}
+  </div>
+);
+
+const ToolCard = ({ tool, compact }) => (
+  <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:compact?"11px 14px":"16px 18px" }}>
+    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:5 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
+        <TypeBadge type={tool.type}/>
+        <span style={{ fontSize:compact?12:13, fontWeight:700, color:C.textPri }}>{tool.name}</span>
+      </div>
+      <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, marginLeft:8 }}>
+        {!compact && <StatusBadge label={tool.badge}/>}
+        {tool.link && tool.link !== "#" &&
+          <a href={tool.link} target="_blank" rel="noreferrer"
+            style={{ fontSize:11, color:C.goldLight, textDecoration:"none", whiteSpace:"nowrap" }}>Open ↗</a>}
+      </div>
+    </div>
+    {!compact && <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Platform: <span style={{ color:C.textSec }}>{tool.platform}</span></div>}
+    <div style={{ fontSize:11, color:C.textSec, lineHeight:1.6 }}>{compact ? (tool.note || tool.desc) : tool.desc}</div>
+  </div>
+);
+
+// Guide detail view
+const GuideDetail = ({ guide, onBack }) => (
+  <div>
+    <button onClick={onBack}
+      style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, color:C.textSec, marginBottom:16, display:"flex", alignItems:"center", gap:6, padding:0 }}>
+      ← Back to guides
+    </button>
+    <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
+      <span style={{ fontSize:28 }}>{guide.icon}</span>
+      <div>
+        <div style={{ fontSize:18, fontWeight:800, color:C.textPri }}>{guide.title}</div>
+        <div style={{ fontSize:12, color:C.textSec, marginTop:2 }}>{guide.desc}</div>
+      </div>
+    </div>
+    <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+      {guide.sections.map((sec, si) => (
+        <div key={si} style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:18 }}>
+          <div style={{ fontSize:12, fontWeight:700, color:C.goldLight, marginBottom:10 }}>{sec.heading}</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+            {sec.steps.map((step, i) => (
+              <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
+                {sec.numbered
+                  ? <div style={{ width:18, height:18, borderRadius:"50%", background:C.gold, color:C.bg, fontSize:10, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>{i+1}</div>
+                  : <div style={{ width:5, height:5, borderRadius:"50%", background:C.gold, flexShrink:0, marginTop:6 }}/>
+                }
+                <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65 }} dangerouslySetInnerHTML={{ __html:step }}/>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// Workflow detail view
+const WorkflowDetail = ({ wf, onBack }) => {
+  const [expanded, setExpanded] = useState(null);
+  const tools   = wf.toolIds.map(id => TOOLS_REGISTRY.find(t => t.id === id)).filter(Boolean);
+  const prompts = wf.promptIds.map(id => PROMPTS_REGISTRY.find(p => p.id === id)).filter(Boolean);
+
+  return (
+    <div>
+      <button onClick={onBack}
+        style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, color:C.textSec, marginBottom:18, display:"flex", alignItems:"center", gap:6, padding:0 }}>
+        ← All workflows
+      </button>
+      <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:24 }}>
+        <span style={{ fontSize:32 }}>{wf.icon}</span>
+        <div>
+          <div style={{ fontSize:20, fontWeight:800 }}>{wf.label}</div>
+          <div style={{ fontSize:13, color:C.textSec, marginTop:2 }}>{wf.desc}</div>
+        </div>
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
+        <div>
+          <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase", color:C.gold, marginBottom:12 }}>Tools to use</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+            {tools.map(t => <ToolCard key={t.id} tool={t} compact/>)}
+          </div>
+        </div>
+        <div>
+          {prompts.length > 0 && (
+            <>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1px", textTransform:"uppercase", color:C.gold, marginBottom:12 }}>Prompts to run</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:16 }}>
+                {prompts.map(p => (
+                  <PromptRow key={p.id} p={p} expanded={expanded===p.id} onToggle={id=>setExpanded(expanded===id?null:id)}/>
+                ))}
+              </div>
+            </>
+          )}
+          <div style={{ backgroundColor:"#1E2A10", border:"1px solid #3a5a18", borderRadius:10, padding:"14px 16px" }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"#a0e8b0", marginBottom:6 }}>💡 Pro tip</div>
+            <div style={{ fontSize:12, color:"#7EC8A0", lineHeight:1.65 }}>{wf.tip}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN APP
+// ─────────────────────────────────────────────────────────────────────────────
+export default function App() {
+  const [tab, setTab]                 = useState("start-here");
+  const [activeWorkflow, setActiveWorkflow] = useState(null);
+  const [activeGuide, setActiveGuide] = useState(null);
+  const [search, setSearch]           = useState("");
+  const [expanded, setExpanded]       = useState(null);
+  const [activeTag, setActiveTag]     = useState(null);
+  const [tagOpen, setTagOpen]         = useState(false);
+  const [ecoTagFilter, setEcoTagFilter] = useState("All");
+
+  const q = search.toLowerCase();
+
+  // Prompt groups for library tab (deduplicated)
+  const PROMPT_GROUPS = useMemo(() => {
+    const groups = [
+      { label:"Sourcing & Initial Research", wfMatch:["sourcing-outreach","initial-profile","market-research"] },
+      { label:"CIM & Diligence",             wfMatch:["cim-diligence"] },
+      { label:"IC Prep",                     wfMatch:["ic-prep"] },
+    ];
+    const seen = new Set();
+    return groups.map(g => {
+      const ids = PROMPTS_REGISTRY
+        .filter(p => p.workflowIds.some(w => g.wfMatch.includes(w)) && !seen.has(p.id))
+        .map(p => { seen.add(p.id); return p.id; });
+      return { ...g, ids };
+    });
+  }, []);
+
+  const fPrompts = useMemo(() => PROMPTS_REGISTRY.filter(p =>
+    (!activeTag || p.labels.some(l => l.text === activeTag)) &&
+    (!q || p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.labels.some(l => l.text.toLowerCase().includes(q)))
+  ), [activeTag, q]);
+
+  const allTags = useMemo(() => {
+    const m = {};
+    PROMPTS_REGISTRY.forEach(p => p.labels.forEach(l => { if(!m[l.text]) m[l.text] = l.type; }));
+    return Object.entries(m).sort((a,b) => a[0].localeCompare(b[0]));
+  }, []);
+
+  const fEco = useMemo(() => TOOLS_REGISTRY.filter(t =>
+    (ecoTagFilter === "All" || t.tags.includes(ecoTagFilter)) &&
+    (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+  ), [ecoTagFilter, q]);
+
+  const ecoAllTags = useMemo(() => {
+    const s = new Set();
+    TOOLS_REGISTRY.forEach(t => t.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  const tabs = [
+    { id:"start-here", label:"⚡ Start Here",            count:WORKFLOWS.length },
+    { id:"prompts",    label:"Prompt Library",           count:PROMPTS_REGISTRY.length },
+    { id:"ecosystem",  label:"Custom Tools & Connectors", count:TOOLS_REGISTRY.length },
+    { id:"external",   label:"External Tools",           count:EXTERNAL_TOOLS.length },
+    { id:"guides",     label:"Claude Guides",            count:GUIDES.length },
+  ];
+
+  const card     = { backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:12 };
+  const hashTag  = { fontSize:11, padding:"2px 7px", borderRadius:4, backgroundColor:C.surfaceHi, color:C.textMuted };
+  const linkStyle = { fontSize:12, color:C.goldLight, textDecoration:"none" };
+
+  return (
+    <div style={{ minHeight:"100vh", backgroundColor:C.bg, color:C.textPri, fontFamily:"system-ui,sans-serif" }}>
+
+      {/* Header */}
+      <div style={{ backgroundColor:C.surface, borderBottom:`1px solid ${C.border}` }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"20px 24px" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
+            <div>
+              <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+                <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+                  <defs><radialGradient id="bgG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#1B3D6F"/><stop offset="100%" stopColor="#0C2340"/></radialGradient></defs>
+                  <rect width="38" height="38" rx="9" fill="url(#bgG)"/>
+                  <path d="M19 10 C14 10 10 13 10 17 C9 19 9 21 10 23 C10 26 12 28 15 29 L19 30" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
+                  <path d="M19 10 C24 10 28 13 28 17 C29 19 29 21 28 23 C28 26 26 28 23 29 L19 30" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
+                  <line x1="19" y1="10" x2="19" y2="30" stroke="#C9A84C" strokeWidth="1" strokeOpacity="0.35" strokeDasharray="2 2"/>
+                  <path d="M12 16 C14 15 15 17 13 18" stroke="#E8D5A0" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.7"/>
+                  <path d="M11 22 C13 21 15 23 13 25" stroke="#E8D5A0" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.7"/>
+                  <path d="M26 16 C24 15 23 17 25 18" stroke="#E8D5A0" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.7"/>
+                  <path d="M27 22 C25 21 23 23 25 25" stroke="#E8D5A0" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.7"/>
+                  <line x1="19" y1="30" x2="19" y2="33" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round"/>
+                  <line x1="16" y1="33" x2="22" y2="33" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round"/>
+                </svg>
+                <span style={{ fontSize:20, fontWeight:700 }}>FTV AI Cortex</span>
+                <span style={{ fontSize:11, padding:"2px 8px", borderRadius:999, backgroundColor:C.surfaceHi, color:C.textSec }}>Internal</span>
+              </div>
+              <p style={{ fontSize:13, color:C.textSec, marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for the investment team</p>
+              <a href="https://adas-ftv.github.io/Claude-Usage-Tracker/" target="_blank" rel="noreferrer"
+                style={{ display:"inline-flex", alignItems:"center", gap:7, marginTop:8, marginLeft:50, fontSize:13, fontWeight:700, color:C.gold, textDecoration:"none", backgroundColor:"#1A2E10", border:"1px solid #4a8a20", borderRadius:8, padding:"6px 14px", letterSpacing:"0.01em" }}>
+                <span>📋</span> Click here to submit Claude use cases
+              </a>
+            </div>
+            <a href="https://ftvcapital1.sharepoint.com/sites/AI" target="_blank" rel="noreferrer"
+              style={{ fontSize:12, color:C.goldLight, border:`1px solid ${C.gold}`, borderRadius:8, padding:"6px 12px", textDecoration:"none", backgroundColor:C.surfaceHi }}>
+              SharePoint AI Site ↗
+            </a>
+          </div>
+          <div style={{ position:"relative" }}>
+            <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted }}>🔍</span>
+            <input
+              style={{ width:"100%", backgroundColor:C.surfaceHi, border:`1px solid ${C.border}`, borderRadius:8, padding:"9px 36px", fontSize:13, color:C.textPri, outline:"none", boxSizing:"border-box" }}
+              placeholder="Search prompts, tools, tags..."
+              value={search} onChange={e => setSearch(e.target.value)}/>
+            {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:C.textMuted, cursor:"pointer" }}>✕</button>}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth:1100, margin:"0 auto", padding:"24px 24px" }}>
+
+        {/* Tabs */}
+        <div style={{ display:"flex", gap:4, marginBottom:24, backgroundColor:C.surface, padding:4, borderRadius:10, width:"fit-content", border:`1px solid ${C.border}`, flexWrap:"wrap" }}>
+          {tabs.map(t => (
+            <button key={t.id}
+              onClick={() => { setTab(t.id); setActiveWorkflow(null); setActiveGuide(null); }}
+              style={{ padding:"7px 16px", borderRadius:7, fontSize:13, fontWeight:tab===t.id?700:500, border:"none", cursor:"pointer",
+                backgroundColor:tab===t.id?C.gold:"transparent", color:tab===t.id?C.bg:C.textSec }}>
+              {t.label} <span style={{ fontSize:11, opacity:0.7 }}>{t.count}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* ── START HERE ── */}
+        {tab === "start-here" && (
+          activeWorkflow
+            ? <WorkflowDetail wf={WORKFLOWS.find(w => w.id === activeWorkflow)} onBack={() => setActiveWorkflow(null)}/>
+            : <>
+                <p style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>What are you working on?</p>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
+                  {WORKFLOWS.map(wf => (
+                    <div key={wf.id} onClick={() => setActiveWorkflow(wf.id)}
+                      style={{ ...card, padding:"20px 22px", cursor:"pointer", transition:"all 0.18s" }}
+                      onMouseOver={e=>{ e.currentTarget.style.borderColor=wf.accent; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
+                      onMouseOut={e=>{ e.currentTarget.style.borderColor=C.border; e.currentTarget.style.backgroundColor=C.surface; }}>
+                      <div style={{ fontSize:26, marginBottom:10 }}>{wf.icon}</div>
+                      <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
+                      <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
+                      <div style={{ marginTop:14, fontSize:11, color:wf.accent, fontWeight:600 }}>
+                        {wf.toolIds.length} tool{wf.toolIds.length!==1?"s":""}
+                        {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+        )}
+
+        {/* ── PROMPT LIBRARY ── */}
+        {tab === "prompts" && (
+          <div>
+            <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Copy a prompt, attach the right source files and connectors, and run with Opus or Deep Research mode for best results.</p>
+            {/* Tag filter */}
+            <div style={{ marginBottom:20, position:"relative" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                <button onClick={() => setTagOpen(o => !o)}
+                  style={{ fontSize:12, padding:"4px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`1px solid ${activeTag?C.gold:C.border}`, backgroundColor:activeTag?C.surfaceHi:C.surface, color:activeTag?C.goldLight:C.textSec }}>
+                  <span>🏷 {activeTag || "Filter by tag"}</span>
+                  <span style={{ color:C.textMuted, fontSize:10 }}>{tagOpen?"▲":"▼"}</span>
+                </button>
+                {activeTag && <button onClick={()=>setActiveTag(null)} style={{ fontSize:12, color:C.textSec, background:"none", border:"none", cursor:"pointer" }}>✕ Clear</button>}
+              </div>
+              {tagOpen && (
+                <div style={{ position:"absolute", top:"110%", left:0, zIndex:20, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:340, boxShadow:"0 8px 24px rgba(0,0,0,0.4)" }}>
+                  <div style={{ display:"flex", flexWrap:"wrap", gap:6, maxHeight:200, overflowY:"auto" }}>
+                    {allTags.map(([text,type]) => (
+                      <button key={text} onClick={() => { setActiveTag(activeTag===text?null:text); setTagOpen(false); }}
+                        style={{ border:"none", cursor:"pointer", borderRadius:999, fontSize:11, padding:"3px 9px",
+                          fontWeight:activeTag===text?600:400, backgroundColor:activeTag===text?TAG[type].bg:C.surfaceHi,
+                          color:activeTag===text?TAG[type].color:C.textSec, outline:activeTag===text?`1px solid ${TAG[type].border}`:"none" }}>
+                        {text}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {PROMPT_GROUPS.map(group => {
+              const prompts = fPrompts.filter(p => group.ids.includes(p.id));
+              if (!prompts.length) return null;
+              return (
+                <div key={group.label} style={{ marginBottom:28 }}>
+                  <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:10 }}>{group.label}</div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    {prompts.map(p => (
+                      <PromptRow key={p.id} p={p} expanded={expanded===p.id} onToggle={id=>setExpanded(expanded===id?null:id)}/>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── CUSTOM TOOLS & CONNECTORS ── */}
+        {tab === "ecosystem" && (
+          <div>
+            <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Custom GPTs, connectors, Claude projects, and apps. A single tool can apply to multiple workflows — each card shows where it is used.</p>
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:20 }}>
+              {ecoAllTags.map(t => (
+                <button key={t} onClick={() => setEcoTagFilter(t)}
+                  style={{ fontSize:12, padding:"3px 12px", borderRadius:999, border:`1px solid ${ecoTagFilter===t?C.gold:C.border}`, backgroundColor:ecoTagFilter===t?C.gold:"transparent", color:ecoTagFilter===t?C.bg:C.textSec, cursor:"pointer", fontWeight:ecoTagFilter===t?600:400 }}>
+                  {t}
+                </button>
+              ))}
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:12 }}>
+              {fEco.map(t => (
+                <div key={t.id} style={{ ...card, padding:20 }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                      <TypeBadge type={t.type}/>
+                      <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{t.name}</span>
+                    </div>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, marginLeft:8 }}>
+                      <StatusBadge label={t.badge}/>
+                      {t.link && t.link !== "#" && <a href={t.link} target="_blank" rel="noreferrer" style={linkStyle}>Open ↗</a>}
+                    </div>
+                  </div>
+                  <p style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>Platform: <span style={{ color:C.textSec }}>{t.platform}</span></p>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65, marginBottom:10 }}>
+                    {t.desc.split("\n").map((line,li) =>
+                      line.startsWith("Enable in") || line.startsWith("How to")
+                        ? <p key={li} style={{ color:C.goldLight, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
+                        : <p key={li} style={{ margin:0 }}>{line}</p>
+                    )}
+                  </div>
+                  {t.workflowIds.length > 0 && (
+                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
+                      <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                        {t.workflowIds.map(wid => {
+                          const wf = WORKFLOWS.find(w => w.id === wid);
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:10 }}>
+                    {t.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── EXTERNAL TOOLS ── */}
+        {tab === "external" && (
+          <div>
+            <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>External AI-powered platforms used across the investment team.</p>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(360px,1fr))", gap:12 }}>
+              {EXTERNAL_TOOLS.filter(t => !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)).map(t => (
+                <div key={t.id} style={{ ...card, padding:20 }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:600 }}>{t.name}</span>
+                    <StatusBadge label={t.badge}/>
+                  </div>
+                  <p style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:12 }}>{t.desc}</p>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
+                      {t.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                    </div>
+                    {t.link && t.link !== "#" && <a href={t.link} target="_blank" rel="noreferrer" style={linkStyle}>Open ↗</a>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── CLAUDE GUIDES ── */}
+        {tab === "guides" && (
+          <div>
+            {activeGuide
+              ? <GuideDetail guide={GUIDES.find(g => g.id === activeGuide)} onBack={() => setActiveGuide(null)}/>
+              : <>
+                  <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Setup guides, best practices, and how-tos for using Claude at FTV.</p>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                    {GUIDES.map(g => (
+                      <div key={g.id} onClick={() => setActiveGuide(g.id)}
+                        style={{ ...card, padding:20, cursor:"pointer" }}
+                        onMouseOver={e => e.currentTarget.style.borderColor=C.gold}
+                        onMouseOut={e  => e.currentTarget.style.borderColor=C.border}>
+                        <div style={{ fontSize:24, marginBottom:10 }}>{g.icon}</div>
+                        <div style={{ fontSize:14, fontWeight:700, color:C.textPri, marginBottom:6 }}>{g.title}</div>
+                        <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{g.desc}</div>
+                        <div style={{ marginTop:12, fontSize:12, color:C.goldLight }}>Read guide →</div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+            }
+          </div>
+        )}
+
+      </div>
+
+      <div style={{ borderTop:`1px solid ${C.border}`, marginTop:32 }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"14px 24px", display:"flex", justifyContent:"space-between" }}>
+          <span style={{ fontSize:11, color:C.textMuted }}>FTV Capital · Data, Technology and Operations · Internal Use Only</span>
+          <span style={{ fontSize:11, color:C.textMuted }}>v4.0 · 2026</span>
+        </div>
+      </div>
+    </div>
+  );
+}
