@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — On Demand</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0B4379;
+    --gold:   #FBB03B;
+    --blue:   #007DC3;
+    --light:  #C6EAFA;
+    --dark:   #0a1628;
+    --text:   #1a2744;
+    --muted:  #6b7fa3;
+    --bg:     #f4f7fc;
+    --white:  #ffffff;
+    --border: #dce4f0;
+    --success: #0BA0A6;
+    --error:   #e53e3e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    box-shadow: 0 2px 12px rgba(11,67,121,0.18);
+  }
+
+  header .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+
+  header .badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ── Main layout ── */
+  main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 32px rgba(11,67,121,0.08), 0 1px 4px rgba(11,67,121,0.06);
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(135deg, var(--navy) 0%, #1a3d6e 100%);
+    padding: 32px 36px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+
+  .card-header::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .card-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .card-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+
+  .card-body {
+    padding: 36px;
+  }
+
+  /* ── Form elements ── */
+  .field {
+    margin-bottom: 24px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  label span {
+    color: var(--gold);
+    margin-left: 2px;
+  }
+
+  input[type="email"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  input[type="email"]:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0,125,195,0.1);
+  }
+
+  textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    resize: vertical;
+    min-height: 140px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    line-height: 1.7;
+  }
+
+  textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0,125,195,0.1);
+    background: var(--white);
+  }
+
+  textarea::placeholder {
+    color: #b0bcd4;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── Submit button ── */
+  button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button[type="submit"]:hover:not(:disabled) {
+    background: #0d3460;
+    box-shadow: 0 4px 16px rgba(11,67,121,0.25);
+    transform: translateY(-1px);
+  }
+
+  button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  button[type="submit"]:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* ── Spinner ── */
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── Results ── */
+  #results {
+    margin-top: 28px;
+    display: none;
+  }
+
+  .results-title {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .result-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .result-item.success {
+    background: #f0fafa;
+    border: 1px solid #b2e4e6;
+    color: #0a5c5f;
+  }
+
+  .result-item.error {
+    background: #fff5f5;
+    border: 1px solid #fbb;
+    color: #7a1f1f;
+  }
+
+  .result-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .result-company {
+    font-weight: 500;
+  }
+
+  /* ── CSV upload ── */
+  .csv-drop {
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 18px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--bg);
+    position: relative;
+  }
+
+  .csv-drop:hover, .csv-drop.drag-over {
+    border-color: var(--blue);
+    background: #eef6fc;
+  }
+
+  .csv-drop input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .csv-drop-icon {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .csv-drop-text {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .csv-drop-text strong {
+    color: var(--blue);
+  }
+
+  .csv-loaded {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #eef6fc;
+    border: 1.5px solid var(--blue);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--blue);
+    display: none;
+  }
+
+  .csv-loaded .csv-clear {
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    padding: 0 2px;
+    line-height: 1;
+  }
+
+  .csv-clear:hover { color: var(--error); }
+
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .or-divider::before,
+  .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMoAAABQCAYAAABYmOqNAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAXJElEQVR4nO2debQdVZXGf/u+95KQSJiEFRuUdgTUJZOAjQqtoi2IaAsqLm11qc0oCc2gGEESBI2MzdAaVBCwBYW2HbFpFQcQFF247EagkTECigwaJk3yhq//OHun6l3vVPdW3XdD7rdWrbpVt+pMdfbZw9lnH5P0LeBFwBRQo/+YAOYBC83sq5LGgC8Am8xgmTrBJDAX+DFwNnBp7j9r8d6U/38McBtgZjZVVSHrIcnMTJLmAxcCGwEjwF/qHp0ktf3VZnaWpBEzm+wh3xEzm5S0O7AYEOV822jPj5vZDb2WsxlGgTnAs8tOuAuM5X7vBjxvpgpSEI+Y2WOSRoF/KPDeHWZ2pKR+DwQjpMHp7cD+HTz/xV4zlGR+ng2cD7y41zQbYEtJO0d+ZqYyE68Bq0nUPeHnfh/jud+QRrI/+Xncz4N4rCaNZqu93Md4eSfavBf/f0DSFj7KtuJApcHzmfQO+xEv/7if82Vc4+drzewrkmo9jtIxyh9OIpI1DfLs5VgD7AAc5PmM9FDWhqiR2NYgHAC4GCKvbM3Pg3rUyAj8ZuAnZB+p2Tuj/s480qhO7p2qUfORdncyKWKM5u18TrzXbYbOMackbQEcTyKQVnl2c4x5uqdIWuD5lcqpB1X+L5Vt9gPeAZdSR/hNEO1+kOtk/dJRol0X113nEXrh/wFfczFmooc8QwdbSqZ3ls1BzdPdFDjB85tRQhHViTKqy2eqh6NonXrJSwCuo1wH/Jz04VqJKjX//8XAvmY25e9XBldypyTtCOzlZW/EyUQq//JexRhJI6TR/SXA+0l1rop7jnr6B0va3swmPP9SUJRQjPLFl9lkIkkgWHOcix5F69RNHrP8PNvTGfGRdwmdcRVInfJY1x36xVUO83Oj/MIS9SDwhdBpesnMOe05ZMaaqvWxEeCsskWvTkexGGUeAn5NuaLRJMlE+afcvYeBFXQ3AhmwZYH3ngAeKZgHJKV8FLjHryf943wP+AWwC63LP0LqrH9HGuG/X5VpM6cnPAM4kEwHrEdwmWVhyetW7MqZg/cH9qRabhIY8XxeBbzVDRHltKmkK5UwoeYY9/PRPWfYWZk2lDRL0ljBY5YfvyxQpxP93Q26yG+srtyjfj64g/yjDFOSLvf3KulIuXItqat7HlN+PCJpviRTl9Y4f3fE2/R2T3eyTVuUhUnP7w5JcyXVuq1HHkXl4rAmjJJG1LKgvN3bzB7vKTFpvMDjfzGzcUmTJUz8han3YpK5+Lm0njQNwthb0rOBe5RMsaWJYcpMwpsAh9J8om+S9F0/1ys3IVnXJiUtJM2H9YObrM3b83susMjMPqk0UPTUXwvL8/4Rp8yszGOaKBejWRdHjB5FRpARf2ekmzzrGkekTrIKOMXL0UpMDR3gaaSPWtZs9bT6ebrvALYgm3HPI0SxlST5vmvdRJmYtxXJujYT3hU1z3expK0pwVw8kOZhM1M3B3WcqUNMe7eLPOsx5R3tCuA+Ml2kGWKkfZeP+mVPQE4piXTtuIkBl5rZH8iIqxvErPjpwHwy/bafiAHqacDpPrj3VIaBJJR1Gd5JRszsSWCZ325FKDF6bwYcGO+XURa5SRh4PckU3Wx0HyF5GJytHixwyhT4l5MmU/spctUjFPv9Je3h5eq6LENCqQbBFf6dJM6M0F4EE7BIyb2kLB0l8lzU4pkJz/9yM/sNSXTsOn/XB85p+2D/YMDpvRAJDAmlEuR0lUdJntCdTEAK2AbYq4wJSGUTjLsCr6X5BGONRCxn9iLyufI/CRwE7MTMcpNAcJVdgPf3wlWGhFId5B3vVNJcTTuuEo6hR/Ui/jRAcJNG6YVif6WZ/Qq3VhXNIMoraTPgRKpxU+kW0ZZLvXxT3QwIQ0KpCC6+jJjZA8CXaM9VgpBeDbzUuUFXo5+bmCclPR94m6fbikOd1aMBIcS144DNybyDJ3o8yhgswgK2APg4mTNm4USGqA4xep1DJvq04irRMVrpFJ0gvusiMh+oeoRo9DPgWpK1qhtuEubgl5Hmjoy0xmm0hCPvnd0LYhD4odexcJqVOuKt7wiuYGa3SLoEeC+Z60sjBCEdIOl4YEXRCcjcBONmwDtp7q6C//exXrgXPrem5EZ/Co3naYog3p8i6Va709tcTAwI/21mV0jaD/iOii7uUjEXlqP8nYEksBAfJP28QJ2O83cqqVN0QEnbqzNXjijXJ/LvF8gv3FWOatEGE16Wa/3ZniSLomVsk9ZsSaNKrkibSVqpzC2lKKa8rhOSXiBpG7//tqLlLto5av4hRqVS/CIny16yOWgIS4uZ/Y+k/wL2oTOucpCkT5nZo+pw9FPGTTYCjqX1unQDzvV3YgTvGDni2hy4UmkmPhYCdosaSWwbA04zs49KOhk4je6saCHuftrMfhMDA/AxpVgRqztt26Ic5ZCCBe0rNIAcxdMOrrKn59kpVzmiSNmUcZP9W9Q/RudblUbvrpwfc3kta1OXbrBC0sZKnGVM0i0q7lg56cfDSs6Rb/f7q/x8SpG27bRzxOixn6RYh9GLRSLcGq40sztVQTCAQYJzlRpwDUl5fhmtR8ho7yMlnU9a194JQhk/iuYK6xTpuy83s9XqwvnR6xJWtYVkLjC9moQnSNxkoZmtlDTby7gY+BrF+lzoZkeTvA7OJLP+TZHa9vN06oiqzjhKVSgsK7apy0ByFE8/uMrenm+70THKfmAn5VNyazdJL1c2mtYjuMndSksZuuUmUZfLOmjnThFpXFWXR5yL9NOo+y3+7ifq3o3z1/N5tEJRJa4M2/gEicLjvF4gx1WuAm6k/bxK4GA/tx1NnSsfQ3OOHxOBX/ClDIWdH5X5c72OtAiszBn4ceA4JeKNcsmvj/T/23lk5/EeSc8kcdi8NS5m7N8k6ZWdzNgXJZRYi1LWMSizt/1CREH5BO3rHkr9HpJ2dBNsw++lbC7jhcDeZOLVtMc8zUeBz6iL2X9lHHsU+CTlrXSd8LJd4B4C4cwZE7c1M7udJD61E/uDIC43s18AnyIt127mxXxujms1/SbDCcf+IrjKt0lRItt99Jg/+IhfN/uQoeMdTeoUzdxVDPismT1ErjMWQCyrXUh5/lxhmXsIOCmIvu6ZGCROAn5H83YLYlgF/Iuk3UjrcGJR2rS6+P3tgcOtTSCNIaH0ETlnyTVkXKXVqBwz0/tKeg4NFiAp87PaCHgjjScY497jZM6P3ZiDJyU9ncyfq4z+ExxgqZn9ngbey95uZmZ/Jg0azdotynSymf2O5JDaCtEOJ3i9mnLtbnSUssITRWTK9Q3BVS4D7qA1Vwk9ZgPgvU1WQIaecQhpTqORQ2Jwky+571k3rvQhNp5ItiCrV0KJkf5W4AIXgRrqbbn5qEtIYaHqnw0iuc/MTpH0fmA72lsXp4Cnkwi1qTNnNzpKGSGKZpHpKesVclxlnBSHt93oHrrKIZI2JiO0QIRIPYzmcnhwpphgLKrA1yzFydqGZFwog5tEGaaAoywtn472aVUWAz6Uez9/NuAwb6ezOixnrED9gKTtckaXaei0owZVXkZa4tqU8gtgPikSPPQvptWgIBZ2nU+yyCyg+UcNrrI58G4zO0dZYLlR78BvB55F49Ez7l3uPmfdhO8J4vssaZ6jV3+uKNcocImZXaUO5nNyXOV6SReT+c5FvLlrzOxbki4CNuywnDFQzSLtSvA6Gg02HdqnY87h0AIN0XdogOdRGpS1fma7UQihQMx/3CNpnnLBNDyNG1rUd1LSGkk7+LNFfcfCIvSPHbRpp4hZ9iclbZ2vSwflqfnzWyrzA4syvUjStsr8u4r4h0Uab2jUTkVHhXlKbgXhuNbrsb6Zh/MIrnI27ZcLhyy9NbCfiyez3GT8amBXGq9gjBH1B2b2KxWMSq9s4NkYOJfyAkVEub5oZisooDPl1vncz/T1JcvN7Gbg82TtUKSsIZKeLmkDmG4uLqzMO3ucNLOJEo71UZkHpgWh+D2dLeyC9CHrJyCPqLuelo2fl6l4GCfIzMHHkKJvliFyBUGvAD6kxubgdogJwn8DfktaQXqkpH2Al9Od2TrigW0LHF1vLh6ah2cWsbDrLOBJWnOV+G9PSa8EQrl+PY1NwtGpf0nyMSu0MEtJF5hQEtkWUd4MfHClY0nm6jFSTLWOJRGyWNXjpLmVJZ7ucnpbhhyK/UckPcfrX4MhocwocrPOdwJfpj1XiZF3oXOkI0lu6WH+nZa8n1uaPVvBiXgxKT5WGWJXENv3zewKS7HRVncpjaw2s0kzu8DMziARzDPpzSIXiv1cYIkTicF6aJ4dROR0lffQ+iMHV9nHuUlshVf/zlpuYmbfVPLOLsJNYs39s4ADaL/mviiWSZoLnAH8gcRVVlJcBAvC3YTEoZpFmimC2Ojpn0irP++RVBsSygwjZ/K8SdJ/koJBNFvYFQrnXJKpfiu/38ysfKr/HqFA7N2cX9kDwA9JAS/KdH5cZGZXS3oF1ezn2AuinlcB9/ugMTUUvQYLp/u51XcJYtmR6RvEBkL0WAFcpe7jCJu72pxARmS9Gl9CB3ijE8mbSXrGarL9L7s9ykDUbxWJmNeuAxoSygAgZoPd2/U7ZBaYpq/QXEwJXWKZpQB8XcURzk/ukZlcy9i7JeKXfc51s+UkR85ePdPLQHCTMy0tHR4Ns/WQUAYHa025ddfN0OjbBTe5F7ikB26yNj0XwU4kueeXET4ouMq2kt5HMhasotg6kyoQbXc/cKrXe23bDQllQJDzMbqetA9kO67SCMFNznNP216i0ue9dh8kKcu9LgFfm7SncwapjoeXmHa3CCfPE5wT1/JtNySUwUJYp06K6wLvxof+A7C8BG4SiJhfFwE30X4bi04QnGljkphzIXALM0csIXJdB1wUc0j5B4aEMkDIcZXvkDplkXUjMZdyhZk9Ro/cJFcm+Xmc5LUL5YhIQRSHSNoOeB8zI37lvZgPa9ZmQ0IZPATLX0bnHSdm5lcB56nkXYZziv1VwFcpR7GPugm42MxuIJm8yzIadIqYe7nEzP5XTbyrh4QyeAiu8lXSwq5ORJ3gJl80s9vocY+TJgiCPYZkzi1j9I+67SJpb5Lf2pqS0u4EodM9BhyvFmt1hoQyYMgt7FoNfMZvt+v0I6R5iNNafeweyxVxlO8h89otS7EXKbDEI6SgFf3SVcKD4VPujdw0jsCQUAYT+YVd99Oaq8TCpW9bilRSBTcJhLn4DOBOyunQkcYzJC02syUkj+CqiSVErt+S4gi0tDIOCWUAkXPBf5K0vV0rnSP8v5b6dWUiS47braJ1kIeiiE66RCmG8cElpt0MIXYd7fWxVsaPIaEMLsIF/zySO3ojF/wYAX9oKQh4ldwEAHc9HyHpUNdQnmIPySXnbDcaXF9S2o0Q5uAfmNl/NFPg8xgSyoAi54J/H2kOo9G8SCzGOi133c/yLQL+4rfKUuzforTv5D/3mF4zRDkngIWdrrIdEspgQ8p27IpoivGhQxG9Afhe0WW+vcDNxaOWojpeSvl+YMvN7BbgQgp6PneA0E3OtLR0uKNgG6EwdRqLa11ZuvuUqFOOq9wBXExjrnKyf+h+xx8Ixf540loSI3XoXmK9QbLe7SjpHSTXlkdz93tJe9LTEPBHMgthR6JqDZhHFmurWRyu2bnzuoCn8dSpUxDyGWQjbgQ3v5G0zVrfuEkgR8QPkKJexvLcMmK+AVxAWr15hKc7VkLaY57WEjN7mBbm4HqMAr8gNf44zUWxSS/0XX49sKOw4zrSoqMJptcpv/BJpI9yu/83kHWKRVRmdquyHbsC51m2J/2M+Eg5VzkX2IO00nCC3iYNg2vOJ0WcucSDRjyd3tbDh5XrQeD8or5w63O4oHUG3hkFvIC0ZHgUeJi0dHgNtI+wuC4i6j0IdYuNZPIEU088+UIORKHboa5O+frEqNIoCPQQXaJJH+o2GMXabxFikbLgeGUN7FNFv/mQo6xDULYx6VqCHxL5EEMMMcQQQwwxxBBDDDHEEGuhLrdWHmKIbjDofW1a4dwMVyNFq1eze+sD3EO2/uNNVe2d63lHzNtKrVpqvSeM+jXb7yFfZ6Rv5UzbnU19SH+1iea8Ng1ZKfIjzCCNNvXtNEQ5kDSr/VMzh9gopuauEM8DDgTeBLyEtA7iJuBHpB1W74XqJ+hifYCkk4H7zewznawZKCFfMzNJmgP8K8mNYowUtOE64Gozu72qETD3HY4DdgaOMbMVZa4zydVxY5JXcuzBHulHfOE/A0eY2RMV1jfKMhf4JvAuUrilfvaxfYEPkryJv9u0nynbemyxsu25Hpb0fUk/Vba9V1+2cAvdSNJcSY9JulvSHPmWZFXn7ef5klZ7vf+sDOOSjvVnSucsuW/xDc9v5/z9kvKI7ey2Uuvt8B6XtKk/W0m7R1+S9FbPc2H+fpXI5b2o47wlLfWH75a0r9Ius/HfAkkflvROvy7to7WpwMIckR7QthLl5B2EMk/SHyWtcILdTNL+kh708mznz5VKLDlCudQ78fb5+2VD0saSNpW0udd1pRPQpn5UNjDJ923040Zv13skbaj+DIrRzw5RYhAH5+83euHvvZC3S9o6d79WdkdoB2XcZI4TbeC6fpSnjlAel3Rn3f/HOvEe7telEm6OUL7s9d4hf79KSLrT69wXXSHXUd/idX3cz4fm/+9D/od6voe0yjcCMEPaxWmF0kamZmZT4eLdjw8V5XHZ9ADgb0lLXC8Gdgdek3Mp7xdM0oik2F7hCbJgc+s8YuTWdKfGWTHaV5ivkYVqXUpaX/MW0vZ8i5V0lohEMxjwEXKF0v54M2bRyXGTMUm3KekIG0l6gVP8d/25yjppA45yV+6/3ST9xsuySxVl6TdH0XTL4l1e53n1/1WQb4zmr/F6fsOvP+fXb8s/V3EZOuIoQSjRCWeSUKKTvNML/ukc4fzM7+2Zf7aCMgShbCjpIaU9zG9Ukp0DZ/ozVSrzT3VCCd3kR97GO/lA/cJcm49VzNUKi14G/I0qijBYACFWnUAyTX7c0maY42T780WU936U08jWaT8AXA7sY2ZHyUXTPpThKQcl8+sUsCuwJ/BNM/ulpQ1MbwG+AuwEvGEGRO2mGCXNlTwb2MrM7lUDO3JQdlWdQymix4SSdWsbksx6aW5EGSER9Ssk7W5m1zcqZ4mYIs0v3Gdmu9aVdcZmkZ9iOIE04O0k6RqyBXUL/P+PAl+nf0ucW3LQGklhnku209OU6vb1DsW+wkJGRI/Ffr0S2IU06bYzsD1pVM8bH/qBEBFq3halbKWwvkLZJN/LgL399jwSB9mB9K03J62731nSfhHzuA/FC+4V/X662KdkS7/N5bSzlJtDyT3zIkkv9d9VzR2EmfpaJSV+jqRZSla4OUp2/Ztdp3ph/t0Sy9JKma/cAvNU11Fy9fu21+8w/7Yb+LfewL/3/v7/T1WRBU7T51Ek6ehOXnq+N5SU5i8+LOldkt4t6VzvnCf5s412ou2lwDUlE+xPPP9Q2P/K10vSO/yZi/y6akK5u/6/KpHrSF/xeu6Yv19Bfvk2vrtKQsnVbTev26/bPP9jf+61+fdLLE8Qygc9n5slnSnpdEkXSnrztHyVuTQskLRM2exzHjepAotTrvH28HyudqIZUWYuzs/gzpZ0qz+7Q778JZUnCGWupCc0cxzlMq/jS/L3K8ivnqM8oTSHUQWhRMe8QMmy9W7/tqN13zqu91IaoL/n75UtydQTysq6Pn9S/rlpTpH+ewNgW2BLktXnLt9OoHQoc4rbBHgGsMLMnlQDhTn37ObAFiRnyZWNni2jXMDzgQkzu6vd82Xm63VcAGwG3GZ1ewlWmPdzSMad2yt27X8mMKcT51JJ2wBrzOzuZs/0UI5o6/mkvn4vmRFnNvCkmT3e8EW1MMWVTdHdoB+j+hD9wbr2Lf8fy1CHIai0uvEAAAAASUVORK5CYII=" alt="FTV Capital" style="height:38px; display:block;" />
+  </div>
+  <div class="badge">Meeting Prep · On Demand</div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="card-header">
+      <h1>On-Demand Briefing</h1>
+      <p>Enter company names or URLs and your email address. Briefings will be sent directly to your inbox.</p>
+    </div>
+
+    <div class="card-body">
+      <form id="prepForm">
+
+        <div class="field">
+          <label for="recipient">Your Email Address <span>*</span></label>
+          <input type="email" id="recipient" placeholder="you@ftvcapital.com" required />
+        </div>
+
+        <div class="field">
+          <label>Upload CSV <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <div class="csv-drop" id="csvDrop">
+            <input type="file" id="csvFile" accept=".csv" />
+            <div class="csv-drop-icon">📄</div>
+            <div class="csv-drop-text">Drop a CSV file here or <strong>browse</strong></div>
+          </div>
+          <div class="csv-loaded" id="csvLoaded">
+            <span>📄</span>
+            <span id="csvFileName"></span>
+            <span id="csvCount" style="color:var(--muted);font-size:12px;"></span>
+            <button type="button" class="csv-clear" id="csvClear" title="Remove file">×</button>
+          </div>
+          <div class="hint">CSV should have one company name or URL per row. First column is used.</div>
+        </div>
+
+        <div class="or-divider">or type manually</div>
+
+        <div class="field">
+          <label for="companies">Companies</label>
+          <textarea
+            id="companies"
+            placeholder="formotiv.com&#10;Salesforce&#10;acmecorp.com&#10;Veeva Systems"
+          ></textarea>
+          <div class="hint">One company per line. Use a URL (e.g. formotiv.com) for best results, or a company name.</div>
+        </div>
+
+        <button type="submit" id="submitBtn">
+          <div class="btn-inner">
+            <div class="spinner" id="spinner"></div>
+            <span id="btnText">Generate Briefings</span>
+          </div>
+        </button>
+
+      </form>
+
+      <div id="results">
+        <hr class="divider">
+        <div class="results-title">Results</div>
+        <div id="resultsList"></div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>FTV Capital Data &amp; Analytics &nbsp;·&nbsp; Meeting Prep Bot</footer>
+
+<script>
+  const LAMBDA_URL = 'https://uxaoswlckzthcyhf4kpuckxt3e0wwnfe.lambda-url.us-east-2.on.aws/';
+
+  const form        = document.getElementById('prepForm');
+  const submitBtn   = document.getElementById('submitBtn');
+  const spinner     = document.getElementById('spinner');
+  const btnText     = document.getElementById('btnText');
+  const results     = document.getElementById('results');
+  const resultsList = document.getElementById('resultsList');
+  const csvFile     = document.getElementById('csvFile');
+  const csvDrop     = document.getElementById('csvDrop');
+  const csvLoaded   = document.getElementById('csvLoaded');
+  const csvFileName = document.getElementById('csvFileName');
+  const csvCount    = document.getElementById('csvCount');
+  const csvClear    = document.getElementById('csvClear');
+
+  let csvCompanies = [];
+
+  // ── CSV drag and drop ──
+  csvDrop.addEventListener('dragover', e => { e.preventDefault(); csvDrop.classList.add('drag-over'); });
+  csvDrop.addEventListener('dragleave', () => csvDrop.classList.remove('drag-over'));
+  csvDrop.addEventListener('drop', e => {
+    e.preventDefault();
+    csvDrop.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) handleCSV(file);
+  });
+
+  csvFile.addEventListener('change', () => {
+    if (csvFile.files[0]) handleCSV(csvFile.files[0]);
+  });
+
+  csvClear.addEventListener('click', () => {
+    csvCompanies = [];
+    csvFile.value = '';
+    csvDrop.style.display = 'block';
+    csvLoaded.style.display = 'none';
+  });
+
+  function handleCSV(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const lines = e.target.result.split('\n');
+      csvCompanies = lines
+        .map(l => l.split(',')[0].replace(/^"|"$/g, '').trim())
+        .filter(Boolean);
+
+      // Skip header row if it looks like a header
+      if (csvCompanies.length && /^(company|name|url|website)/i.test(csvCompanies[0])) {
+        csvCompanies.shift();
+      }
+
+      csvFileName.textContent = file.name;
+      csvCount.textContent    = `· ${csvCompanies.length} companies`;
+      csvDrop.style.display   = 'none';
+      csvLoaded.style.display = 'flex';
+    };
+    reader.readAsText(file);
+  }
+
+  // ── Form submit ──
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const recipient   = document.getElementById('recipient').value.trim();
+    const raw         = document.getElementById('companies').value.trim();
+    const manualList  = raw.split('\n').map(s => s.trim()).filter(Boolean);
+
+    // Merge CSV + manual, deduplicate
+    const seen      = new Set();
+    const companies = [...csvCompanies, ...manualList].filter(c => {
+      if (!c || seen.has(c.toLowerCase())) return false;
+      seen.add(c.toLowerCase());
+      return true;
+    });
+
+    if (!companies.length) {
+      alert('Please enter at least one company or upload a CSV.');
+      return;
+    }
+
+    if (!recipient) {
+      alert('Please enter your email address.');
+      return;
+    }
+
+    // Show loading state
+    submitBtn.disabled    = true;
+    spinner.style.display = 'block';
+    btnText.textContent   = `Generating ${companies.length} briefing${companies.length > 1 ? 's' : ''}…`;
+    results.style.display = 'none';
+    resultsList.innerHTML = '';
+
+    try {
+      const resp = await fetch(LAMBDA_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ companies, recipient }),
+      });
+
+      const data  = await resp.json();
+      const items = data.results || [];
+
+      resultsList.innerHTML = items.map(item => `
+        <div class="result-item ${item.status === 'SUCCESS' ? 'success' : 'error'}">
+          <div class="result-icon">${item.status === 'SUCCESS' ? '✓' : '✗'}</div>
+          <div>
+            <div class="result-company">${escHtml(item.company)}</div>
+            <div>${escHtml(item.message)}</div>
+          </div>
+        </div>
+      `).join('');
+
+      results.style.display = 'block';
+
+    } catch (err) {
+      resultsList.innerHTML = `
+        <div class="result-item error">
+          <div class="result-icon">✗</div>
+          <div>
+            <div class="result-company">Request failed</div>
+            <div>${escHtml(err.message)}</div>
+          </div>
+        </div>`;
+      results.style.display = 'block';
+    }
+
+    submitBtn.disabled    = false;
+    spinner.style.display = 'none';
+    btnText.textContent   = 'Generate Briefings';
+  });
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>
