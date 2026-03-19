@@ -14,10 +14,16 @@ st.set_page_config(
 
 # Initialize Snowflake connection
 @st.cache_resource
-def get_snowflake_connection():
-    return st.connection("snowflake")
+def get_snowflake_session():
+    try:
+        from snowflake.snowpark.context import get_active_session
+        session = get_active_session()
+    except:
+        from snowflake.snowpark import Session
+        session = Session.builder.config('connection_name', 'default').create()
+    return session
 
-conn = get_snowflake_connection()
+session = get_snowflake_session()
 
 # Title and description
 st.title("🎯 Sourcing Dashboard")
