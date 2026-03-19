@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "snowflake": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "git+https://github.com/Snowflake-Labs/mcp"
+      ],
+      "env": {
+        "SNOWFLAKE_ACCOUNT": "UY18554.us-east-1",
+        "SNOWFLAKE_USER": "ADAS"
+      }
+    }
+  }
+}
