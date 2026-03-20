@@ -41,6 +41,7 @@ const TYPE_MAP = {
   "Custom App":     { bg:"#0D2A1C", color:"#5DC994" },
   "Skill":          { bg:"#1a2040", color:"#93b4ff" },
   "External":       { bg:"#243050", color:"#93b4ff" },
+  "MCP Server":     { bg:"#0A2A2A", color:"#4DD0C4" },
 };
 
 const SP_BASE = "https://ftvcapital1.sharepoint.com/sites/AI/Shared%20Documents/Deep%20Research/Deep%20Research%20Prompts/";
@@ -246,6 +247,33 @@ const SKILLS_REGISTRY = [
     note:"Auto-fires on GPN and partner network queries.",
     tags:["sourcing","research","outreach"],
     workflowIds:["sourcing-outreach","expert-calls"],
+  },
+  {
+    id:"dealcloud-mcp",
+    type:"MCP Server", name:"DealCloud MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Queries FTV's DealCloud CRM for companies, contacts, pipeline status, priority tiers, and coverage — directly in Claude conversation.\n\nEnable in Claude: Customize → Connectors → DealCloud MCP → Connect with FTV credentials.",
+    note:"Enable in Claude: Customize → Connectors → DealCloud MCP.",
+    tags:["sourcing","data","crm"],
+    workflowIds:["sourcing-outreach","general-admin"],
+  },
+  {
+    id:"expert-network-mcp",
+    type:"MCP Server", name:"Expert Network MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Searches historical FTV expert call transcripts and interview notes for company, sector, or management insights — directly in Claude conversation.\n\nEnable in Claude: Customize → Connectors → Expert Network MCP → Connect.",
+    note:"Enable in Claude: Customize → Connectors → Expert Network MCP.",
+    tags:["dd","research","calls","expert"],
+    workflowIds:["expert-calls"],
+  },
+  {
+    id:"portfolio-mcp",
+    type:"MCP Server", name:"Portfolio MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Looks up FTV portfolio company profiles, sectors, and investment details — directly in Claude conversation.\n\nEnable in Claude: Customize → Connectors → Portfolio MCP → Connect with FTV credentials.",
+    note:"Enable in Claude: Customize → Connectors → Portfolio MCP.",
+    tags:["research","sourcing","data"],
+    workflowIds:["sourcing-outreach","market-research"],
   },
 ];
 
@@ -2633,7 +2661,7 @@ function App() {
                 {ecoTypeOpen && (
                   <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:240, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
                     <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-                      {["Custom GPT","Claude Project","Connector","Custom App","Skill","External"].map(type => (
+                      {["Custom GPT","Claude Project","Connector","Custom App","Skill","External","MCP Server"].map(type => (
                         <button key={type} onClick={() => { setEcoTypeFilter(ecoTypeFilter===type?"All":type); setEcoTypeOpen(false); }}
                           style={{ border:"none", cursor:"pointer", borderRadius:6, fontSize:12, padding:"6px 10px", textAlign:"left",
                             fontWeight:ecoTypeFilter===type?600:400,
