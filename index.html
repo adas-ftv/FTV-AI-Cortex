@@ -142,6 +142,12 @@ const TOOLS_REGISTRY = [
     tags:["research","dd","calls"],
     workflowIds:["expert-calls","market-research"],
   },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SKILLS REGISTRY — FTV firm-level skills
+// ─────────────────────────────────────────────────────────────────────────────
+const SKILLS_REGISTRY = [
   {
     id:"skill-ic-diligence",
     type:"Skill", name:"IC Diligence", platform:"Claude",
@@ -2430,6 +2436,7 @@ function App() {
     { id:"start-here", label:"⚡ Start Here",            count:WORKFLOWS.length },
     { id:"prompts",    label:"Prompt Library",           count:PROMPTS_REGISTRY.length },
     { id:"ecosystem",  label:"Custom Tools & Connectors", count:TOOLS_REGISTRY.length },
+    { id:"skills",     label:"🧠 Skills",               count:SKILLS_REGISTRY.length },
     { id:"external",   label:"External Tools",           count:EXTERNAL_TOOLS.length },
     { id:"guides",     label:"Claude Guides",            count:GUIDES.length },
   ];
@@ -2724,6 +2731,91 @@ function App() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── SKILLS ── */}
+        {tab === "skills" && (
+          <div>
+            <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>FTV team members have access to firm-level skills that Claude applies automatically to handle formatting, analysis, and firm-specific workflows. You can create personal skills, manage which skills are active, and share skills with teammates.</p>
+
+            <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:20, marginBottom:32 }}>
+              {/* How to disable skills */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to disable a firm-level skill</div>
+                <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
+                  <li>Click <strong>Customize</strong> in Claude's sidebar</li>
+                  <li>Select <strong>Skills</strong></li>
+                  <li>Toggle any firm-level skill on/off</li>
+                </ol>
+              </div>
+
+              {/* Create new skills */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
+                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                  Create a folder with a <strong>SKILL.md</strong> file containing your instructions. Zip the folder and upload via <strong>Customize → Skills → Upload skill</strong>. Personal skills are private to your account.
+                </p>
+              </div>
+
+              {/* Share skills */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🤝 Share skills with your team</div>
+                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                  Share your SKILL.md file directly with teammates, or reach out to the <strong>AI & Data team</strong> to provision a skill firm-wide.
+                </p>
+              </div>
+            </div>
+
+            {/* Firm Level Skills Section */}
+            <div style={{ marginBottom:32 }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Firm Level Skills</div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:12 }}>
+                {SKILLS_REGISTRY.map(s => (
+                  <div key={s.id} style={{ ...card, padding:20 }}>
+                    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                        <TypeBadge type={s.type}/>
+                        <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{s.name}</span>
+                      </div>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, marginLeft:8 }}>
+                        <StatusBadge label={s.badge}/>
+                      </div>
+                    </div>
+                    <p style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>Platform: <span style={{ color:C.textSec }}>{s.platform}</span></p>
+                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65, marginBottom:10 }}>
+                      {s.desc.split("\n").map((line,li) =>
+                        line.startsWith("Triggers on:") || line.startsWith("Auto-fires")
+                          ? <p key={li} style={{ color:C.goldLight, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
+                          : <p key={li} style={{ margin:0 }}>{line}</p>
+                      )}
+                    </div>
+                    {s.workflowIds.length > 0 && (
+                      <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
+                        <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
+                        <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                          {s.workflowIds.map(wid => {
+                            const wf = WORKFLOWS.find(w => w.id === wid);
+                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:10 }}>
+                      {s.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* New Skills to Download Section */}
+            <div>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>New Skills to Download</div>
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:20, textAlign:"center" }}>
+                <p style={{ fontSize:12, color:C.textMuted, margin:0 }}>No additional skills available yet. Check back soon for community-contributed and FTV-created skill files.</p>
+              </div>
             </div>
           </div>
         )}
