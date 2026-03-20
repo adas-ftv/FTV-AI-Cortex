@@ -517,8 +517,8 @@ with tab4:
 
         # Conferences by team
         st.subheader(f"Conferences Attended by Team ({time_metric})")
-        team_conferences = df_conferences.groupby("PRIMARY_TEAM")[f"CONFERENCES_ATTENDED{metric_suffix}"].sum().sort_values(ascending=False)
-        fig = px.bar(team_conferences, title=f"Conferences by Team ({time_metric})", labels={"value": "Conference Count", "index": "Team"})
+        team_conferences = df_conferences.groupby("PRIMARY_TEAM")[f"CONFERENCES_ATTENDED{metric_suffix}"].sum().sort_values(ascending=False).reset_index()
+        fig = px.bar(team_conferences, x="PRIMARY_TEAM", y=f"CONFERENCES_ATTENDED{metric_suffix}", title=f"Conferences by Team ({time_metric})", labels={f"CONFERENCES_ATTENDED{metric_suffix}": "Conference Count", "PRIMARY_TEAM": "Team"})
         st.plotly_chart(fig, use_container_width=True)
 
     except Exception as e:
@@ -561,8 +561,8 @@ with tab5:
 
         # Deals by team
         st.subheader("Active Deals by Team (YTD)")
-        team_deals = df_deals.groupby("PRIMARY_TEAM")["ACTIVE_DEALS_YTD"].sum().sort_values(ascending=False)
-        fig = px.bar(team_deals, title="Active Deals by Team (YTD)", labels={"value": "Deal Count", "index": "Team"})
+        team_deals = df_deals.groupby("PRIMARY_TEAM")["ACTIVE_DEALS_YTD"].sum().sort_values(ascending=False).reset_index()
+        fig = px.bar(team_deals, x="PRIMARY_TEAM", y="ACTIVE_DEALS_YTD", title="Active Deals by Team (YTD)", labels={"ACTIVE_DEALS_YTD": "Deal Count", "PRIMARY_TEAM": "Team"})
         st.plotly_chart(fig, use_container_width=True)
 
     except Exception as e:
