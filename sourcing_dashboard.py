@@ -17,11 +17,17 @@ st.set_page_config(
 def get_snowflake_session():
     try:
         from snowflake.snowpark.context import get_active_session
-        session = get_active_session()
+        return get_active_session()  # Works inside Snowflake SiS
     except:
         from snowflake.snowpark import Session
-        session = Session.builder.config('connection_name', 'default').create()
-    return session
+        creds = st.secrets["snowflake"]
+        return Session.builder.configs({
+            "account": creds["account"],
+            "user": creds["user"],
+            "password": creds["password"],
+            "role": creds.get("role", "ACCOUNTADMIN"),
+            "warehouse": creds.get("warehouse", "ADAS_WH"),
+        }).create()
 
 session = get_snowflake_session()
 
