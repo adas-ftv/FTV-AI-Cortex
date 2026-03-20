@@ -2223,11 +2223,34 @@ const GUIDES = [
       ]},
     ]
   },
+  {
+    id:"chatgpt-to-claude", title:"Transferring your memory from ChatGPT to Claude", icon:"🧠→💬",
+    desc:"Export your ChatGPT memory and context to use with Claude for continuity across AI tools.",
+    sections:[
+      { heading:"Export your ChatGPT memory", numbered:true, steps:[
+        "Go to <strong>ChatGPT Settings</strong> → <strong>Customize ChatGPT</strong> → <strong>View Memory</strong>",
+        "Review all stored memories and preferences that ChatGPT has about you",
+      ]},
+      { heading:"Export your instructions and preferences", numbered:true, steps:[
+        "Ask ChatGPT: <strong>'Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.'</strong>",
+        "Request the export in the following format with these five categories (in order):<ul style=\"margin-top:8px;margin-bottom:8px;\"><li><strong>Instructions:</strong> Rules I've explicitly set — tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections</li><li><strong>Memory:</strong> Name, age, location, education, family, relationships, languages, and personal interests</li><li><strong>Career:</strong> Current and past roles, companies, general technical skills</li><li><strong>Projects:</strong> Meaningful projects you're working on or building, with current status and key decisions</li><li><strong>Preferences:</strong> General opinions, tastes, and working style preferences</li></ul>",
+        "If ChatGPT indicates there's more data, ask: <strong>'Continue — give me the next batch. Keep doing this until it confirms the export is complete.'</strong>",
+      ]},
+      { heading:"Add to Claude's memory", numbered:true, steps:[
+        "Copy the exported text and go to <strong>Claude's interface</strong>",
+        "Navigate to <strong>Settings</strong> → <strong>Memory</strong> (or ask Claude directly)",
+        "Paste the exported content and say: <strong>'Add this to your understanding of my memory'</strong>",
+        "Claude will store this information and reference it across your future conversations",
+      ]},
+      { heading:"💡 Pro tip", numbered:false, steps:[
+        "For the smoothest transition, you can wrap the entire export in a code block so Claude can easily copy it. After uploading, Claude will maintain this memory just like ChatGPT does.",
+      ]},
+    ]
+  },
 ];
 
 // External Tools (not workflow-linked)
 const EXTERNAL_TOOLS = [
-  { id:"capsa",      name:"Capsa",      tags:["sourcing","research"], badge:"Active Pilot", desc:"AI-powered deal sourcing and market intelligence for automated company discovery and enrichment.", link:"#" },
   { id:"quikirr",    name:"QuikIRR",    tags:["financials","modeling"], badge:"Active Pilot", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#" },
   { id:"alphasense-ext", name:"AlphaSense", tags:["research","dd"], badge:"Core Tool", desc:"Market intelligence and earnings transcript analysis. Used for pattern tracking and expert calls.", link:"#" },
   { id:"upslide",    name:"Upslide",    tags:["ops","writing"], badge:"Active Pilot", desc:"PowerPoint and Excel productivity add-in. Automates slide formatting, brand compliance, and data linking.", link:"#" },
@@ -2462,11 +2485,11 @@ function App() {
 
   const tabs = [
     { id:"start-here", label:"⚡ Start Here",            count:WORKFLOWS.length },
-    { id:"prompts",    label:"Prompt Library",           count:PROMPTS_REGISTRY.length },
-    { id:"ecosystem",  label:"Custom Tools & Connectors", count:TOOLS_REGISTRY.length },
+    { id:"prompts",    label:"📋 Prompt Library",        count:PROMPTS_REGISTRY.length },
+    { id:"ecosystem",  label:"🛠️ Custom Tools & Connectors", count:TOOLS_REGISTRY.length },
     { id:"skills",     label:"🧠 Skills",               count:SKILLS_REGISTRY.length },
-    { id:"external",   label:"External Tools",           count:EXTERNAL_TOOLS.length },
-    { id:"guides",     label:"Claude Guides",            count:GUIDES.length },
+    { id:"external",   label:"🔧 External Tools",        count:EXTERNAL_TOOLS.length },
+    { id:"guides",     label:"📖 Claude Guides",         count:GUIDES.length },
   ];
 
   const card     = { backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:12 };
