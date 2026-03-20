@@ -95,14 +95,15 @@ selected_locations = st.sidebar.multiselect(
 )
 
 # Build WHERE clause for filters with sector/location joins
-def build_filter_clause(table_alias="sm"):
+def build_filter_clause(table_alias=""):
     filters = []
+    prefix = f"{table_alias}." if table_alias else ""
     if selected_teams:
         team_list = "', '".join([t.replace("'", "''") for t in selected_teams])
-        filters.append(f"{table_alias}.PRIMARY_TEAM IN ('{team_list}')")
+        filters.append(f"{prefix}PRIMARY_TEAM IN ('{team_list}')")
     if selected_titles:
         title_list = "', '".join([t.replace("'", "''") for t in selected_titles])
-        filters.append(f"{table_alias}.TITLE IN ('{title_list}')")
+        filters.append(f"{prefix}TITLE IN ('{title_list}')")
     return " AND ".join(filters) if filters else "1=1"
 
 def build_sector_location_filters():
@@ -235,8 +236,8 @@ with tab1:
         PASSED_LEADS_MTD, PASSED_LEADS_L3M, PASSED_LEADS_YTD,
         CONFERENCES_ATTENDED_MTD, CONFERENCES_ATTENDED_L3M, CONFERENCES_ATTENDED_YTD,
         ACTIVE_DEALS_CURRENT, ACTIVE_DEALS_L3M, ACTIVE_DEALS_YTD
-    FROM AD_VIEWS.DEALCLOUD.SOURCING_METRICS_NET_NEW_COMPANIES sm
-    WHERE {build_filter_clause('sm')}
+    FROM AD_VIEWS.DEALCLOUD.SOURCING_METRICS_NET_NEW_COMPANIES
+    WHERE {build_filter_clause()}
     ORDER BY NET_NEW_COMPANIES_YTD DESC
     """
 
@@ -536,8 +537,8 @@ with tab5:
         ACTIVE_DEALS_CURRENT,
         ACTIVE_DEALS_L3M,
         ACTIVE_DEALS_YTD
-    FROM AD_VIEWS.DEALCLOUD.SOURCING_METRICS_NET_NEW_COMPANIES sm
-    WHERE {build_filter_clause('sm')}
+    FROM AD_VIEWS.DEALCLOUD.SOURCING_METRICS_NET_NEW_COMPANIES
+    WHERE {build_filter_clause()}
     ORDER BY ACTIVE_DEALS_YTD DESC
     """
 
