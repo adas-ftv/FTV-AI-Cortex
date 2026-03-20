@@ -2197,25 +2197,23 @@ const GUIDES = [
   },
   {
     id:"chatgpt-to-claude", title:"Transferring your memory from ChatGPT to Claude", icon:"🧠→💬",
-    desc:"Export your ChatGPT memory and context to use with Claude for continuity across AI tools.",
+    desc:"Export your ChatGPT memory using the exact prompts below and upload to Claude for seamless continuity.",
     sections:[
-      { heading:"Export your ChatGPT memory", numbered:true, steps:[
-        "Go to <strong>ChatGPT Settings</strong> → <strong>Customize ChatGPT</strong> → <strong>View Memory</strong>",
-        "Review all stored memories and preferences that ChatGPT has about you",
+      { heading:"Step 1: Copy this prompt and send to ChatGPT", numbered:false, steps:[
+        "<strong style=\"color:#E8D5A0;\">Copy the prompt below and paste it into ChatGPT:</strong><br/><br/><code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:12px;borderRadius:6px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.</code>",
       ]},
-      { heading:"Export your instructions and preferences", numbered:true, steps:[
-        "Ask ChatGPT: <strong>'Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.'</strong>",
-        "Request the export in the following format with these five categories (in order):<ul style=\"margin-top:8px;margin-bottom:8px;\"><li><strong>Instructions:</strong> Rules I've explicitly set — tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections</li><li><strong>Memory:</strong> Name, age, location, education, family, relationships, languages, and personal interests</li><li><strong>Career:</strong> Current and past roles, companies, general technical skills</li><li><strong>Projects:</strong> Meaningful projects you're working on or building, with current status and key decisions</li><li><strong>Preferences:</strong> General opinions, tastes, and working style preferences</li></ul>",
-        "If ChatGPT indicates there's more data, ask: <strong>'Continue — give me the next batch. Keep doing this until it confirms the export is complete.'</strong>",
+      { heading:"Step 2: ChatGPT will ask for the format. Copy this format specification", numbered:false, steps:[
+        "<strong style=\"color:#E8D5A0;\">When ChatGPT asks how to format the export, copy and send this:</strong><br/><br/><code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:12px;borderRadius:6px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">## Categories (Output in this order):\n1. \"Instructions\": Rules I've explicitly set—tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections. Only include rules stored in memory, not temporary chat context.\n2. \"Memory\": Name, age, location, education, family, relationships, languages spoken, and personal interests.\n3. \"Career\": Current and past roles, companies, and general technical skills.\n4. \"Projects\": Meaningful projects I've worked on or am currently building. Ideally one entry per project. Include what it is, its current status, and any key decisions made. Make the first word of the entry the project name or a brief description.\n5. \"Preferences\": General opinions, tastes, and working style preferences.\n\n## Format:\nUse section headers for each category. Within each category, list one item per line, sorted from oldest to newest. Format each line like this:\n[YYYY-MM-DD] — item content goes here.\nIf the date is unknown, use [Unknown] instead.\n\n## Output:\n– Wrap the entire export in a single code block so I can copy it easily.\n– After the code block, explicitly state whether this is the complete dataset or if there is more data remaining.</code>",
       ]},
-      { heading:"Add to Claude's memory", numbered:true, steps:[
-        "Copy the exported text and go to <strong>Claude's interface</strong>",
-        "Navigate to <strong>Settings</strong> → <strong>Memory</strong> (or ask Claude directly)",
-        "Paste the exported content and say: <strong>'Add this to your understanding of my memory'</strong>",
-        "Claude will store this information and reference it across your future conversations",
+      { heading:"Step 3: If ChatGPT says 'more data remaining', use this follow-up", numbered:false, steps:[
+        "<strong style=\"color:#E8D5A0;\">ChatGPT will tell you if there's more data. Copy and send this to get the next batch:</strong><br/><br/><code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:12px;borderRadius:6px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Continue — give me the next batch. Keep doing this until it confirms the export is complete.</code>",
       ]},
-      { heading:"💡 Pro tip", numbered:false, steps:[
-        "For the smoothest transition, you can wrap the entire export in a code block so Claude can easily copy it. After uploading, Claude will maintain this memory just like ChatGPT does.",
+      { heading:"Step 4: Upload to Claude's memory", numbered:true, steps:[
+        "Copy the complete export from ChatGPT (including any additional batches)",
+        "Go to <strong>Claude.ai</strong> → <strong>Settings</strong> → <strong>Memory</strong>",
+        "Paste the exported data",
+        "Add a note: <strong>'Add this to your understanding of my memory'</strong>",
+        "Claude will now reference this memory in all future conversations",
       ]},
     ]
   },
