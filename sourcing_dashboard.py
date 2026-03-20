@@ -13,21 +13,11 @@ st.set_page_config(
 )
 
 # Initialize Snowflake connection
+# In Snowflake Streamlit, get_active_session() provides direct access
 @st.cache_resource
 def get_snowflake_session():
-    try:
-        from snowflake.snowpark.context import get_active_session
-        return get_active_session()  # Works inside Snowflake SiS
-    except:
-        from snowflake.snowpark import Session
-        creds = st.secrets["snowflake"]
-        return Session.builder.configs({
-            "account": creds["account"],
-            "user": creds["user"],
-            "password": creds["password"],
-            "role": creds.get("role", "ACCOUNTADMIN"),
-            "warehouse": creds.get("warehouse", "ADAS_WH"),
-        }).create()
+    from snowflake.snowpark.context import get_active_session
+    return get_active_session()
 
 session = get_snowflake_session()
 
