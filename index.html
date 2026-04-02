@@ -7,6 +7,14 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Google Analytics 4 for page visit tracking -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #07192E; }
@@ -246,6 +254,15 @@ const SKILLS_REGISTRY = [
     note:"Auto-fires on GPN and partner network queries.",
     tags:["sourcing","research","outreach"],
     workflowIds:["sourcing-outreach","expert-calls"],
+  },
+  {
+    id:"skill-fsi-comps",
+    type:"Skill", name:"FSI Comps Analysis", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Build institutional-grade comparable company analyses with operating metrics, valuation multiples, and statistical benchmarking. Retrieves FTV's historical M&A precedent transaction comps from SharePoint when deal benchmarking is needed. Perfect for public company valuation, IPO pricing, performance benchmarking, and identifying valuation outliers.",
+    note:"Auto-fires on valuation, comps, transaction benchmarking, and precedent requests.",
+    tags:["ic","dd","research","valuation"],
+    workflowIds:["cim-diligence","ic-prep"],
   },
 ];
 
@@ -2224,6 +2241,7 @@ const EXTERNAL_TOOLS = [
   { id:"quikirr",    name:"QuikIRR",    tags:["financials","modeling"], badge:"Active Pilot", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#" },
   { id:"alphasense-ext", name:"AlphaSense", tags:["research","dd"], badge:"Core Tool", desc:"Market intelligence and earnings transcript analysis. Used for pattern tracking and expert calls.", link:"#" },
   { id:"upslide",    name:"Upslide",    tags:["ops","writing"], badge:"Active Pilot", desc:"PowerPoint and Excel productivity add-in. Automates slide formatting, brand compliance, and data linking.", link:"#" },
+  { id:"meeting-prep-notes", name:"Meeting Prep Notes on Demand", tags:["research","calls","prep"], badge:"Available", desc:"Generate contextualized meeting notes for upcoming company calls. Pulls company context, recent news, and key talking points automatically.", link:"https://kscoli26.github.io/meeting-prep-bot/meeting_prep_ondemand.html" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
