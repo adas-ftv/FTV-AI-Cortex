@@ -2706,27 +2706,30 @@ function App() {
 
         {/* ── START HERE ── */}
         {tab === "start-here" && (
-          activeWorkflow
-            ? <WorkflowDetail wf={WORKFLOWS.find(w => w.id === activeWorkflow)} onBack={() => setActiveWorkflow(null)}/>
-            : <>
-                <p style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>What are you working on?</p>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
-                  {WORKFLOWS.map(wf => (
-                    <div key={wf.id} onClick={() => setActiveWorkflow(wf.id)}
-                      style={{ ...card, padding:"20px 22px", cursor:"pointer", transition:"all 0.18s" }}
-                      onMouseOver={e=>{ e.currentTarget.style.borderColor=wf.accent; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
-                      onMouseOut={e=>{ e.currentTarget.style.borderColor=C.border; e.currentTarget.style.backgroundColor=C.surface; }}>
-                      <div style={{ fontSize:26, marginBottom:10 }}>{wf.icon}</div>
-                      <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
-                      <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
-                      <div style={{ marginTop:14, fontSize:11, color:wf.accent, fontWeight:600 }}>
-                        {wf.toolIds.length} tool{wf.toolIds.length!==1?"s":""}
-                        {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
+          <>
+            {activeWorkflow
+              ? <WorkflowDetail wf={WORKFLOWS.find(w => w.id === activeWorkflow)} onBack={() => setActiveWorkflow(null)}/>
+              : <>
+                  <p style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>What are you working on?</p>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
+                    {WORKFLOWS.map(wf => (
+                      <div key={wf.id} onClick={() => setActiveWorkflow(wf.id)}
+                        style={{ ...card, padding:"20px 22px", cursor:"pointer", transition:"all 0.18s" }}
+                        onMouseOver={e=>{ e.currentTarget.style.borderColor=wf.accent; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
+                        onMouseOut={e=>{ e.currentTarget.style.borderColor=C.border; e.currentTarget.style.backgroundColor=C.surface; }}>
+                        <div style={{ fontSize:26, marginBottom:10 }}>{wf.icon}</div>
+                        <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
+                        <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
+                        <div style={{ marginTop:14, fontSize:11, color:wf.accent, fontWeight:600 }}>
+                          {wf.toolIds.length} tool{wf.toolIds.length!==1?"s":""}
+                          {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </>
+                    ))}
+                  </div>
+                </>
+            }
+          </>
         )}
 
         {/* ── PROMPT LIBRARY ── */}
