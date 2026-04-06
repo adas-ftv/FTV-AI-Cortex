@@ -2653,15 +2653,31 @@ function App() {
                 <span style={{ fontSize:11, padding:"2px 8px", borderRadius:999, backgroundColor:C.surfaceHi, color:C.textSec }}>Internal</span>
               </div>
               <p style={{ fontSize:13, color:C.textSec, marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for FTV</p>
-              <a href="https://adas-ftv.github.io/Claude-Usage-Tracker/" target="_blank" rel="noreferrer"
-                style={{ display:"inline-flex", alignItems:"center", gap:7, marginTop:8, marginLeft:50, fontSize:13, fontWeight:700, color:C.gold, textDecoration:"none", backgroundColor:"#1A2E10", border:"1px solid #4a8a20", borderRadius:8, padding:"6px 14px", letterSpacing:"0.01em" }}>
-                <span>📋</span> Click here to submit Claude use cases
-              </a>
+
+              {/* Key Links */}
+              <div style={{ display:"flex", flexDirection:"column", gap:8, marginTop:12, marginLeft:50 }}>
+                <a href="https://adas-ftv.github.io/Claude-Usage-Tracker/" target="_blank" rel="noreferrer"
+                  style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:12, fontWeight:600, color:C.textPri, textDecoration:"none", backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:6, padding:"8px 12px", cursor:"pointer", width:"fit-content" }}>
+                  📋 Claude Usage Tracker ↗
+                </a>
+                <a href="https://ftvcapital1.sharepoint.com/sites/AI" target="_blank" rel="noreferrer"
+                  style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:12, fontWeight:600, color:C.textPri, textDecoration:"none", backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:6, padding:"8px 12px", cursor:"pointer", width:"fit-content" }}>
+                  📁 SharePoint AI Site ↗
+                </a>
+                <a href="https://anthropic.skilljar.com/claude-101" target="_blank" rel="noreferrer"
+                  style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:12, fontWeight:600, color:C.textPri, textDecoration:"none", backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:6, padding:"8px 12px", cursor:"pointer", width:"fit-content" }}>
+                  📚 Claude 101 ↗
+                </a>
+                <a href="https://anthropic.skilljar.com/introduction-to-claude-cowork" target="_blank" rel="noreferrer"
+                  style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:12, fontWeight:600, color:C.textPri, textDecoration:"none", backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:6, padding:"8px 12px", cursor:"pointer", width:"fit-content" }}>
+                  👥 Introduction to Cowork ↗
+                </a>
+                <a href="https://anthropic.skilljar.com/claude-code-in-action" target="_blank" rel="noreferrer"
+                  style={{ display:"inline-flex", alignItems:"center", gap:6, fontSize:12, fontWeight:600, color:C.textPri, textDecoration:"none", backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:6, padding:"8px 12px", cursor:"pointer", width:"fit-content" }}>
+                  💻 Intro to Claude Code ↗
+                </a>
+              </div>
             </div>
-            <a href="https://ftvcapital1.sharepoint.com/sites/AI" target="_blank" rel="noreferrer"
-              style={{ fontSize:12, color:C.goldLight, border:`1px solid ${C.gold}`, borderRadius:8, padding:"6px 12px", textDecoration:"none", backgroundColor:C.surfaceHi }}>
-              SharePoint AI Site ↗
-            </a>
           </div>
           <div style={{ position:"relative" }}>
             <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted }}>🔍</span>
