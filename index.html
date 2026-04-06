@@ -45,6 +45,7 @@ const TAG = {
 const TYPE_MAP = {
   "Custom GPT":     { bg:"#1E1030", color:"#C0A0F0" },
   "Claude Project": { bg:"#0E2A4A", color:"#7EC2F3" },
+  "Custom Tool":    { bg:"#0D3A1C", color:"#6DD9A0" },
   "Connector":      { bg:"#2A1E08", color:"#E8D5A0" },
   "Custom App":     { bg:"#0D2A1C", color:"#5DC994" },
   "Skill":          { bg:"#1a2040", color:"#93b4ff" },
@@ -143,13 +144,58 @@ const TOOLS_REGISTRY = [
     workflowIds:["sourcing-outreach"],
   },
   {
-    id:"alphasense",
-    type:"External", name:"AlphaSense", platform:"AlphaSense",
-    badge:"Core Tool", link:"#",
-    desc:"Market intelligence, earnings transcripts, and expert call analysis. Used for pattern tracking and competitive research.",
-    note:"Used for expert calls and competitive research.",
-    tags:["research","dd","calls"],
-    workflowIds:["expert-calls","market-research"],
+    id:"meeting-prep-notes",
+    type:"Custom Tool", name:"Meeting Prep Notes on Demand", platform:"Web",
+    badge:"Available", link:"https://kscoli26.github.io/meeting-prep-bot/meeting_prep_ondemand.html",
+    desc:"Generate contextualized meeting notes for upcoming company calls. Pulls company context, recent news, and key talking points automatically.",
+    note:"Generate meeting briefing notes instantly.",
+    tags:["research","calls","prep"],
+    workflowIds:["expert-calls"],
+  },
+  {
+    id:"g2-connector",
+    type:"Connector", name:"G2", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Software reviews and ratings database. Access user reviews, pricing data, and feature comparisons across thousands of business applications.",
+    note:"Access G2 reviews and comparative software analysis.",
+    tags:["research","data","competitive"],
+    workflowIds:["market-research","cim-diligence"],
+  },
+  {
+    id:"expert-network-mcp",
+    type:"Connector", name:"Expert Network MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Searches FTV expert call transcripts and interview notes for company, sector, or management insights. Pulls historical expert diligence data.",
+    note:"Auto-connects to expert call transcripts and notes.",
+    tags:["research","calls","expert","dd"],
+    workflowIds:["expert-calls","cim-diligence"],
+  },
+  {
+    id:"dealcloud-mcp",
+    type:"Connector", name:"DealCloud MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Pull live DealCloud CRM data: companies, financials, deals, interactions, and contacts. Direct access to FTV's deal pipeline and relationship management data.",
+    note:"Live connection to FTV DealCloud CRM.",
+    tags:["data","crm","sourcing","deals"],
+    workflowIds:["sourcing-outreach","general-admin"],
+  },
+  {
+    id:"portfolio-mcp",
+    type:"Connector", name:"Portfolio MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Access FTV portfolio company profiles, sectors, and capabilities. Look up portfolio company financials, ownership structure, and industry data.",
+    note:"Portfolio company profiles and sector data.",
+    tags:["research","data","sourcing"],
+    workflowIds:["sourcing-outreach","market-research"],
+  },
+  {
+    id:"gpn-mcp",
+    type:"Connector", name:"GPN MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Global Partner Network contacts, bios, and relationship activity. Find relevant GPN members by expertise, and track engagement history.",
+    note:"GPN contact database and relationship history.",
+    tags:["sourcing","research","outreach"],
+    workflowIds:["sourcing-outreach","expert-calls"],
   },
 ];
 
@@ -158,14 +204,6 @@ const TOOLS_REGISTRY = [
 // ─────────────────────────────────────────────────────────────────────────────
 const SKILLS_REGISTRY = [
   {
-    id:"skill-ic-diligence",
-    type:"Skill", name:"IC Diligence", platform:"Claude",
-    badge:"Active", link:"#",
-    desc:"Produces FTV-format Initial Profiles from CIMs, VDRs, and financial models. Auto-fires on deal analysis requests.",
-    note:"Auto-fires on deal analysis requests.",
-    tags:["ic","dd","research"],
-    workflowIds:["initial-profile","cim-diligence"],
-  },
   {
     id:"skill-sourcing",
     type:"Skill", name:"Sourcing Outreach", platform:"Claude",
@@ -264,31 +302,24 @@ const SKILLS_REGISTRY = [
     note:"Auto-fires on valuation, comps, transaction benchmarking, and precedent requests.",
     tags:["ic","dd","research","valuation"],
     workflowIds:["cim-diligence","ic-prep"],
-    id:"dealcloud-mcp",
-    type:"MCP Server", name:"DealCloud MCP", platform:"Claude",
-    badge:"Active", link:"#",
-    desc:"Queries FTV's DealCloud CRM for companies, contacts, pipeline status, priority tiers, and coverage — directly in Claude conversation.\n\nEnable in Claude: Customize → Connectors → DealCloud MCP → Connect with FTV credentials.",
-    note:"Enable in Claude: Customize → Connectors → DealCloud MCP.",
-    tags:["sourcing","data","crm"],
-    workflowIds:["sourcing-outreach","general-admin"],
   },
   {
-    id:"expert-network-mcp",
-    type:"MCP Server", name:"Expert Network MCP", platform:"Claude",
+    id:"skill-mcp-builder",
+    type:"Skill", name:"MCP Builder", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Searches historical FTV expert call transcripts and interview notes for company, sector, or management insights — directly in Claude conversation.\n\nEnable in Claude: Customize → Connectors → Expert Network MCP → Connect.",
-    note:"Enable in Claude: Customize → Connectors → Expert Network MCP.",
-    tags:["dd","research","calls","expert"],
-    workflowIds:["expert-calls"],
+    desc:"Build and configure custom Model Context Protocols (MCPs) to connect Claude to any data source or system. Execute MCP creation workflows, deploy protocol servers, test connections, and manage multi-tool integrations.",
+    note:"Auto-fires on MCP creation and configuration requests.",
+    tags:[],
+    workflowIds:[],
   },
   {
-    id:"portfolio-mcp",
-    type:"MCP Server", name:"Portfolio MCP", platform:"Claude",
+    id:"skill-skill-creator",
+    type:"Skill", name:"Skill Creator", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Looks up FTV portfolio company profiles, sectors, and investment details — directly in Claude conversation.\n\nEnable in Claude: Customize → Connectors → Portfolio MCP → Connect with FTV credentials.",
-    note:"Enable in Claude: Customize → Connectors → Portfolio MCP.",
-    tags:["research","sourcing","data"],
-    workflowIds:["sourcing-outreach","market-research"],
+    desc:"Generates ready-to-deploy SKILL.md files and folder structures for custom Claude skills. Handles skill packaging, trigger definition, formatting, and upload instructions.",
+    note:"Auto-fires on skill creation requests.",
+    tags:[],
+    workflowIds:[],
   },
 ];
 
@@ -2027,7 +2058,7 @@ const WORKFLOWS = [
     id:"initial-profile", icon:"🏢", label:"Initial Profile Creation",
     desc:"IC-ready company briefs from websites, CIMs, or VDRs",
     accent:"#7EC2F3",
-    toolIds:["initial-profile-project","skill-ic-diligence","pitchbook"],
+    toolIds:["initial-profile-project","pitchbook"],
     promptIds:[4,5],
     tip:"Upload a CIM or link a SharePoint VDR alongside the prompt for grounded output. The Initial Profile Claude Project has the right context pre-loaded.",
   },
@@ -2043,7 +2074,7 @@ const WORKFLOWS = [
     id:"cim-diligence", icon:"📋", label:"CIM & VDR Diligence",
     desc:"Structured analysis from CIMs, data rooms, and financial documents",
     accent:"#E8D5A0",
-    toolIds:["cimba","microsoft365","skill-risk","skill-ic-diligence"],
+    toolIds:["cimba","microsoft365","skill-risk"],
     promptIds:[3,9,10,11,12,13,14],
     tip:"Link your SharePoint VDR folder URL directly in the conversation for grounded analysis. CIMBA is best for initial CIM pass/fail screening.",
   },
@@ -2267,7 +2298,6 @@ const EXTERNAL_TOOLS = [
   { id:"quikirr",    name:"QuikIRR",    tags:["financials","modeling"], badge:"Active Pilot", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#" },
   { id:"alphasense-ext", name:"AlphaSense", tags:["research","dd"], badge:"Core Tool", desc:"Market intelligence and earnings transcript analysis. Used for pattern tracking and expert calls.", link:"#" },
   { id:"upslide",    name:"Upslide",    tags:["ops","writing"], badge:"Active Pilot", desc:"PowerPoint and Excel productivity add-in. Automates slide formatting, brand compliance, and data linking.", link:"#" },
-  { id:"meeting-prep-notes", name:"Meeting Prep Notes on Demand", tags:["research","calls","prep"], badge:"Available", desc:"Generate contextualized meeting notes for upcoming company calls. Pulls company context, recent news, and key talking points automatically.", link:"https://kscoli26.github.io/meeting-prep-bot/meeting_prep_ondemand.html" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2455,6 +2485,26 @@ function App() {
   const [ecoWorkflowFilter, setEcoWorkflowFilter] = useState("All");
   const [ecoWorkflowOpen, setEcoWorkflowOpen]     = useState(false);
 
+  // Custom Tools filters
+  const [ctTagFilter, setCtTagFilter]             = useState("All");
+  const [ctTagOpen, setCtTagOpen]                 = useState(false);
+  const [ctTypeFilter, setCtTypeFilter]           = useState("All");
+  const [ctTypeOpen, setCtTypeOpen]               = useState(false);
+  const [ctWorkflowFilter, setCtWorkflowFilter]   = useState("All");
+  const [ctWorkflowOpen, setCtWorkflowOpen]       = useState(false);
+
+  // Connectors filters
+  const [connTagFilter, setConnTagFilter]         = useState("All");
+  const [connTagOpen, setConnTagOpen]             = useState(false);
+  const [connWorkflowFilter, setConnWorkflowFilter] = useState("All");
+  const [connWorkflowOpen, setConnWorkflowOpen]   = useState(false);
+
+  // Skills filters
+  const [skillTagFilter, setSkillTagFilter]       = useState("All");
+  const [skillTagOpen, setSkillTagOpen]           = useState(false);
+  const [skillWorkflowFilter, setSkillWorkflowFilter] = useState("All");
+  const [skillWorkflowOpen, setSkillWorkflowOpen] = useState(false);
+
   const q = search.toLowerCase();
 
   // Prompt groups for library tab (deduplicated)
@@ -2497,13 +2547,80 @@ function App() {
     return ["All", ...Array.from(s).sort()];
   }, []);
 
+  // Custom Tools filtering
+  const fCustomTools = useMemo(() => TOOLS_REGISTRY.filter(t =>
+    ["Custom GPT","Claude Project","Custom Tool","Custom App"].includes(t.type) &&
+    (ctTagFilter === "All" || t.tags.includes(ctTagFilter)) &&
+    (ctTypeFilter === "All" || t.type === ctTypeFilter) &&
+    (ctWorkflowFilter === "All" || t.workflowIds.includes(ctWorkflowFilter)) &&
+    (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+  ), [ctTagFilter, ctTypeFilter, ctWorkflowFilter, q]);
+
+  const ctAllTags = useMemo(() => {
+    const s = new Set();
+    TOOLS_REGISTRY.filter(t => ["Custom GPT","Claude Project","Custom Tool","Custom App"].includes(t.type)).forEach(t => t.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  // Connectors filtering
+  const fConnectors = useMemo(() => TOOLS_REGISTRY.filter(t =>
+    t.type === "Connector" &&
+    (connTagFilter === "All" || t.tags.includes(connTagFilter)) &&
+    (connWorkflowFilter === "All" || t.workflowIds.includes(connWorkflowFilter)) &&
+    (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+  ), [connTagFilter, connWorkflowFilter, q]);
+
+  const connAllTags = useMemo(() => {
+    const s = new Set();
+    TOOLS_REGISTRY.filter(t => t.type === "Connector").forEach(t => t.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  // Skills filtering (exclude MCP-based skills)
+  const fSkills = useMemo(() => SKILLS_REGISTRY.filter(s =>
+    s.id !== "skill-expert-network" &&
+    s.id !== "skill-dealcloud" &&
+    s.id !== "skill-portfolio" &&
+    s.id !== "skill-gpn" &&
+    (skillTagFilter === "All" || s.tags.includes(skillTagFilter)) &&
+    (skillWorkflowFilter === "All" || s.workflowIds.includes(skillWorkflowFilter)) &&
+    (!q || s.name.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q))
+  ), [skillTagFilter, skillWorkflowFilter, q]);
+
+  const skillAllTags = useMemo(() => {
+    const s = new Set();
+    SKILLS_REGISTRY.filter(sk =>
+      sk.id !== "skill-expert-network" &&
+      sk.id !== "skill-dealcloud" &&
+      sk.id !== "skill-portfolio" &&
+      sk.id !== "skill-gpn"
+    ).forEach(skill => skill.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  const skillAllWorkflows = useMemo(() => {
+    const s = new Set();
+    SKILLS_REGISTRY.filter(sk =>
+      sk.id !== "skill-expert-network" &&
+      sk.id !== "skill-dealcloud" &&
+      sk.id !== "skill-portfolio" &&
+      sk.id !== "skill-gpn"
+    ).forEach(skill => skill.workflowIds.forEach(wf => s.add(wf)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
+  const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
+  const skillsCount = useMemo(() => fSkills.length, [fSkills]);
+
   const tabs = [
-    { id:"start-here", label:"⚡ Start Here",            count:WORKFLOWS.length },
-    { id:"prompts",    label:"📋 Prompt Library",        count:PROMPTS_REGISTRY.length },
-    { id:"ecosystem",  label:"🛠️ Custom Tools & Connectors", count:TOOLS_REGISTRY.length },
-    { id:"skills",     label:"🧠 Skills",               count:SKILLS_REGISTRY.length },
-    { id:"external",   label:"🔧 External Tools",        count:EXTERNAL_TOOLS.length },
-    { id:"guides",     label:"📖 Claude Guides",         count:GUIDES.length },
+    { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
+    { id:"prompts",    label:"📋 Prompt Library",   count:PROMPTS_REGISTRY.length },
+    { id:"custom-tools", label:"🛠️ Custom Tools",  count:customToolsCount },
+    { id:"connectors", label:"🔌 Connectors",      count:connectorsCount },
+    { id:"skills",     label:"🧠 Skills",          count:skillsCount },
+    { id:"external",   label:"🔧 External Tools",  count:EXTERNAL_TOOLS.length },
+    { id:"guides",     label:"📖 Claude Guides",   count:GUIDES.length },
   ];
 
   const card     = { backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:12 };
@@ -2805,7 +2922,39 @@ function App() {
           <div>
             <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>FTV team members have access to firm-level skills that Claude applies automatically to handle formatting, analysis, and firm-specific workflows. You can create personal skills, manage which skills are active, and share skills with teammates.</p>
 
+            {/* New Skills to Download Section */}
+            <div style={{ marginBottom:32 }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>New Skills to Download</div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
+                <div style={{ ...card, padding:20 }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                    Comprehensive prospect scoring model for FTV Capital sales/sourcing teams to rank and prioritize software companies for outreach. Evaluates companies across FTE, growth, capital efficiency, and account coverage dimensions. Outputs multi-tab Excel with rankings, product categories, state trip planning, conference analysis.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["prospect-scoring","sourcing","sales","analytics","excel","rankings"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:20, marginBottom:32 }}>
+              {/* Create new skills - NOW FIRST */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
+                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                  <strong>Create skills in two ways:</strong><br/>
+                  • <strong>Chat with Claude:</strong> Ask Claude to help you build a skill, and it will generate the SKILL.md file structure<br/>
+                  • <strong>Manual creation:</strong> Create a folder with a SKILL.md file, zip it, and upload via <strong>Customize → Skills → Upload skill</strong><br/><br/>
+                  <strong>Skill use cases:</strong> Formatting (presentations, reports), analysis (valuation, competitive intelligence), data access (pulling from your systems), specialized processes (deal analysis, market research). Personal skills are private to your account.
+                </p>
+              </div>
+
               {/* How to disable skills */}
               <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to disable a firm-level skill</div>
@@ -2814,14 +2963,6 @@ function App() {
                   <li>Select <strong>Skills</strong></li>
                   <li>Toggle any firm-level skill on/off</li>
                 </ol>
-              </div>
-
-              {/* Create new skills */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
-                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
-                  Create a folder with a <strong>SKILL.md</strong> file containing your instructions. Zip the folder and upload via <strong>Customize → Skills → Upload skill</strong>. Personal skills are private to your account.
-                </p>
               </div>
 
               {/* Share skills */}
@@ -2833,32 +2974,57 @@ function App() {
               </div>
             </div>
 
+            {/* Skill Filters */}
+            <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
+              <div style={{ position:"relative" }}>
+                <button onClick={() => setSkillTagOpen(!skillTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                  Tag: {skillTagFilter} ▼
+                </button>
+                {skillTagOpen && (
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:150 }}>
+                    {skillAllTags.map(t => (
+                      <button key={t} onClick={() => { setSkillTagFilter(t); setSkillTagOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:skillTagFilter === t ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ position:"relative" }}>
+                <button onClick={() => setSkillWorkflowOpen(!skillWorkflowOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                  Workflow: {skillWorkflowFilter} ▼
+                </button>
+                {skillWorkflowOpen && (
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:180 }}>
+                    {skillAllWorkflows.map(w => {
+                      const wf = WORKFLOWS.find(wk => wk.id === w);
+                      return (
+                        <button key={w} onClick={() => { setSkillWorkflowFilter(w); setSkillWorkflowOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:skillWorkflowFilter === w ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
+                          {wf ? `${wf.icon} ${wf.label}` : w}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Firm Level Skills Section */}
             <div style={{ marginBottom:32 }}>
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Firm Level Skills</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:12 }}>
-                {SKILLS_REGISTRY.map(s => (
-                  <div key={s.id} style={{ ...card, padding:20 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
+                {fSkills.map(s => (
+                  <div key={s.id} style={{ ...card, padding:20, backgroundColor:["skill-mcp-builder","skill-skill-creator"].includes(s.id) ? "#1a3030" : card.backgroundColor }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                      <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-                        <TypeBadge type={s.type}/>
-                        <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{s.name}</span>
-                      </div>
-                      <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, marginLeft:8 }}>
-                        <StatusBadge label={s.badge}/>
-                      </div>
+                      <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{s.name}</span>
+                      <StatusBadge label={s.badge}/>
                     </div>
-                    <p style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>Platform: <span style={{ color:C.textSec }}>{s.platform}</span></p>
-                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65, marginBottom:10 }}>
-                      {s.desc.split("\n").map((line,li) =>
-                        line.startsWith("Triggers on:") || line.startsWith("Auto-fires")
-                          ? <p key={li} style={{ color:C.goldLight, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
-                          : <p key={li} style={{ margin:0 }}>{line}</p>
-                      )}
+                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                      {s.desc}
                     </div>
                     {s.workflowIds.length > 0 && (
-                      <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
-                        <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
+                      <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
                         <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                           {s.workflowIds.map(wid => {
                             const wf = WORKFLOWS.find(w => w.id === wid);
@@ -2867,7 +3033,7 @@ function App() {
                         </div>
                       </div>
                     )}
-                    <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:10 }}>
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
                       {s.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
                   </div>
@@ -2875,13 +3041,6 @@ function App() {
               </div>
             </div>
 
-            {/* New Skills to Download Section */}
-            <div>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>New Skills to Download</div>
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:20, textAlign:"center" }}>
-                <p style={{ fontSize:12, color:C.textMuted, margin:0 }}>No additional skills available yet. Check back soon for community-contributed and FTV-created skill files.</p>
-              </div>
-            </div>
           </div>
         )}
 
