@@ -3053,7 +3053,7 @@ function App() {
               <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
-                  <strong>Chat with Claude:</strong> Ask Claude to help you build a skill and it will generate the SKILL.md file structure for you.<br/><br/>
+                  <strong>Chat with Claude:</strong> Ask Claude to help you build a skill and it will generate the SKILL.md file structure for you.<br/>
                   <strong>Skill use cases:</strong> Formatting (presentations, reports), analysis (valuation, competitive intelligence), data access (pulling from your systems), specialized processes (deal analysis, market research). Personal skills are private to your account.
                 </p>
               </div>
@@ -3131,6 +3131,23 @@ function App() {
                     {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
                   <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
+                {/* Download tile — Sub-Sector Tagger */}
+                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sub-Sector Tagger</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["sourcing","classification","sub-sector","pipeline"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                     Download from SharePoint ↗
                   </a>
                 </div>
