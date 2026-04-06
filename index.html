@@ -45,6 +45,7 @@ const TAG = {
 const TYPE_MAP = {
   "Custom GPT":     { bg:"#1E1030", color:"#C0A0F0" },
   "Claude Project": { bg:"#0E2A4A", color:"#7EC2F3" },
+  "Custom Tool":    { bg:"#0D3A1C", color:"#6DD9A0" },
   "Connector":      { bg:"#2A1E08", color:"#E8D5A0" },
   "Custom App":     { bg:"#0D2A1C", color:"#5DC994" },
   "Skill":          { bg:"#1a2040", color:"#93b4ff" },
@@ -143,13 +144,58 @@ const TOOLS_REGISTRY = [
     workflowIds:["sourcing-outreach"],
   },
   {
-    id:"alphasense",
-    type:"External", name:"AlphaSense", platform:"AlphaSense",
-    badge:"Core Tool", link:"#",
-    desc:"Market intelligence, earnings transcripts, and expert call analysis. Used for pattern tracking and competitive research.",
-    note:"Used for expert calls and competitive research.",
-    tags:["research","dd","calls"],
-    workflowIds:["expert-calls","market-research"],
+    id:"meeting-prep-notes",
+    type:"Custom Tool", name:"Meeting Prep Notes on Demand", platform:"Web",
+    badge:"Available", link:"https://kscoli26.github.io/meeting-prep-bot/meeting_prep_ondemand.html",
+    desc:"Generate contextualized meeting notes for upcoming company calls. Pulls company context, recent news, and key talking points automatically.",
+    note:"Generate meeting briefing notes instantly.",
+    tags:["research","calls","prep"],
+    workflowIds:["expert-calls"],
+  },
+  {
+    id:"g2-connector",
+    type:"Connector", name:"G2", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Software reviews and ratings database. Access user reviews, pricing data, and feature comparisons across thousands of business applications.",
+    note:"Access G2 reviews and comparative software analysis.",
+    tags:["research","data","competitive"],
+    workflowIds:["market-research","cim-diligence"],
+  },
+  {
+    id:"expert-network-mcp",
+    type:"Connector", name:"Expert Network MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Searches FTV expert call transcripts and interview notes for company, sector, or management insights. Pulls historical expert diligence data.",
+    note:"Auto-connects to expert call transcripts and notes.",
+    tags:["research","calls","expert","dd"],
+    workflowIds:["expert-calls","cim-diligence"],
+  },
+  {
+    id:"dealcloud-mcp",
+    type:"Connector", name:"DealCloud MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Pull live DealCloud CRM data: companies, financials, deals, interactions, and contacts. Direct access to FTV's deal pipeline and relationship management data.",
+    note:"Live connection to FTV DealCloud CRM.",
+    tags:["data","crm","sourcing","deals"],
+    workflowIds:["sourcing-outreach","general-admin"],
+  },
+  {
+    id:"portfolio-mcp",
+    type:"Connector", name:"Portfolio MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Access FTV portfolio company profiles, sectors, and capabilities. Look up portfolio company financials, ownership structure, and industry data.",
+    note:"Portfolio company profiles and sector data.",
+    tags:["research","data","sourcing"],
+    workflowIds:["sourcing-outreach","market-research"],
+  },
+  {
+    id:"gpn-mcp",
+    type:"Connector", name:"GPN MCP", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Global Partner Network contacts, bios, and relationship activity. Find relevant GPN members by expertise, and track engagement history.",
+    note:"GPN contact database and relationship history.",
+    tags:["sourcing","research","outreach"],
+    workflowIds:["sourcing-outreach","expert-calls"],
   },
 ];
 
@@ -2267,7 +2313,6 @@ const EXTERNAL_TOOLS = [
   { id:"quikirr",    name:"QuikIRR",    tags:["financials","modeling"], badge:"Active Pilot", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#" },
   { id:"alphasense-ext", name:"AlphaSense", tags:["research","dd"], badge:"Core Tool", desc:"Market intelligence and earnings transcript analysis. Used for pattern tracking and expert calls.", link:"#" },
   { id:"upslide",    name:"Upslide",    tags:["ops","writing"], badge:"Active Pilot", desc:"PowerPoint and Excel productivity add-in. Automates slide formatting, brand compliance, and data linking.", link:"#" },
-  { id:"meeting-prep-notes", name:"Meeting Prep Notes on Demand", tags:["research","calls","prep"], badge:"Available", desc:"Generate contextualized meeting notes for upcoming company calls. Pulls company context, recent news, and key talking points automatically.", link:"https://kscoli26.github.io/meeting-prep-bot/meeting_prep_ondemand.html" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2455,6 +2500,20 @@ function App() {
   const [ecoWorkflowFilter, setEcoWorkflowFilter] = useState("All");
   const [ecoWorkflowOpen, setEcoWorkflowOpen]     = useState(false);
 
+  // Custom Tools filters
+  const [ctTagFilter, setCtTagFilter]             = useState("All");
+  const [ctTagOpen, setCtTagOpen]                 = useState(false);
+  const [ctTypeFilter, setCtTypeFilter]           = useState("All");
+  const [ctTypeOpen, setCtTypeOpen]               = useState(false);
+  const [ctWorkflowFilter, setCtWorkflowFilter]   = useState("All");
+  const [ctWorkflowOpen, setCtWorkflowOpen]       = useState(false);
+
+  // Connectors filters
+  const [connTagFilter, setConnTagFilter]         = useState("All");
+  const [connTagOpen, setConnTagOpen]             = useState(false);
+  const [connWorkflowFilter, setConnWorkflowFilter] = useState("All");
+  const [connWorkflowOpen, setConnWorkflowOpen]   = useState(false);
+
   const q = search.toLowerCase();
 
   // Prompt groups for library tab (deduplicated)
@@ -2497,13 +2556,46 @@ function App() {
     return ["All", ...Array.from(s).sort()];
   }, []);
 
+  // Custom Tools filtering
+  const fCustomTools = useMemo(() => TOOLS_REGISTRY.filter(t =>
+    ["Custom GPT","Claude Project","Custom Tool","Custom App"].includes(t.type) &&
+    (ctTagFilter === "All" || t.tags.includes(ctTagFilter)) &&
+    (ctTypeFilter === "All" || t.type === ctTypeFilter) &&
+    (ctWorkflowFilter === "All" || t.workflowIds.includes(ctWorkflowFilter)) &&
+    (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+  ), [ctTagFilter, ctTypeFilter, ctWorkflowFilter, q]);
+
+  const ctAllTags = useMemo(() => {
+    const s = new Set();
+    TOOLS_REGISTRY.filter(t => ["Custom GPT","Claude Project","Custom Tool","Custom App"].includes(t.type)).forEach(t => t.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  // Connectors filtering
+  const fConnectors = useMemo(() => TOOLS_REGISTRY.filter(t =>
+    t.type === "Connector" &&
+    (connTagFilter === "All" || t.tags.includes(connTagFilter)) &&
+    (connWorkflowFilter === "All" || t.workflowIds.includes(connWorkflowFilter)) &&
+    (!q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+  ), [connTagFilter, connWorkflowFilter, q]);
+
+  const connAllTags = useMemo(() => {
+    const s = new Set();
+    TOOLS_REGISTRY.filter(t => t.type === "Connector").forEach(t => t.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
+  const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
+
   const tabs = [
-    { id:"start-here", label:"⚡ Start Here",            count:WORKFLOWS.length },
-    { id:"prompts",    label:"📋 Prompt Library",        count:PROMPTS_REGISTRY.length },
-    { id:"ecosystem",  label:"🛠️ Custom Tools & Connectors", count:TOOLS_REGISTRY.length },
-    { id:"skills",     label:"🧠 Skills",               count:SKILLS_REGISTRY.length },
-    { id:"external",   label:"🔧 External Tools",        count:EXTERNAL_TOOLS.length },
-    { id:"guides",     label:"📖 Claude Guides",         count:GUIDES.length },
+    { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
+    { id:"prompts",    label:"📋 Prompt Library",   count:PROMPTS_REGISTRY.length },
+    { id:"custom-tools", label:"🛠️ Custom Tools",  count:customToolsCount },
+    { id:"connectors", label:"🔌 Connectors",      count:connectorsCount },
+    { id:"skills",     label:"🧠 Skills",          count:SKILLS_REGISTRY.length },
+    { id:"external",   label:"🔧 External Tools",  count:EXTERNAL_TOOLS.length },
+    { id:"guides",     label:"📖 Claude Guides",   count:GUIDES.length },
   ];
 
   const card     = { backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:12 };
