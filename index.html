@@ -3124,7 +3124,7 @@ function App() {
                     <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
                     <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
                   </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
                   </div>
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
@@ -3141,7 +3141,7 @@ function App() {
                       <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{s.name}</span>
                       <StatusBadge label={s.badge}/>
                     </div>
-                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                       {s.desc}
                     </div>
                     {s.workflowIds.length > 0 && (
