@@ -2922,7 +2922,39 @@ function App() {
           <div>
             <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>FTV team members have access to firm-level skills that Claude applies automatically to handle formatting, analysis, and firm-specific workflows. You can create personal skills, manage which skills are active, and share skills with teammates.</p>
 
+            {/* New Skills to Download Section */}
+            <div style={{ marginBottom:32 }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>New Skills to Download</div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
+                <div style={{ ...card, padding:20 }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                    Comprehensive prospect scoring model for FTV Capital sales/sourcing teams to rank and prioritize software companies for outreach. Evaluates companies across FTE, growth, capital efficiency, and account coverage dimensions. Outputs multi-tab Excel with rankings, product categories, state trip planning, conference analysis.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["prospect-scoring","sourcing","sales","analytics","excel","rankings"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:20, marginBottom:32 }}>
+              {/* Create new skills - NOW FIRST */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
+                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                  <strong>Create skills in two ways:</strong><br/>
+                  • <strong>Chat with Claude:</strong> Ask Claude to help you build a skill, and it will generate the SKILL.md file structure<br/>
+                  • <strong>Manual creation:</strong> Create a folder with a SKILL.md file, zip it, and upload via <strong>Customize → Skills → Upload skill</strong><br/><br/>
+                  <strong>Skill use cases:</strong> Formatting (presentations, reports), analysis (valuation, competitive intelligence), data access (pulling from your systems), specialized processes (deal analysis, market research). Personal skills are private to your account.
+                </p>
+              </div>
+
               {/* How to disable skills */}
               <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to disable a firm-level skill</div>
@@ -2931,14 +2963,6 @@ function App() {
                   <li>Select <strong>Skills</strong></li>
                   <li>Toggle any firm-level skill on/off</li>
                 </ol>
-              </div>
-
-              {/* Create new skills */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
-                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
-                  Create a folder with a <strong>SKILL.md</strong> file containing your instructions. Zip the folder and upload via <strong>Customize → Skills → Upload skill</strong>. Personal skills are private to your account.
-                </p>
               </div>
 
               {/* Share skills */}
@@ -3017,26 +3041,6 @@ function App() {
               </div>
             </div>
 
-            {/* New Skills to Download Section */}
-            <div>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>New Skills to Download</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
-                <div style={{ ...card, padding:20 }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10, display:"-webkit-box", WebkitLineClamp:3, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
-                    Comprehensive prospect scoring model for FTV Capital sales/sourcing teams to rank and prioritize software companies for outreach. Evaluates companies across FTE, growth, capital efficiency, and account coverage dimensions. Outputs multi-tab Excel with rankings, product categories, state trip planning, conference analysis.
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["prospect-scoring","sourcing","sales","analytics","excel","rankings"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
