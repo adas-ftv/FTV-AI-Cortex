@@ -320,6 +320,15 @@ const SKILLS_REGISTRY = [
     tags:[],
     workflowIds:[],
   },
+  {
+    id:"skill-initial-profile-generator",
+    type:"Skill", name:"Initial Profile Generator", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Generates FTV Initial Profile Word documents from VDR materials, CIMs, and financial models. Produces exact 2-3 page IC format with 16 mandatory sections, strict anti-hallucination controls, and plain formatting.",
+    note:"Auto-fires on initial profile generation requests.",
+    tags:["ic","dd","cim"],
+    workflowIds:["cim-diligence","ic-prep"],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
