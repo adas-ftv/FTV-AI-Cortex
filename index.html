@@ -329,6 +329,15 @@ const SKILLS_REGISTRY = [
     tags:["ic","dd","cim"],
     workflowIds:["cim-diligence","ic-prep"],
   },
+  {
+    id:"skill-board-deck-review",
+    type:"Skill", name:"Board Deck Review", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Reviews and analyzes board of directors presentation decks for FTV Capital portfolio companies. Produces a consistently formatted Word memo with key observations, strategic questions, and board priorities from FTV's perspective as a growth equity investor and majority/significant shareholder. Triggers on: board deck, board pack, board presentation, board materials, board meeting, board memo, or any uploaded PDF that appears to be a board-level presentation.",
+    note:"Auto-fires on board deck review and board meeting prep requests.",
+    tags:["board","portfolio","ic","writing","dd"],
+    workflowIds:["ic-prep","cim-diligence"],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
