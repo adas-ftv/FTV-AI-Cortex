@@ -197,6 +197,15 @@ const TOOLS_REGISTRY = [
     tags:["sourcing","research","outreach"],
     workflowIds:["sourcing-outreach","expert-calls"],
   },
+  {
+    id:"third-bridge",
+    type:"Connector", name:"Third Bridge", platform:"Claude + ChatGPT",
+    badge:"Active", link:"#",
+    desc:"Access 100,000+ expert call transcripts from Third Bridge's interview library. Query expert perspectives on companies, sectors, and management teams using natural language — directly in your chats and projects. Research-grade coverage similar to AlphaSense for expert diligence.",
+    note:"Log in with your FTV email and Third Bridge password. New users can create an account with their FTV email.",
+    tags:["research","calls","expert","dd"],
+    workflowIds:["expert-calls","cim-diligence"],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2203,6 +2212,14 @@ const GUIDES = [
         "Done — Claude can now search historical FTV expert call transcripts and interview notes directly in conversation.",
         "Try: <em>What did experts say about [Company]?</em> or <em>Find me expert calls on payments fraud.</em>",
         "If Expert Network MCP is not visible, contact the AI and Data team.",
+      ]},
+      { heading:"Third Bridge — How to enable", numbered:true, steps:[
+        "Open the Third Bridge connector link directly on Claude or ChatGPT and click <strong>Connect</strong>.",
+        "<strong>Existing users:</strong> log in with your FTV email and your Third Bridge password.",
+        "<strong>New users:</strong> create an account using your FTV email — reach out to the AI and Data team for the account set-up link.",
+        "Done — you can now query Third Bridge's library of 100,000+ expert interview transcripts directly in your chats and projects.",
+        "Try: <em>What do Third Bridge experts say about [Company]'s competitive positioning?</em> or <em>Find expert calls on B2B payments fraud.</em>",
+        "Full Third Bridge MCP resources and a prompt guide covering deal screens, sector idea generation, sentiment checks, GTM assessment, pricing power diligence, and moat analysis are available — contact the AI and Data team.",
       ]},
       { heading:"💡 Best practices", numbered:false, steps:[
         "<strong>Enable once, use everywhere.</strong> Connectors stay active across all conversations.",
