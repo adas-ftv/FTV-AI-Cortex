@@ -3221,6 +3221,40 @@ function App() {
                   </a>
                 </div>
 
+                {/* Download tile — Meeting Prep Deck */}
+                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Meeting Prep Deck</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Builds a structured meeting prep deck for management meetings and diligence calls. Surfaces company background, key questions, and prior context automatically.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["meeting-prep","diligence","management","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:f:/r/sites/AI/Shared%20Documents/FTV%20Skills/meeting-prep-deck?csf=1&web=1&e=HiU8jK" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
+                {/* Download tile — Expert Call Notes Summary */}
+                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Expert Call Notes Summary</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Transforms raw expert call notes into a clean, structured summary with key insights, sentiment, and diligence-ready takeaways.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["expert-calls","notes","diligence","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/notes-summary-expert-call.skill?csf=1&web=1&e=PnkGIV" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
                 {fSkills.map(s => (
                   <div key={s.id} style={{ ...card, padding:20, backgroundColor:["skill-mcp-builder","skill-skill-creator"].includes(s.id) ? "#1a3030" : card.backgroundColor }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
