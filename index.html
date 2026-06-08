@@ -2679,7 +2679,7 @@ function App() {
 
   const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
   const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
-  const skillsCount = useMemo(() => fSkills.length, [fSkills]);
+  const skillsCount = useMemo(() => fSkills.length + 4, [fSkills]);
 
   const tabs = [
     { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
