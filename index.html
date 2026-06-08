@@ -336,7 +336,7 @@ const SKILLS_REGISTRY = [
     desc:"Build and configure custom Model Context Protocols (MCPs) to connect Claude to any data source or system. Execute MCP creation workflows, deploy protocol servers, test connections, and manage multi-tool integrations.",
     note:"Auto-fires on MCP creation and configuration requests.",
     tags:[],
-    workflowIds:[],
+    workflowIds:["general-admin"],
   },
   {
     id:"skill-skill-creator",
@@ -345,7 +345,7 @@ const SKILLS_REGISTRY = [
     desc:"Generates ready-to-deploy SKILL.md files and folder structures for custom Claude skills. Handles skill packaging, trigger definition, formatting, and upload instructions.",
     note:"Auto-fires on skill creation requests.",
     tags:[],
-    workflowIds:[],
+    workflowIds:["general-admin"],
   },
   {
     id:"skill-initial-profile-generator",
@@ -3230,6 +3230,14 @@ function App() {
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Builds a structured meeting prep deck for management meetings and diligence calls. Surfaces company background, key questions, and prior context automatically.
                   </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["cim-diligence","expert-calls"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
+                  </div>
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["meeting-prep","diligence","management","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
@@ -3246,6 +3254,14 @@ function App() {
                   </div>
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Transforms raw expert call notes into a clean, structured summary with key insights, sentiment, and diligence-ready takeaways.
+                  </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["expert-calls","cim-diligence"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
                   </div>
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["expert-calls","notes","diligence","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
