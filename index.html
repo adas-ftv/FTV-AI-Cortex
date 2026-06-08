@@ -3196,6 +3196,14 @@ function App() {
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
                   </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["sourcing-outreach","market-research"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
+                  </div>
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
@@ -3212,6 +3220,14 @@ function App() {
                   </div>
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
+                  </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["sourcing-outreach","market-research"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
                   </div>
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["sourcing","classification","sub-sector","pipeline"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
