@@ -2299,10 +2299,10 @@ const GUIDES = [
   },
   {
     id:"skills", title:"Using Skills", icon:"🧠",
-    desc:"FTV-specific skills that Claude applies automatically — IC format, sourcing outreach, right-to-win, and more.",
+    desc:"FTV-specific skills for Claude and ChatGPT — IC format, sourcing outreach, right-to-win, and more.",
     sections:[
       { heading:"What is a Skill?", numbered:false, steps:[
-        "A Skill is a <strong>packaged set of instructions</strong> Claude loads automatically when it detects a relevant task. Unlike a prompt, you do not invoke it manually — Claude detects the context and applies it on its own.",
+        "A Skill is a <strong>packaged set of instructions</strong> that Claude or ChatGPT loads automatically when it detects a relevant task. Unlike a prompt, you do not invoke it manually — the AI detects the context and applies it on its own.",
       ]},
       { heading:"FTV skills enabled at the org level", numbered:false, steps:[
         "<strong>IC Diligence</strong> — Produces FTV-format Initial Profiles from CIMs, VDRs, and financial models. Triggers on: deal analysis, Initial Profile, IC prep.",
@@ -2318,15 +2318,20 @@ const GUIDES = [
         "<strong>GPN</strong> — Surfaces FTV Global Partner Network contacts, bios, and relationship activity. Triggers on: GPN executive lookup, finding relevant GPN contacts for a deal, SAB members, past introductions, subject matter experts.",
       ]},
       { heading:"Managing skills", numbered:true, steps:[
-        "Click <strong>Customize</strong> in the left sidebar, then select <strong>Skills</strong>.",
+        "Click <strong>Customize</strong> in the left sidebar of Claude or ChatGPT, then select <strong>Skills</strong>.",
         "FTV-provisioned skills appear with a <strong>team indicator</strong> — toggle any on or off. Your preference saves across all future conversations.",
         "For built-in skills (Excel, PowerPoint, Word) to work, ensure <strong>Code execution and file creation</strong> is enabled under Customize → Capabilities.",
       ]},
+      { heading:"Downloading & uploading skills", numbered:true, steps:[
+        "Click <strong>Download from SharePoint</strong> on any downloadable skill tile in the Skills tab.",
+        "In Claude or ChatGPT, go to <strong>Customize → Skills → Upload skill</strong>.",
+        "Upload the .skill file or zip folder — it's now available in all your conversations.",
+      ]},
       { heading:"Creating new skills", numbered:true, steps:[
-        "A skill is a folder with a <strong>SKILL.md</strong> file containing a short description and your instructions. Claude reads it to know when to activate.",
+        "A skill is a folder with a <strong>SKILL.md</strong> file containing a short description and your instructions. Claude or ChatGPT reads it to know when to activate.",
         "Zip the folder and upload via <strong>Customize → Skills → Upload skill</strong>. Personal skills are private to your account.",
         "To share a skill firm-wide, reach out to the AI and Data team — we will test and provision it org-wide.",
-        "<strong>Shortcut:</strong> Ask Claude to build the skill for you — describe the workflow and Claude generates a ready-to-upload SKILL.md.",
+        "<strong>Shortcut:</strong> Ask Claude or ChatGPT to build the skill for you — describe the workflow and it generates a ready-to-upload SKILL.md.",
       ]},
       { heading:"💡 Skill ideas for the investment team", numbered:false, steps:[
         "<strong>Reference Check Formatter</strong> — Auto-structures reference call notes into FTV's standard format with scoring.",
@@ -2572,6 +2577,7 @@ function App() {
   const [skillTagOpen, setSkillTagOpen]           = useState(false);
   const [skillWorkflowFilter, setSkillWorkflowFilter] = useState("All");
   const [skillWorkflowOpen, setSkillWorkflowOpen] = useState(false);
+  const [skillTypeFilter, setSkillTypeFilter]     = useState("All");
 
   const q = search.toLowerCase();
 
@@ -2679,7 +2685,7 @@ function App() {
 
   const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
   const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
-  const skillsCount = useMemo(() => fSkills.length + 4, [fSkills]);
+  const skillsCount = useMemo(() => fSkills.length + 5, [fSkills]);
 
   const tabs = [
     { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
@@ -3114,40 +3120,59 @@ function App() {
         {/* ── SKILLS ── */}
         {tab === "skills" && (
           <div>
-            <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>FTV team members have access to firm-level skills that Claude applies automatically to handle formatting, analysis, and firm-specific workflows. You can create personal skills, manage which skills are active, and share skills with teammates.</p>
-
+            <p style={{ fontSize:13, color:C.textSec, marginBottom:8 }}>Skills come in two forms: <strong style={{ color:C.gold }}>Firm-Enabled</strong> skills are provisioned at the org level and activate automatically in Claude when they detect a relevant task. <strong style={{ color:C.gold }}>Downloadable</strong> skills are .skill files you download from SharePoint and upload into Claude or ChatGPT to use in your own conversations.</p>
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:20, marginBottom:32 }}>
-              {/* Create new skills - NOW FIRST */}
+              {/* Create new skills */}
               <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
-                  <strong>Chat with Claude:</strong> Ask Claude to help you build a skill and it will generate the SKILL.md file structure for you.<br/>
+                  <strong>Chat with any AI:</strong> Ask Claude or ChatGPT to help you build a skill and it will generate the SKILL.md file structure for you.<br/>
                   <strong>Skill use cases:</strong> Formatting (presentations, reports), analysis (valuation, competitive intelligence), data access (pulling from your systems), specialized processes (deal analysis, market research). Personal skills are private to your account.
                 </p>
               </div>
 
-              {/* How to disable skills */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to disable a firm-level skill</div>
-                <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
-                  <li>Click <strong>Customize</strong> in Claude's sidebar</li>
-                  <li>Select <strong>Skills</strong></li>
-                  <li>Toggle any firm-level skill on/off</li>
-                </ol>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
+                {/* How to manage firm-level skills */}
+                <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                  <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to manage firm-level skills</div>
+                  <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
+                    <li>Click <strong>Customize</strong> in Claude's or ChatGPT's sidebar</li>
+                    <li>Select <strong>Skills</strong></li>
+                    <li>Toggle any firm-level skill on or off — your preference saves across all conversations</li>
+                  </ol>
+                </div>
+
+                {/* How to download & upload skills */}
+                <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                  <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>⬇️ How to download & upload skills</div>
+                  <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
+                    <li>Click <strong>Download from SharePoint</strong> on any downloadable skill tile below</li>
+                    <li>In Claude or ChatGPT, go to <strong>Customize → Skills → Upload skill</strong></li>
+                    <li>Upload the .skill file (or zip folder) — it's now available in all your conversations</li>
+                  </ol>
+                </div>
               </div>
 
               {/* Share skills */}
               <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🤝 Share skills with your team</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
-                  Share your SKILL.md file directly with teammates, or reach out to the <strong>AI & Data team</strong> to provision a skill firm-wide.
+                  Built something useful? Send the SKILL.md file directly to teammates or a specific deal team — they upload it once and it works immediately. To share a skill across the entire firm, reach out to the <strong>AI & Data team</strong> and we'll test, package, and provision it org-wide.
                 </p>
               </div>
             </div>
 
             {/* Skill Filters */}
             <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
+              <div style={{ display:"flex", gap:2, backgroundColor:C.surface, borderRadius:6, border:`1px solid ${C.border}`, overflow:"hidden" }}>
+                {["All","Firm-Enabled","Downloadable"].map(opt => (
+                  <button key={opt} onClick={() => setSkillTypeFilter(opt)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:skillTypeFilter === opt ? C.gold : "transparent", color:skillTypeFilter === opt ? C.bg : C.textSec, border:"none", cursor:"pointer", fontWeight:skillTypeFilter === opt ? 600 : 400, transition:"all 0.15s" }}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+
               <div style={{ position:"relative" }}>
                 <button onClick={() => setSkillTagOpen(!skillTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
                   Tag: {skillTagFilter} ▼
@@ -3182,9 +3207,10 @@ function App() {
               </div>
             </div>
 
-            {/* Firm Level Skills Section */}
+            {/* Downloadable Skills Section */}
+            {(skillTypeFilter === "All" || skillTypeFilter === "Downloadable") && (
             <div style={{ marginBottom:32 }}>
-              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Firm Level Skills</div>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Downloadable Skills</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
 
                 {/* Download tile — Prospect Scoring Analysis */}
@@ -3287,6 +3313,40 @@ function App() {
                   </a>
                 </div>
 
+                {/* Download tile — Sector Market Sizing */}
+                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sector Market Sizing</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Structures a bottom-up and top-down market sizing analysis for a given sector or sub-sector. Estimates TAM, SAM, and SOM using available data sources, public benchmarks, and FTV sector frameworks.
+                  </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["market-research","cim-diligence"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["market-sizing","research","sectors","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/sector-market-sizing.skill?csf=1&web=1&e=NaHqDu" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
+              </div>
+            </div>
+            )}
+
+            {/* Firm-Enabled Skills Section */}
+            {(skillTypeFilter === "All" || skillTypeFilter === "Firm-Enabled") && (
+            <div style={{ marginBottom:32 }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Firm-Enabled Skills</div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
                 {fSkills.map(s => (
                   <div key={s.id} style={{ ...card, padding:20, backgroundColor:["skill-mcp-builder","skill-skill-creator"].includes(s.id) ? "#1a3030" : card.backgroundColor }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
@@ -3313,6 +3373,7 @@ function App() {
                 ))}
               </div>
             </div>
+            )}
 
           </div>
         )}
