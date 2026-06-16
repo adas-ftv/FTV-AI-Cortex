@@ -243,7 +243,7 @@ const SKILLS_REGISTRY = [
     id:"skill-rtw",
     type:"Skill", name:"Right to Win", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Structures a right-to-win competitive positioning assessment for a specific deal.",
+    desc:"Produces FTV's Right to Win report in the firm's standard IC format. Structures a full competitive positioning assessment — mapping differentiated capabilities, key partnerships, customer proof points, and why FTV is the value-add partner of choice for this specific deal.",
     note:"Competitive positioning assessment.",
     tags:["ic","dd"],
     workflowIds:["ic-prep"],
@@ -252,7 +252,7 @@ const SKILLS_REGISTRY = [
     id:"skill-risk",
     type:"Skill", name:"Risk Framework", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Builds a structured risk and mitigant table. Auto-fires on risk/bear case requests.",
+    desc:"Produces FTV's Risk Framework report in the firm's standard IC format. Builds a structured risk and mitigant table covering market, execution, competitive, financial, and regulatory dimensions — with bear case framing and explicit mitigants for each risk identified.",
     note:"Auto-fires on risk/bear case requests.",
     tags:["ic","dd"],
     workflowIds:["cim-diligence","ic-prep"],
@@ -261,7 +261,7 @@ const SKILLS_REGISTRY = [
     id:"skill-ic-materials",
     type:"Skill", name:"IC Materials", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Produces IC-ready slide content in FTV format. Auto-fires on IC slide requests.",
+    desc:"Produces IC-ready slide content in FTV's standard format. Covers all core IC sections — business overview, market opportunity, competitive dynamics, financial performance, and investment thesis — structured for direct use in IC presentations and board materials.",
     note:"Auto-fires on IC slide requests.",
     tags:["ic"],
     workflowIds:["ic-prep"],
@@ -270,7 +270,7 @@ const SKILLS_REGISTRY = [
     id:"skill-playbook",
     type:"Skill", name:"Investment Playbook", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Applies FTV's investment framework to evaluate company mandate fit.",
+    desc:"Applies FTV's investment framework to evaluate how well a company fits the firm's mandate. Scores and narrates fit across sector focus, growth profile, go-to-market model, and value creation levers — surfacing where the company is squarely in FTV's wheelhouse and where it stretches the thesis.",
     note:"FTV mandate fit evaluation.",
     tags:["ic","dd"],
     workflowIds:["ic-prep"],
@@ -2667,7 +2667,7 @@ function App() {
 
   const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
   const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
-  const skillsCount = useMemo(() => fSkills.length + 6, [fSkills]);
+  const skillsCount = useMemo(() => fSkills.length + 7, [fSkills]);
 
   const tabs = [
     { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
@@ -3341,6 +3341,31 @@ function App() {
                     {["portfolio","review","reporting","lp"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
                   <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/portfolio-review.skill?csf=1&web=1&e=8UMACh" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
+                {/* Download tile — Conference List / Market Map Scrubber */}
+                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Conference List / Market Map Scrubber</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Turns market decks, conference attendee lists, and logo maps into enriched, actionable output — extracting every company, tagging by sector and relevance, and producing a clean Excel-ready table in minutes.
+                  </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["sourcing-outreach","market-research"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["sourcing","enrichment","market-map","conference"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/conference-list-scrubbing.skill?csf=1&web=1&e=rZp02k" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                     Download from SharePoint ↗
                   </a>
                 </div>
