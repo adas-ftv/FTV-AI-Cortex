@@ -6,7 +6,7 @@
   <title>FTV AI Cortex</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
   <!-- Google Analytics 4 for page visit tracking -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VW1MVE100"></script>
   <script>
@@ -26,7 +26,7 @@
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
+  <script type="text/babel" data-presets="react">
     const { useState, useMemo } = React;
 
 const C = {
