@@ -120,8 +120,8 @@ const TOOLS_REGISTRY = [
     id:"pitchbook",
     type:"Connector", name:"PitchBook", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
-    desc:"Live PitchBook Premium data: company lookups, deal comps, investor profiles, market sizing.\n\nEnable in Claude: Customize → Connectors → PitchBook → Connect.\nEnable in ChatGPT: Profile → Settings → Connectors → PitchBook → Connect.",
-    note:"Enable in Claude: Customize → Connectors → PitchBook. In ChatGPT: Profile → Settings → Connectors.",
+    desc:"Live PitchBook Premium data: company lookups, deal comps, investor profiles, market sizing.",
+    note:"",
     tags:["research","data","sourcing","dd"],
     workflowIds:["initial-profile","market-research","cim-diligence","sourcing-outreach"],
   },
@@ -129,8 +129,8 @@ const TOOLS_REGISTRY = [
     id:"microsoft365",
     type:"Connector", name:"Microsoft 365", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
-    desc:"Connects Claude and ChatGPT to Outlook, Teams, Calendar, and SharePoint. Enables direct VDR access for deal diligence.\n\nEnable in Claude: Customize → Connectors → Microsoft 365 → Connect with FTV credentials.\nEnable in ChatGPT: Profile → Settings → Connectors → Microsoft → Connect.",
-    note:"Enable in Claude: Customize → Connectors → Microsoft 365. In ChatGPT: Profile → Settings → Connectors.",
+    desc:"Connects Claude and ChatGPT to Outlook, Teams, Calendar, and SharePoint. Enables direct VDR access for deal diligence.",
+    note:"",
     tags:["ops","data","dd","admin"],
     workflowIds:["cim-diligence","general-admin"],
   },
@@ -346,6 +346,24 @@ const SKILLS_REGISTRY = [
     note:"Auto-fires on board deck review and board meeting prep requests.",
     tags:["board","portfolio","ic","writing","dd"],
     workflowIds:["ic-prep","cim-diligence"],
+  },
+  {
+    id:"skill-mcp-builder",
+    type:"Skill", name:"MCP Builder", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Build and configure custom Model Context Protocols (MCPs) to connect Claude to any data source or system. Execute MCP creation workflows, deploy protocol servers, test connections, and manage multi-tool integrations.",
+    note:"Auto-fires on MCP creation and configuration requests.",
+    tags:[],
+    workflowIds:[],
+  },
+  {
+    id:"skill-skill-creator",
+    type:"Skill", name:"Skill Creator", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Generates ready-to-deploy SKILL.md files and folder structures for custom Claude skills. Handles skill packaging, trigger definition, formatting, and upload instructions.",
+    note:"Auto-fires on skill creation requests.",
+    tags:[],
+    workflowIds:[],
   },
 ];
 
@@ -3052,6 +3070,27 @@ function App() {
         {tab === "connectors" && (
           <div>
             <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Data connectors and integrations that link Claude to FTV's systems and external data sources.</p>
+
+            {/* Enablement steps */}
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:24 }}>
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:8, textTransform:"uppercase", letterSpacing:"0.5px" }}>Enable in Claude</div>
+                <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:18, margin:0 }}>
+                  <li>Click <strong>Customize</strong> in the Claude sidebar</li>
+                  <li>Select <strong>Connectors</strong></li>
+                  <li>Find the connector and click <strong>Enable</strong></li>
+                  <li>Sign in with your FTV credentials when prompted</li>
+                </ol>
+              </div>
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:8, textTransform:"uppercase", letterSpacing:"0.5px" }}>Enable in ChatGPT</div>
+                <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:18, margin:0 }}>
+                  <li>Click <strong>Apps</strong> in the ChatGPT sidebar</li>
+                  <li>Find the connector and click <strong>Enable</strong></li>
+                  <li>Sign in with your FTV credentials when prompted</li>
+                </ol>
+              </div>
+            </div>
 
             {/* Filters */}
             <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, alignItems:"flex-start" }}>
