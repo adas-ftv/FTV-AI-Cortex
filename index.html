@@ -126,6 +126,15 @@ const TOOLS_REGISTRY = [
     workflowIds:["cim-diligence","general-admin"],
   },
   {
+    id:"third-bridge",
+    type:"Connector", name:"Third Bridge", platform:"Claude",
+    badge:"Active", link:"#",
+    desc:"Expert network and research platform with access to industry specialists, sector primers, and company-specific interview transcripts. Surfaces relevant expert perspectives to support diligence and market analysis.",
+    note:"",
+    tags:["research","expert-calls","dd","calls"],
+    workflowIds:["expert-calls","cim-diligence","market-research"],
+  },
+  {
     id:"outreach-app",
     type:"Custom App", name:"FTV Outreach Generator", platform:"Microsoft",
     badge:"Active", link:"https://launcher.myapps.microsoft.com/api/signin/5b0f18f4-6c70-48af-b13b-bbbcf1af108e?tenantId=5d499720-ad8d-4e33-bf72-ec145ee39ad6",
@@ -3198,6 +3207,17 @@ function App() {
                     <StatusBadge label={t.badge}/>
                   </div>
                   <p style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:12 }}>{t.desc}</p>
+                  {t.workflowIds && t.workflowIds.length > 0 && (
+                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginBottom:10 }}>
+                      <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                        {t.workflowIds.map(wid => {
+                          const wf = WORKFLOWS.find(w => w.id === wid);
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                        })}
+                      </div>
+                    </div>
+                  )}
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                     <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
                       {t.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
