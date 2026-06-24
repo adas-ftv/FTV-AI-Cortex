@@ -2088,7 +2088,7 @@ const WORKFLOWS = [
     tip:"Use Deep Research mode in Claude Opus or ChatGPT for the most comprehensive output. PitchBook connector adds live company data automatically.",
   },
   {
-    id:"cim-diligence", icon:"📋", label:"CIM & VDR Diligence",
+    id:"cim-diligence", icon:"📋", label:"Diligence & Analysis",
     desc:"Structured analysis from CIMs, data rooms, and financial documents",
     accent:"#E8D5A0",
     toolIds:["cimba","microsoft365","skill-risk"],
@@ -2312,9 +2312,7 @@ const GUIDES = [
 
 // External Tools (not workflow-linked)
 const EXTERNAL_TOOLS = [
-  { id:"quikirr",    name:"QuikIRR",    tags:["financials","modeling"], badge:"Active Pilot", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#" },
-  { id:"alphasense-ext", name:"AlphaSense", tags:["research","dd"], badge:"Core Tool", desc:"Market intelligence and earnings transcript analysis. Used for pattern tracking and expert calls.", link:"#" },
-  { id:"upslide",    name:"Upslide",    tags:["ops","writing"], badge:"Active Pilot", desc:"PowerPoint and Excel productivity add-in. Automates slide formatting, brand compliance, and data linking.", link:"#" },
+  { id:"quikirr", name:"QuikIRR", tags:["financials","modeling"], badge:"Rolling Out", desc:"AI-powered returns modeling. Quickly calculate and stress-test IRR scenarios without building a full model.", link:"#", workflowIds:["cim-diligence"] },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2528,7 +2526,7 @@ function App() {
   const PROMPT_GROUPS = useMemo(() => {
     const groups = [
       { label:"Sourcing & Initial Research", wfMatch:["sourcing-outreach","initial-profile","market-research"] },
-      { label:"CIM & Diligence",             wfMatch:["cim-diligence"] },
+      { label:"Diligence & Analysis",          wfMatch:["cim-diligence"] },
       { label:"IC Prep",                     wfMatch:["ic-prep"] },
     ];
     const seen = new Set();
