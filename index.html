@@ -320,24 +320,6 @@ const SKILLS_REGISTRY = [
     tags:["board","portfolio","ic","writing","dd"],
     workflowIds:["ic-prep","cim-diligence"],
   },
-  {
-    id:"skill-mcp-builder",
-    type:"Skill", name:"MCP Builder", platform:"Claude",
-    badge:"Active", link:"#",
-    desc:"Build and configure custom Model Context Protocols (MCPs) to connect Claude to any data source or system. Execute MCP creation workflows, deploy protocol servers, test connections, and manage multi-tool integrations.",
-    note:"Auto-fires on MCP creation and configuration requests.",
-    tags:[],
-    workflowIds:[],
-  },
-  {
-    id:"skill-skill-creator",
-    type:"Skill", name:"Skill Creator", platform:"Claude",
-    badge:"Active", link:"#",
-    desc:"Generates ready-to-deploy SKILL.md files and folder structures for custom Claude skills. Handles skill packaging, trigger definition, formatting, and upload instructions.",
-    note:"Auto-fires on skill creation requests.",
-    tags:[],
-    workflowIds:[],
-  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3191,7 +3173,7 @@ function App() {
                 </div>
 
                 {fSkills.map(s => (
-                  <div key={s.id} style={{ ...card, padding:20, backgroundColor:["skill-mcp-builder","skill-skill-creator"].includes(s.id) ? "#1a3030" : card.backgroundColor }}>
+                  <div key={s.id} style={{ ...card, padding:20 }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                       <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{s.name}</span>
                       <StatusBadge label={s.badge}/>
