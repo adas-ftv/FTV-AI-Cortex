@@ -2174,7 +2174,7 @@ const GUIDES = [
     ]
   },
   {
-    id:"connectors", title:"Using Connectors", icon:"🔌",
+    id:"connectors", title:"Using Connectors", icon:"🔗",
     desc:"Enable PitchBook, Microsoft 365, and other connectors to give Claude access to your real data.",
     sections:[
       { heading:"What is a connector?", numbered:false, steps:[
@@ -2321,6 +2321,38 @@ const GUIDES = [
         "<strong>Competitive Snapshot</strong> — Produces a structured competitor comparison table.",
         "<strong>DealCloud Entry Formatter</strong> — Formats research output into DealCloud field-ready structured data.",
         "Have a repetitive workflow? That is a skill candidate — reach out to the AI and Data team.",
+      ]},
+    ]
+  },
+  {
+    id:"plugins", title:"Using Plug-ins", icon:"🔌",
+    desc:"Install Anthropic's Claude for Financial Services plug-ins — pre-built bundles of skills, connectors, and slash commands you can run as-is or use as templates for FTV's own skills.",
+    sections:[
+      { heading:"What is an Anthropic plug-in?", numbered:false, steps:[
+        "A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:1px 5px;borderRadius:4px;\">/dcf</code> or <code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:1px 5px;borderRadius:4px;\">/comps</code>) into one installable unit. Think of it as a pre-built toolkit for an entire workflow rather than a single task.",
+        "Anthropic publishes a <strong>Claude for Financial Services</strong> marketplace of battle-tested plug-ins for private equity, equity research, and financial modeling. Everything is <strong>file-based (markdown + JSON, no build step)</strong> — so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure.",
+        "Install from <strong>Customize → Plug-ins</strong> in Claude (also available in Claude Code and Cowork on paid plans). Once installed, the plug-in's skills fire automatically and its slash commands become available in any conversation.",
+      ]},
+      { heading:"Enabled FTV plug-ins", numbered:false, steps:[
+        "<strong><a href=\"https://claude.ai/customize/plugins/private-equity%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Private Equity ↗</a></strong> — Sourcing through portfolio operations: deal sourcing, inbound screening, diligence checklists by workstream, unit-economics analysis, IC memos, and portfolio KPI monitoring. Commands: <code style=\"color:#8AAFD4;\">/source</code>, <code style=\"color:#8AAFD4;\">/screen-deal</code>, <code style=\"color:#8AAFD4;\">/dd-checklist</code>, <code style=\"color:#8AAFD4;\">/dd-prep</code>, <code style=\"color:#8AAFD4;\">/unit-economics</code>, <code style=\"color:#8AAFD4;\">/ic-memo</code>, <code style=\"color:#8AAFD4;\">/portfolio</code>, <code style=\"color:#8AAFD4;\">/value-creation</code>, <code style=\"color:#8AAFD4;\">/ai-readiness</code>.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/equity-research%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Equity Research ↗</a></strong> — Coverage and publishing workflows: post-earnings updates, earnings previews, initiating-coverage reports, model updates, thesis and catalyst tracking, and idea screens. Commands: <code style=\"color:#8AAFD4;\">/earnings</code>, <code style=\"color:#8AAFD4;\">/earnings-preview</code>, <code style=\"color:#8AAFD4;\">/initiate</code>, <code style=\"color:#8AAFD4;\">/model-update</code>, <code style=\"color:#8AAFD4;\">/morning-note</code>, <code style=\"color:#8AAFD4;\">/sector</code>, <code style=\"color:#8AAFD4;\">/thesis</code>, <code style=\"color:#8AAFD4;\">/catalysts</code>, <code style=\"color:#8AAFD4;\">/screen</code>.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/financial-analysis%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Financial Analysis ↗</a></strong> — The core modeling plug-in. Carries the shared modeling skills and all financial-data connectors: comparable-company analysis, DCF and LBO models, 3-statement modeling, Excel model audits, deck QC, and competitive analysis. Commands: <code style=\"color:#8AAFD4;\">/comps</code>, <code style=\"color:#8AAFD4;\">/dcf</code>, <code style=\"color:#8AAFD4;\">/lbo</code>, <code style=\"color:#8AAFD4;\">/3-statement-model</code>, <code style=\"color:#8AAFD4;\">/debug-model</code>, <code style=\"color:#8AAFD4;\">/competitive-analysis</code>.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/earnings-reviewer%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Earnings Reviewer ↗</a></strong> — A packaged agent that ingests earnings calls and SEC filings, updates the financial model with new guidance, flags thesis-relevant changes, and stages a note draft for human review.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/market-researcher%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Market Researcher ↗</a></strong> — Takes a sector or theme and produces an industry overview, competitive landscape, peer comps, and a shortlist of ideas — synthesizing news, filings, and broker research.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/valuation-reviewer%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Valuation Reviewer ↗</a></strong> — Quality control for valuations: ingests GP packages, runs valuation templates, checks marks against comparables, methodology, and firm review standards, and stages LP-reporting outputs.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/statement-auditor%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Statement Auditor ↗</a></strong> — Reviews financial and LP statements for consistency, completeness, and accuracy before distribution — catching errors and verifying audit-readiness.",
+      ]},
+      { heading:"Use plug-ins + FTV skills as building blocks", numbered:false, steps:[
+        "Plug-ins are <strong>templates, not black boxes.</strong> Because every skill is plain markdown, the fastest way to build a great FTV skill is to start from one that already works — open a plug-in's <strong>SKILL.md</strong>, study how it structures its triggers, instructions, and output format, then adapt it to FTV's conventions.",
+        "Pair them with the <strong>FTV templatized skills</strong> in this hub (IC Diligence, Sourcing Outreach, Right to Win, Risk Framework, FSI Comps, FTV PPT Template). Use the Anthropic plug-in for the heavy modeling logic and the FTV skill for firm-specific format and voice — e.g. run <code style=\"color:#8AAFD4;\">/comps</code> from Financial Analysis, then let the FSI Comps and IC Materials skills shape the output into FTV's IC format.",
+        "<strong>A practical recipe:</strong> (1) install the closest plug-in, (2) run its slash command on a real deal, (3) copy the skill file that did the work, (4) edit it with FTV context — sectors, mandate, format — and (5) upload it via <strong>Customize → Skills</strong> as your own. Ask Claude to do the editing for you: <em>\"Adapt this SKILL.md to FTV's Initial Profile format.\"</em>",
+        "Built something the whole team should have? Reach out to the AI and Data team — we will test it and provision it org-wide.",
+      ]},
+      { heading:"💡 Best practices", numbered:false, steps:[
+        "<strong>Start with Financial Analysis.</strong> It carries the shared connectors and core models the other plug-ins build on — enable it first.",
+        "<strong>Layer with connectors.</strong> Plug-in skills are far more powerful grounded in live data — keep PitchBook and Microsoft 365 connected so commands like <code style=\"color:#8AAFD4;\">/comps</code> and <code style=\"color:#8AAFD4;\">/dd-checklist</code> pull real numbers.",
+        "<strong>Slash commands beat long prompts.</strong> Once a plug-in is installed, type the command (e.g. <code style=\"color:#8AAFD4;\">/dcf</code>) instead of describing the whole workflow each time.",
+        "<strong>Customize before you scale.</strong> Plug-in defaults are generic — edit the system prompt and skill files with FTV context so output lands in the right format the first time.",
       ]},
     ]
   },
@@ -2673,7 +2705,7 @@ function App() {
     { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
     { id:"prompts",    label:"📋 Prompt Library",   count:PROMPTS_REGISTRY.length },
     { id:"custom-tools", label:"🛠️ Custom Tools",  count:customToolsCount },
-    { id:"connectors", label:"🔌 Connectors",      count:connectorsCount },
+    { id:"connectors", label:"🔗 Connectors",      count:connectorsCount },
     { id:"skills",     label:"🧠 Skills",          count:skillsCount },
     { id:"external",   label:"🔧 External Tools",  count:EXTERNAL_TOOLS.length },
     { id:"guides",     label:"📖 Claude Guides",   count:GUIDES.length },
