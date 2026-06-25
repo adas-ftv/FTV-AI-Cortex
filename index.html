@@ -2419,7 +2419,7 @@ const GUIDES = [
       { heading:"What is an Anthropic plug-in?", numbered:false, steps:[
         "A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:1px 5px;borderRadius:4px;\">/dcf</code> or <code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:1px 5px;borderRadius:4px;\">/comps</code>) into one installable unit. Think of it as a pre-built toolkit for an entire workflow rather than a single task.",
         "Anthropic publishes a <strong>Claude for Financial Services</strong> marketplace of battle-tested plug-ins for private equity, equity research, and financial modeling. Everything is <strong>file-based (markdown + JSON, no build step)</strong> — so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure.",
-        "Install from <strong>Customize → Plug-ins</strong> in Claude (also available in Claude Code and Cowork on paid plans). Once installed, the plug-in's skills fire automatically and its slash commands become available in any conversation.",
+        "Install from <strong>Customize → Plug-ins</strong> in Claude. Once installed, the plug-in's skills fire automatically and its slash commands become available in any conversation.",
       ]},
       { heading:"Enabled FTV plug-ins", numbered:false, steps:[
         "<strong><a href=\"https://claude.ai/customize/plugins/private-equity%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Private Equity ↗</a></strong> — Sourcing through portfolio operations: deal sourcing, inbound screening, diligence checklists by workstream, unit-economics analysis, IC memos, and portfolio KPI monitoring. Commands: <code style=\"color:#8AAFD4;\">/source</code>, <code style=\"color:#8AAFD4;\">/screen-deal</code>, <code style=\"color:#8AAFD4;\">/dd-checklist</code>, <code style=\"color:#8AAFD4;\">/dd-prep</code>, <code style=\"color:#8AAFD4;\">/unit-economics</code>, <code style=\"color:#8AAFD4;\">/ic-memo</code>, <code style=\"color:#8AAFD4;\">/portfolio</code>, <code style=\"color:#8AAFD4;\">/value-creation</code>, <code style=\"color:#8AAFD4;\">/ai-readiness</code>.",
@@ -2835,7 +2835,7 @@ function App() {
 
       {/* Header */}
       <div style={{ backgroundColor:C.surface, borderBottom:`1px solid ${C.border}` }}>
-        <div style={{ maxWidth:1100, margin:"0 auto", padding:"20px 24px" }}>
+        <div style={{ maxWidth:1280, margin:"0 auto", padding:"20px 24px" }}>
           <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16 }}>
             <div>
               <div style={{ display:"flex", alignItems:"center", gap:12 }}>
@@ -2885,7 +2885,7 @@ function App() {
         </div>
       </div>
 
-      <div style={{ maxWidth:1100, margin:"0 auto", padding:"24px 24px" }}>
+      <div style={{ maxWidth:1280, margin:"0 auto", padding:"24px 24px" }}>
 
         {/* Tabs */}
         <div style={{ display:"flex", gap:4, marginBottom:24, backgroundColor:C.surface, padding:4, borderRadius:10, width:"fit-content", border:`1px solid ${C.border}`, flexWrap:"wrap" }}>
@@ -3583,7 +3583,7 @@ function App() {
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🔌 What is an Anthropic plug-in?</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
                   A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style={{ color:C.textSec }}>/dcf</code> or <code style={{ color:C.textSec }}>/comps</code>) into one installable unit — a pre-built toolkit for an entire workflow.<br/><br/>
-                  Everything is <strong>file-based (markdown + JSON, no build step)</strong>, so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure. Install from <strong>Customize → Plug-ins</strong> in Claude (also in Claude Code and Cowork on paid plans).
+                  Everything is <strong>file-based (markdown + JSON, no build step)</strong>, so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure. Install from <strong>Customize → Plug-ins</strong> in Claude.
                 </p>
               </div>
 
@@ -3661,13 +3661,11 @@ function App() {
                         </div>
                       </div>
                     )}
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, flexWrap:"wrap" }}>
-                      <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
-                        {p.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                      </div>
-                      {p.link && p.link !== "#" &&
-                        <a href={p.link} target="_blank" rel="noreferrer" style={{ fontSize:11, color:C.goldLight, textDecoration:"none", whiteSpace:"nowrap" }}>Open ↗</a>}
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                      {p.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
+                    {p.link && p.link !== "#" &&
+                      <a href={p.link} target="_blank" rel="noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>Open in Claude ↗</a>}
                   </div>
                 ))}
               </div>
@@ -3739,7 +3737,7 @@ function App() {
       </div>
 
       <div style={{ borderTop:`1px solid ${C.border}`, marginTop:32 }}>
-        <div style={{ maxWidth:1100, margin:"0 auto", padding:"14px 24px", display:"flex", justifyContent:"space-between" }}>
+        <div style={{ maxWidth:1280, margin:"0 auto", padding:"14px 24px", display:"flex", justifyContent:"space-between" }}>
           <span style={{ fontSize:11, color:C.textMuted }}>FTV Capital · Data, Technology and Operations · Internal Use Only</span>
           <span style={{ fontSize:11, color:C.textMuted }}>v4.0 · 2026</span>
         </div>
