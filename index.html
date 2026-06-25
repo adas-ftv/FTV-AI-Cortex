@@ -49,6 +49,7 @@ const TYPE_MAP = {
   "Connector":      { bg:"#2A1E08", color:"#E8D5A0" },
   "Custom App":     { bg:"#0D2A1C", color:"#5DC994" },
   "Skill":          { bg:"#1a2040", color:"#93b4ff" },
+  "Plugin":         { bg:"#2A1410", color:"#F0A47A" },
   "External":       { bg:"#243050", color:"#93b4ff" },
   "MCP Server":     { bg:"#0A2A2A", color:"#4DD0C4" },
 };
@@ -346,6 +347,76 @@ const SKILLS_REGISTRY = [
     note:"Auto-fires on board deck review and board meeting prep requests.",
     tags:["board","portfolio","ic","writing","dd"],
     workflowIds:["ic-prep","cim-diligence"],
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLUGINS REGISTRY — Anthropic Claude for Financial Services plug-ins
+// Each bundles skills, connectors, and slash commands. Use as templates.
+// ─────────────────────────────────────────────────────────────────────────────
+const PLUGINS_REGISTRY = [
+  {
+    id:"plugin-financial-analysis",
+    type:"Plugin", name:"Financial Analysis", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/financial-analysis%40claude-for-financial-services",
+    desc:"Core modeling plug-in. Carries the shared modeling skills and all financial-data connectors: comparable-company analysis, DCF and LBO models, 3-statement modeling, Excel model audits, deck QC, and competitive analysis. Commands: /comps, /dcf, /lbo, /3-statement-model, /debug-model, /competitive-analysis.",
+    note:"Core models + shared connectors. Enable this first.",
+    tags:["modeling","valuation","comps","dcf","lbo","excel"],
+    workflowIds:["cim-diligence","ic-prep","market-research"],
+  },
+  {
+    id:"plugin-private-equity",
+    type:"Plugin", name:"Private Equity", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/private-equity%40claude-for-financial-services",
+    desc:"Sourcing through portfolio operations: deal sourcing, inbound screening, diligence checklists by workstream, unit-economics analysis, IC memos, and portfolio KPI monitoring. Commands: /source, /screen-deal, /dd-checklist, /dd-prep, /unit-economics, /ic-memo, /portfolio, /value-creation, /ai-readiness.",
+    note:"Sourcing → diligence → IC → portfolio.",
+    tags:["sourcing","dd","ic","portfolio"],
+    workflowIds:["sourcing-outreach","initial-profile","cim-diligence","ic-prep"],
+  },
+  {
+    id:"plugin-equity-research",
+    type:"Plugin", name:"Equity Research", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/equity-research%40claude-for-financial-services",
+    desc:"Coverage and publishing workflows: post-earnings updates, earnings previews, initiating-coverage reports, model updates, thesis and catalyst tracking, and idea screens. Commands: /earnings, /earnings-preview, /initiate, /model-update, /morning-note, /sector, /thesis, /catalysts, /screen.",
+    note:"Earnings, coverage notes, and model updates.",
+    tags:["research","earnings","coverage"],
+    workflowIds:["market-research"],
+  },
+  {
+    id:"plugin-earnings-reviewer",
+    type:"Plugin", name:"Earnings Reviewer", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/earnings-reviewer%40claude-for-financial-services",
+    desc:"A packaged agent that ingests earnings calls and SEC filings, updates the financial model with new guidance, flags thesis-relevant changes, and stages a note draft for human review.",
+    note:"Ingests calls/filings → updates model → stages note.",
+    tags:["research","earnings","calls"],
+    workflowIds:["market-research","expert-calls"],
+  },
+  {
+    id:"plugin-market-researcher",
+    type:"Plugin", name:"Market Researcher", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/market-researcher%40claude-for-financial-services",
+    desc:"Takes a sector or theme and produces an industry overview, competitive landscape, peer comps, and a shortlist of ideas — synthesizing news, filings, and broker research.",
+    note:"Sector/theme → landscape, comps, idea shortlist.",
+    tags:["research","market","sector"],
+    workflowIds:["market-research"],
+  },
+  {
+    id:"plugin-valuation-reviewer",
+    type:"Plugin", name:"Valuation Reviewer", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/valuation-reviewer%40claude-for-financial-services",
+    desc:"Quality control for valuations: ingests GP packages, runs valuation templates, checks marks against comparables, methodology, and firm review standards, and stages LP-reporting outputs.",
+    note:"QC marks vs. comps/methodology; stages LP outputs.",
+    tags:["valuation","ic","portfolio"],
+    workflowIds:["cim-diligence","ic-prep"],
+  },
+  {
+    id:"plugin-statement-auditor",
+    type:"Plugin", name:"Statement Auditor", platform:"Claude for Financial Services",
+    badge:"Active", link:"https://claude.ai/customize/plugins/statement-auditor%40claude-for-financial-services",
+    desc:"Reviews financial and LP statements for consistency, completeness, and accuracy before distribution — catching errors and verifying audit-readiness.",
+    note:"Audits statements for accuracy before distribution.",
+    tags:["audit","dd","reporting"],
+    workflowIds:["cim-diligence"],
   },
 ];
 
@@ -2130,6 +2201,23 @@ const WORKFLOWS = [
   },
 ];
 
+// Every item (tool / connector / app / skill / plug-in) tied to a workflow, in BOTH
+// directions: listed in wf.toolIds, or carrying this workflow in its own workflowIds.
+// Used by the workflow card count and the workflow detail view so they always agree.
+const workflowItems = (wf) => {
+  const all  = [...TOOLS_REGISTRY, ...SKILLS_REGISTRY, ...PLUGINS_REGISTRY];
+  const seen = new Set();
+  const out  = [];
+  wf.toolIds.forEach(id => {
+    const it = all.find(t => t.id === id);
+    if (it && !seen.has(it.id)) { seen.add(it.id); out.push(it); }
+  });
+  all.forEach(it => {
+    if (it.workflowIds && it.workflowIds.includes(wf.id) && !seen.has(it.id)) { seen.add(it.id); out.push(it); }
+  });
+  return out;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // CLAUDE GUIDES
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2510,7 +2598,8 @@ const GuideDetail = ({ guide, onBack }) => (
 // Workflow detail view
 const WorkflowDetail = ({ wf, onBack }) => {
   const [expanded, setExpanded] = useState(null);
-  const tools   = wf.toolIds.map(id => TOOLS_REGISTRY.find(t => t.id === id)).filter(Boolean);
+  // Every item tagged to this workflow — tools, connectors, apps, skills, and plug-ins.
+  const tools   = workflowItems(wf);
   const prompts = wf.promptIds.map(id => PROMPTS_REGISTRY.find(p => p.id === id)).filter(Boolean);
 
   return (
@@ -2592,6 +2681,11 @@ function App() {
   const [skillWorkflowFilter, setSkillWorkflowFilter] = useState("All");
   const [skillWorkflowOpen, setSkillWorkflowOpen] = useState(false);
   const [skillTypeFilter, setSkillTypeFilter]     = useState("All");
+
+  const [pluginTagFilter, setPluginTagFilter]       = useState("All");
+  const [pluginTagOpen, setPluginTagOpen]           = useState(false);
+  const [pluginWorkflowFilter, setPluginWorkflowFilter] = useState("All");
+  const [pluginWorkflowOpen, setPluginWorkflowOpen] = useState(false);
 
   const q = search.toLowerCase();
 
@@ -2697,9 +2791,29 @@ function App() {
     return ["All", ...Array.from(s).sort()];
   }, []);
 
+  // Plugins filtering
+  const fPlugins = useMemo(() => PLUGINS_REGISTRY.filter(p =>
+    (pluginTagFilter === "All" || p.tags.includes(pluginTagFilter)) &&
+    (pluginWorkflowFilter === "All" || p.workflowIds.includes(pluginWorkflowFilter)) &&
+    (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q))
+  ), [pluginTagFilter, pluginWorkflowFilter, q]);
+
+  const pluginAllTags = useMemo(() => {
+    const s = new Set();
+    PLUGINS_REGISTRY.forEach(p => p.tags.forEach(tg => s.add(tg)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
+  const pluginAllWorkflows = useMemo(() => {
+    const s = new Set();
+    PLUGINS_REGISTRY.forEach(p => p.workflowIds.forEach(wf => s.add(wf)));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
+
   const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
   const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
-  const skillsCount = useMemo(() => fSkills.length + 7, [fSkills]);
+  const skillsCount = useMemo(() => fSkills.length, [fSkills]);
+  const pluginsCount = useMemo(() => fPlugins.length, [fPlugins]);
 
   const tabs = [
     { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
@@ -2707,6 +2821,7 @@ function App() {
     { id:"custom-tools", label:"🛠️ Custom Tools",  count:customToolsCount },
     { id:"connectors", label:"🔗 Connectors",      count:connectorsCount },
     { id:"skills",     label:"🧠 Skills",          count:skillsCount },
+    { id:"plugins",    label:"🔌 Plug-ins",        count:pluginsCount },
     { id:"external",   label:"🔧 External Tools",  count:EXTERNAL_TOOLS.length },
     { id:"guides",     label:"📖 Claude Guides",   count:GUIDES.length },
   ];
@@ -2800,10 +2915,12 @@ function App() {
                         <div style={{ fontSize:26, marginBottom:10 }}>{wf.icon}</div>
                         <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
+                        {(() => { const tc = workflowItems(wf).length; return (
                         <div style={{ marginTop:14, fontSize:11, color:wf.accent, fontWeight:600 }}>
-                          {wf.toolIds.length} tool{wf.toolIds.length!==1?"s":""}
+                          {tc} tool{tc!==1?"s":""}
                           {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
                         </div>
+                        ); })()}
                       </div>
                     ))}
                   </div>
@@ -3451,6 +3568,110 @@ function App() {
               </div>
             </div>
             )}
+
+          </div>
+        )}
+
+        {/* ── PLUG-INS ── */}
+        {tab === "plugins" && (
+          <div>
+            <p style={{ fontSize:13, color:C.textSec, marginBottom:16 }}>Anthropic plug-ins are pre-built bundles of skills, connectors, and slash commands. FTV has enabled Anthropic's <strong>Claude for Financial Services</strong> plug-ins — run them as-is, or use them (alongside FTV's templatized skills) as building blocks for your own.</p>
+
+            <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:16, marginBottom:32 }}>
+              {/* What is a plug-in */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🔌 What is an Anthropic plug-in?</div>
+                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                  A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style={{ color:C.textSec }}>/dcf</code> or <code style={{ color:C.textSec }}>/comps</code>) into one installable unit — a pre-built toolkit for an entire workflow.<br/><br/>
+                  Everything is <strong>file-based (markdown + JSON, no build step)</strong>, so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure. Install from <strong>Customize → Plug-ins</strong> in Claude (also in Claude Code and Cowork on paid plans).
+                </p>
+              </div>
+
+              {/* Building blocks */}
+              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🧱 Use plug-ins + FTV skills as building blocks</div>
+                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                  Plug-ins are <strong>templates, not black boxes.</strong> The fastest way to build a great FTV skill is to start from one that already works: open a plug-in's <strong>SKILL.md</strong>, study its triggers, instructions, and output format, then adapt it.<br/><br/>
+                  Pair them with the <strong>FTV templatized skills</strong> in this hub (IC Diligence, Sourcing Outreach, Right to Win, FSI Comps, FTV PPT Template) — use the Anthropic plug-in for the heavy modeling and the FTV skill for firm-specific format and voice.<br/><br/>
+                  <strong>Recipe:</strong> install the closest plug-in → run its slash command on a real deal → copy the skill file → edit it with FTV context → upload it via <strong>Customize → Skills</strong> as your own. Built something the team should have? Reach out to the <strong>AI &amp; Data team</strong> to provision it firm-wide.
+                </p>
+              </div>
+            </div>
+
+            {/* Plugin Filters */}
+            <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
+              <div style={{ position:"relative" }}>
+                <button onClick={() => setPluginTagOpen(!pluginTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                  Tag: {pluginTagFilter} ▼
+                </button>
+                {pluginTagOpen && (
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:150 }}>
+                    {pluginAllTags.map(t => (
+                      <button key={t} onClick={() => { setPluginTagFilter(t); setPluginTagOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:pluginTagFilter === t ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div style={{ position:"relative" }}>
+                <button onClick={() => setPluginWorkflowOpen(!pluginWorkflowOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                  Workflow: {pluginWorkflowFilter} ▼
+                </button>
+                {pluginWorkflowOpen && (
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:180 }}>
+                    {pluginAllWorkflows.map(w => {
+                      const wf = WORKFLOWS.find(wk => wk.id === w);
+                      return (
+                        <button key={w} onClick={() => { setPluginWorkflowFilter(w); setPluginWorkflowOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:pluginWorkflowFilter === w ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
+                          {wf ? `${wf.icon} ${wf.label}` : w}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Enabled Plug-ins Section */}
+            <div style={{ marginBottom:32 }}>
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Enabled FTV Plug-ins</div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
+                {fPlugins.map(p => (
+                  <div key={p.id} style={{ ...card, padding:20 }}>
+                    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8, gap:8 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
+                        <TypeBadge type={p.type}/>
+                        <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{p.name}</span>
+                      </div>
+                      <StatusBadge label={p.badge}/>
+                    </div>
+                    <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Platform: <span style={{ color:C.textSec }}>{p.platform}</span></div>
+                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                      {p.desc}
+                    </div>
+                    {p.workflowIds.length > 0 && (
+                      <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                        <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                          {p.workflowIds.map(wid => {
+                            const wf = WORKFLOWS.find(w => w.id === wid);
+                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:8, flexWrap:"wrap" }}>
+                      <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
+                        {p.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                      </div>
+                      {p.link && p.link !== "#" &&
+                        <a href={p.link} target="_blank" rel="noreferrer" style={{ fontSize:11, color:C.goldLight, textDecoration:"none", whiteSpace:"nowrap" }}>Open ↗</a>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
           </div>
         )}
