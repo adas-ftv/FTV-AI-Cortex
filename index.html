@@ -3276,6 +3276,18 @@ function App() {
                 </p>
               </div>
 
+              {/* How to download & upload skills — HIGHLIGHTED */}
+              <div style={{ backgroundColor:"#2a2000", border:`2px solid ${C.gold}`, borderRadius:10, padding:20, boxShadow:`0 0 0 1px ${C.gold}33` }}>
+                <div style={{ fontSize:14, fontWeight:800, color:C.goldLight, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+                  <span style={{ fontSize:18 }}>⬇️</span> How to download &amp; upload a skill
+                </div>
+                <ol style={{ fontSize:13, color:C.textPri, lineHeight:2, paddingLeft:20, margin:0, fontWeight:500 }}>
+                  <li>Click <strong style={{ color:C.goldLight }}>Download from SharePoint</strong> on any downloadable skill tile below</li>
+                  <li>In Claude or ChatGPT, go to <strong style={{ color:C.goldLight }}>Customize → Skills → Upload skill</strong></li>
+                  <li>Upload the .skill file (or zip folder) — it's now available in all your conversations</li>
+                </ol>
+              </div>
+
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
                 {/* How to manage firm-level skills */}
                 <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
@@ -3287,23 +3299,13 @@ function App() {
                   </ol>
                 </div>
 
-                {/* How to download & upload skills */}
+                {/* Share skills */}
                 <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                  <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>⬇️ How to download & upload skills</div>
-                  <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
-                    <li>Click <strong>Download from SharePoint</strong> on any downloadable skill tile below</li>
-                    <li>In Claude or ChatGPT, go to <strong>Customize → Skills → Upload skill</strong></li>
-                    <li>Upload the .skill file (or zip folder) — it's now available in all your conversations</li>
-                  </ol>
+                  <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🤝 Share skills with your team</div>
+                  <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
+                    Built something useful? Send the SKILL.md file directly to teammates or a specific deal team — they upload it once and it works immediately. To share a skill across the entire firm, reach out to the <strong>AI & Data team</strong> and we'll test, package, and provision it org-wide.
+                  </p>
                 </div>
-              </div>
-
-              {/* Share skills */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🤝 Share skills with your team</div>
-                <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
-                  Built something useful? Send the SKILL.md file directly to teammates or a specific deal team — they upload it once and it works immediately. To share a skill across the entire firm, reach out to the <strong>AI & Data team</strong> and we'll test, package, and provision it org-wide.
-                </p>
               </div>
             </div>
 
@@ -3377,7 +3379,7 @@ function App() {
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-framework.skill?csf=1&web=1&e=wtab0P" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                     Download from SharePoint ↗
                   </a>
                 </div>
