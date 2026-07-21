@@ -3534,6 +3534,31 @@ function App() {
                   </a>
                 </div>
 
+                {/* Download tile — Pipeline Review */}
+                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Pipeline Review</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Reviews pipeline independent of DealCloud priority and contact history — run it against a specific person's name or a sub-sector/space to surface relevant companies and activity without being filtered by existing DC status.
+                  </div>
+                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                      {["sourcing-outreach","market-research"].map(wid => {
+                        const wf = WORKFLOWS.find(w => w.id === wid);
+                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                      })}
+                    </div>
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["pipeline","sourcing","sub-sector","dealcloud"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/pipeline-review.skill?csf=1&web=1&e=OebkPp" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
               </div>
             </div>
             )}
