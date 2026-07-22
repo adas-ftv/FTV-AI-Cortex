@@ -99,14 +99,14 @@ is the variable name (grep for it). Refresh per the
 
 | Registry | Line (approx) | Entries | Purpose |
 |---|---|---|---|
-| `TOOLS_REGISTRY` | ~83 | 16 | Custom Tools + Connectors + Apps + MCP Servers, split by `type` |
-| `SKILLS_REGISTRY` | ~233 | 13 | Firm-enabled Claude Skills (auto-fire; excludes downloadables) |
-| `DOWNLOAD_SKILLS` | ~357 | 8 | Downloadable `.skill` files (SharePoint), rendered via `.map()` in the Skills tab |
-| `PLUGINS_REGISTRY` | ~428 | 7 | Anthropic *Claude for Financial Services* plug-ins |
-| `PROMPTS_REGISTRY` | ~497 | 13 | Prompt Library (Deep Research + Due Diligence) |
-| `WORKFLOWS` | ~2216 | 7 | Start Here workflows; hold `toolIds`/`promptIds`, accent color |
-| `GUIDES` | ~2295 | 6 | Claude Guides tab content |
-| `EXTERNAL_TOOLS` | ~2543 | 3 | Third-party tools (QuikIRR, Fellow AI, Encore Compliance) |
+| `TOOLS_REGISTRY` | ~83 | 17 | Custom Tools + Connectors + Apps + MCP Servers, split by `type` |
+| `SKILLS_REGISTRY` | ~242 | 13 | Firm-enabled Claude Skills (auto-fire; excludes downloadables) |
+| `DOWNLOAD_SKILLS` | ~366 | 8 | Downloadable `.skill` files (SharePoint), rendered via `.map()` in the Skills tab |
+| `PLUGINS_REGISTRY` | ~437 | 7 | Anthropic *Claude for Financial Services* plug-ins |
+| `PROMPTS_REGISTRY` | ~506 | 13 | Prompt Library (Deep Research + Due Diligence) |
+| `WORKFLOWS` | ~2225 | 7 | Start Here workflows; hold `toolIds`/`promptIds`, accent color |
+| `GUIDES` | ~2304 | 6 | Claude Guides tab content |
+| `EXTERNAL_TOOLS` | ~2552 | 3 | Third-party tools (QuikIRR, Fellow AI, Encore Compliance) |
 
 **Item shape** (tools/skills/plugins share this):
 `id, type, name, platform, badge, link, desc, note, tags[], workflowIds[]`.
