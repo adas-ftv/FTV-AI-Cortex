@@ -51,24 +51,42 @@ This is where ~all feature work happens.
 ### How content is rendered
 - **Connectors, Custom Tools, and Apps are NOT separate arrays.** They are
   `TOOLS_REGISTRY` entries discriminated by their `type` field and split at render time
-  via `useMemo` filters: `fCustomTools` (line ~2733), `fConnectors` (line ~2748,
-  `t.type === "Connector"`), `fSkills` (line ~2762). Tab counts derive from these
-  (`customToolsCount`/`connectorsCount`/`skillsCount`, lines ~2813–2815).
-- **Tabs** are declared in the `tabs` array (line ~2818). There are 8:
+  via `useMemo` filters: `fCustomTools` (line ~2804), `fConnectors` (line ~2819,
+  `t.type === "Connector"`), `fSkills` (line ~2833, firm-enabled only), `fPlugins`
+  (line ~2866). Tab counts derive from these (`customToolsCount`/`connectorsCount`/
+  `pluginsCount`, lines ~2884–2893).
+- **Downloadable skills are a separate registry, not a `TOOLS_REGISTRY` filter.**
+  `DOWNLOAD_SKILLS` is rendered via its own `.map()` in the Skills tab's "Downloadable"
+  section, alongside the firm-enabled `SKILLS_REGISTRY` section. The Skills tab count
+  (`skillsCount`, line ~2892) is `totalFirmSkillsCount + DOWNLOAD_SKILLS.length` —
+  a fixed total independent of active tag/workflow filters (do not swap this back to a
+  filtered `.length`, that was a prior bug). `skillCountByWorkflow` (nearby) sums
+  firm + downloadable skills per workflow for the Start Here tile labels.
+- **Tabs** are declared in the `tabs` array (line ~2911). There are 8:
   `⚡ Start Here` · `📋 Prompt Library` · `🛠️ Custom Tools` · `🔗 Connectors` ·
   `🧠 Skills` · `🔌 Plug-ins` · `🔧 External Tools` · `📖 Claude Guides`.
 - **Cross-linking:** an item shows up on the **Start Here** workflow tiles and in a
-  workflow's detail view via its `workflowIds`. A shared helper unions items in both
-  directions (a workflow's `toolIds`/`promptIds` **and** each item's own `workflowIds`),
-  so always give a new item accurate `workflowIds` or it will be invisible on those pages.
+  workflow's detail view via its `workflowIds`. A shared `workflowItems()` helper unions
+  items across `TOOLS_REGISTRY`/`SKILLS_REGISTRY`/`PLUGINS_REGISTRY` in both directions (a
+  workflow's `toolIds` **and** each item's own `workflowIds`), so always give a new item
+  accurate `workflowIds` or it will be invisible on those pages. Note `DOWNLOAD_SKILLS`
+  is **not** included in `workflowItems()` — its workflow tie-in only feeds
+  `skillCountByWorkflow` for the Start Here tile's skill count, not the tool count/detail
+  list. The Start Here tile count itself is split: `workflowItems(wf).filter(it => it.type
+  !== "Skill").length` for tools (avoids double-counting firm skills that `skillCountByWorkflow`
+  already covers) plus `skillCountByWorkflow[wf.id]` for skills.
 
 ### Common recipe — add a skill
-Append an object to `SKILLS_REGISTRY` matching the existing shape
-(`id, type:"Skill", name, platform, badge, link, desc, note, tags[], workflowIds[]`),
-give it real `workflowIds`, then bump the SKILLS count in the
-[Registry inventory](#registry-inventory) below. Same pattern for tools/connectors
-(`TOOLS_REGISTRY`), plug-ins (`PLUGINS_REGISTRY`), external tools (`EXTERNAL_TOOLS`), and
-prompts (`PROMPTS_REGISTRY`).
+- **Firm-enabled (auto-fires):** append to `SKILLS_REGISTRY` matching the existing shape
+  (`id, type:"Skill", name, platform, badge, link, desc, note, tags[], workflowIds[]`).
+- **Downloadable (.skill file on SharePoint):** append to `DOWNLOAD_SKILLS` instead —
+  lighter shape (`id, name, desc, tags[], workflowIds[], link`), rendered in the same
+  Skills tab under its own "Downloadable" section. Verify the SharePoint link resolves
+  before shipping (dead `.skill` links have shipped before).
+- Either way, give it real `workflowIds`, then bump the relevant count in the
+  [Registry inventory](#registry-inventory) below. Same pattern for tools/connectors
+  (`TOOLS_REGISTRY`), plug-ins (`PLUGINS_REGISTRY`), external tools (`EXTERNAL_TOOLS`), and
+  prompts (`PROMPTS_REGISTRY`).
 
 ---
 
@@ -82,15 +100,18 @@ is the variable name (grep for it). Refresh per the
 | Registry | Line (approx) | Entries | Purpose |
 |---|---|---|---|
 | `TOOLS_REGISTRY` | ~83 | 16 | Custom Tools + Connectors + Apps + MCP Servers, split by `type` |
-| `SKILLS_REGISTRY` | ~233 | 13 | Firm-enabled & downloadable Claude Skills |
-| `PLUGINS_REGISTRY` | ~357 | 7 | Anthropic *Claude for Financial Services* plug-ins |
-| `PROMPTS_REGISTRY` | ~426 | 13 | Prompt Library (Deep Research + Due Diligence) |
-| `WORKFLOWS` | ~2145 | 7 | Start Here workflows; hold `toolIds`/`promptIds`, accent color |
-| `GUIDES` | ~2224 | 6 | Claude Guides tab content |
-| `EXTERNAL_TOOLS` | ~2472 | 3 | Third-party tools (QuikIRR, Fellow AI, Encore Compliance) |
+| `SKILLS_REGISTRY` | ~233 | 13 | Firm-enabled Claude Skills (auto-fire; excludes downloadables) |
+| `DOWNLOAD_SKILLS` | ~357 | 8 | Downloadable `.skill` files (SharePoint), rendered via `.map()` in the Skills tab |
+| `PLUGINS_REGISTRY` | ~428 | 7 | Anthropic *Claude for Financial Services* plug-ins |
+| `PROMPTS_REGISTRY` | ~497 | 13 | Prompt Library (Deep Research + Due Diligence) |
+| `WORKFLOWS` | ~2216 | 7 | Start Here workflows; hold `toolIds`/`promptIds`, accent color |
+| `GUIDES` | ~2295 | 6 | Claude Guides tab content |
+| `EXTERNAL_TOOLS` | ~2543 | 3 | Third-party tools (QuikIRR, Fellow AI, Encore Compliance) |
 
 **Item shape** (tools/skills/plugins share this):
 `id, type, name, platform, badge, link, desc, note, tags[], workflowIds[]`.
+`DOWNLOAD_SKILLS` items use a lighter shape: `id, name, desc, tags[], workflowIds[], link`
+(no `type`/`platform`/`badge` — those fields are implied by the "Downloadable" section).
 `WORKFLOWS` items use `id, icon, label, desc, accent, toolIds[], promptIds[], tip`.
 `PROMPTS_REGISTRY` items use numeric `id, category, title, source (SharePoint URL), desc,
 labels[], workflowIds[], text` (backtick prompt template).
@@ -168,7 +189,7 @@ updates it as part of editing the cortex. When you change `index.html`:
    a new convention, add a bullet so the next session doesn't rediscover it.
 3. **Refresh line numbers** when they've drifted:
    ```
-   grep -n "const TOOLS_REGISTRY\|const SKILLS_REGISTRY\|const PLUGINS_REGISTRY\|const PROMPTS_REGISTRY\|const WORKFLOWS\|const GUIDES\|const EXTERNAL_TOOLS" index.html
+   grep -n "const TOOLS_REGISTRY\|const SKILLS_REGISTRY\|const DOWNLOAD_SKILLS\|const PLUGINS_REGISTRY\|const PROMPTS_REGISTRY\|const WORKFLOWS\|const GUIDES\|const EXTERNAL_TOOLS" index.html
    ```
    To re-count a registry's entries, count its `id:` fields between its opening `[` and
    closing `];`.

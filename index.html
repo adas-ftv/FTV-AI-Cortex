@@ -351,6 +351,77 @@ const SKILLS_REGISTRY = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DOWNLOAD SKILLS REGISTRY — .skill files downloaded from SharePoint and
+// uploaded manually into Claude/ChatGPT. Not auto-fired like SKILLS_REGISTRY.
+// ─────────────────────────────────────────────────────────────────────────────
+const DOWNLOAD_SKILLS = [
+  {
+    id:"dl-prospect-scoring",
+    name:"Prospect Scoring Analysis",
+    desc:"Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.",
+    tags:["prospect-scoring","sourcing","sales","analytics"],
+    workflowIds:["sourcing-outreach","market-research"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-framework.skill?csf=1&web=1&e=wtab0P",
+  },
+  {
+    id:"dl-subsector-tagger",
+    name:"Sub-Sector Tagger",
+    desc:"Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.",
+    tags:["sourcing","classification","sub-sector","pipeline"],
+    workflowIds:["sourcing-outreach","market-research"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU",
+  },
+  {
+    id:"dl-meeting-prep-deck",
+    name:"Meeting Prep Deck",
+    desc:"Builds a structured meeting prep deck for management meetings and diligence calls. Surfaces company background, key questions, and prior context automatically.",
+    tags:["meeting-prep","diligence","management","dd"],
+    workflowIds:["cim-diligence","expert-calls"],
+    link:"https://ftvcapital1.sharepoint.com/:f:/r/sites/AI/Shared%20Documents/FTV%20Skills/meeting-prep-deck?csf=1&web=1&e=HiU8jK",
+  },
+  {
+    id:"dl-expert-call-notes",
+    name:"Expert Call Notes Summary",
+    desc:"Transforms raw expert call notes into a clean, structured summary with key insights, sentiment, and diligence-ready takeaways.",
+    tags:["expert-calls","notes","diligence","dd"],
+    workflowIds:["expert-calls","cim-diligence"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/notes-summary-expert-call.skill?csf=1&web=1&e=PnkGIV",
+  },
+  {
+    id:"dl-sector-market-sizing",
+    name:"Sector Market Sizing",
+    desc:"Structures a bottom-up and top-down market sizing analysis for a given sector or sub-sector. Estimates TAM, SAM, and SOM using available data sources, public benchmarks, and FTV sector frameworks.",
+    tags:["market-sizing","research","sectors","dd"],
+    workflowIds:["market-research","cim-diligence"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/sector-market-sizing.skill?csf=1&web=1&e=NaHqDu",
+  },
+  {
+    id:"dl-portfolio-review",
+    name:"Portfolio Review",
+    desc:"Generates structured portfolio company review summaries covering performance highlights, KPIs, strategic initiatives, and key risks. Designed for board updates, LP reporting, and internal portfolio monitoring.",
+    tags:["portfolio","review","reporting","lp"],
+    workflowIds:["ic-prep","general-admin"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/portfolio-review.skill?csf=1&web=1&e=8UMACh",
+  },
+  {
+    id:"dl-conference-list-scrubber",
+    name:"Conference List / Market Map Scrubber",
+    desc:"Turns market decks, conference attendee lists, and logo maps into enriched, actionable output — extracting every company, tagging by sector and relevance, and producing a clean Excel-ready table in minutes.",
+    tags:["sourcing","enrichment","market-map","conference"],
+    workflowIds:["sourcing-outreach","market-research"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/conference-list-scrubbing.skill?csf=1&web=1&e=rZp02k",
+  },
+  {
+    id:"dl-pipeline-review",
+    name:"Pipeline Review",
+    desc:"Reviews pipeline independent of DealCloud priority and contact history — run it against a specific person's name or a sub-sector/space to surface relevant companies and activity without being filtered by existing DC status.",
+    tags:["pipeline","sourcing","sub-sector","dealcloud"],
+    workflowIds:["sourcing-outreach","market-research"],
+    link:"https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/pipeline-review.skill?csf=1&web=1&e=OebkPp",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // PLUGINS REGISTRY — Anthropic Claude for Financial Services plug-ins
 // Each bundles skills, connectors, and slash commands. Use as templates.
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2812,8 +2883,30 @@ function App() {
 
   const customToolsCount = useMemo(() => fCustomTools.length, [fCustomTools]);
   const connectorsCount = useMemo(() => fConnectors.length, [fConnectors]);
-  const skillsCount = useMemo(() => fSkills.length, [fSkills]);
+  const totalFirmSkillsCount = useMemo(() => SKILLS_REGISTRY.filter(s =>
+    s.id !== "skill-expert-network" &&
+    s.id !== "skill-dealcloud" &&
+    s.id !== "skill-portfolio" &&
+    s.id !== "skill-gpn"
+  ).length, []);
+  const skillsCount = totalFirmSkillsCount + DOWNLOAD_SKILLS.length;
   const pluginsCount = useMemo(() => fPlugins.length, [fPlugins]);
+
+  const skillCountByWorkflow = useMemo(() => {
+    const counts = {};
+    WORKFLOWS.forEach(wf => {
+      const firmCount = SKILLS_REGISTRY.filter(s =>
+        s.id !== "skill-expert-network" &&
+        s.id !== "skill-dealcloud" &&
+        s.id !== "skill-portfolio" &&
+        s.id !== "skill-gpn" &&
+        s.workflowIds.includes(wf.id)
+      ).length;
+      const downloadCount = DOWNLOAD_SKILLS.filter(d => d.workflowIds.includes(wf.id)).length;
+      counts[wf.id] = firmCount + downloadCount;
+    });
+    return counts;
+  }, []);
 
   const tabs = [
     { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
@@ -2915,9 +3008,10 @@ function App() {
                         <div style={{ fontSize:26, marginBottom:10 }}>{wf.icon}</div>
                         <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
-                        {(() => { const tc = workflowItems(wf).length; return (
+                        {(() => { const tc = workflowItems(wf).filter(it => it.type !== "Skill").length; const sc = skillCountByWorkflow[wf.id] || 0; return (
                         <div style={{ marginTop:14, fontSize:11, color:wf.accent, fontWeight:600 }}>
                           {tc} tool{tc!==1?"s":""}
+                          {sc>0?` · ${sc} skill${sc!==1?"s":""}`:""}
                           {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
                         </div>
                         ); })()}
@@ -3358,207 +3452,31 @@ function App() {
             <div style={{ marginBottom:32 }}>
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Downloadable Skills</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
-
-                {/* Download tile — Prospect Scoring Analysis */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["sourcing-outreach","market-research"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
+                {DOWNLOAD_SKILLS.map(d => (
+                  <div key={d.id} style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                      <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{d.name}</span>
+                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
                     </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-framework.skill?csf=1&web=1&e=wtab0P" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Sub-Sector Tagger */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sub-Sector Tagger</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["sourcing-outreach","market-research"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
+                    <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                      {d.desc}
                     </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["sourcing","classification","sub-sector","pipeline"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Meeting Prep Deck */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Meeting Prep Deck</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Builds a structured meeting prep deck for management meetings and diligence calls. Surfaces company background, key questions, and prior context automatically.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["cim-diligence","expert-calls"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
+                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+                        {d.workflowIds.map(wid => {
+                          const wf = WORKFLOWS.find(w => w.id === wid);
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                        })}
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["meeting-prep","diligence","management","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:f:/r/sites/AI/Shared%20Documents/FTV%20Skills/meeting-prep-deck?csf=1&web=1&e=HiU8jK" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Expert Call Notes Summary */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Expert Call Notes Summary</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Transforms raw expert call notes into a clean, structured summary with key insights, sentiment, and diligence-ready takeaways.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["expert-calls","cim-diligence"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
+                    <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                      {d.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
+                    <a href={d.link} target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                      Download from SharePoint ↗
+                    </a>
                   </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["expert-calls","notes","diligence","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/notes-summary-expert-call.skill?csf=1&web=1&e=PnkGIV" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Sector Market Sizing */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sector Market Sizing</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Structures a bottom-up and top-down market sizing analysis for a given sector or sub-sector. Estimates TAM, SAM, and SOM using available data sources, public benchmarks, and FTV sector frameworks.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["market-research","cim-diligence"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
-                    </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["market-sizing","research","sectors","dd"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/sector-market-sizing.skill?csf=1&web=1&e=NaHqDu" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Portfolio Review */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Portfolio Review</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Generates structured portfolio company review summaries covering performance highlights, KPIs, strategic initiatives, and key risks. Designed for board updates, LP reporting, and internal portfolio monitoring.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["ic-prep","general-admin"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
-                    </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["portfolio","review","reporting","lp"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/portfolio-review.skill?csf=1&web=1&e=8UMACh" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Conference List / Market Map Scrubber */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Conference List / Market Map Scrubber</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Turns market decks, conference attendee lists, and logo maps into enriched, actionable output — extracting every company, tagging by sector and relevance, and producing a clean Excel-ready table in minutes.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["sourcing-outreach","market-research"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
-                    </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["sourcing","enrichment","market-map","conference"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/conference-list-scrubbing.skill?csf=1&web=1&e=rZp02k" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Pipeline Review */}
-                <div style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Pipeline Review</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Reviews pipeline independent of DealCloud priority and contact history — run it against a specific person's name or a sub-sector/space to surface relevant companies and activity without being filtered by existing DC status.
-                  </div>
-                  <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-                      {["sourcing-outreach","market-research"].map(wid => {
-                        const wf = WORKFLOWS.find(w => w.id === wid);
-                        return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
-                      })}
-                    </div>
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["pipeline","sourcing","sub-sector","dealcloud"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/pipeline-review.skill?csf=1&web=1&e=OebkPp" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
+                ))}
               </div>
             </div>
             )}
