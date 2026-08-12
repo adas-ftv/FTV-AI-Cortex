@@ -123,7 +123,7 @@ const TOOLS_REGISTRY = [
     desc:"Connects Claude and ChatGPT to Outlook, Teams, Calendar, and SharePoint. Enables direct VDR access for deal diligence.",
     note:"",
     tags:["ops","data","dd","admin"],
-    workflowIds:["cim-diligence","general-admin"],
+    workflowIds:["cim-diligence","ic-prep","general-admin"],
   },
   {
     id:"third-bridge",
@@ -177,7 +177,7 @@ const TOOLS_REGISTRY = [
     desc:"Expert network platform providing access to industry specialists and subject matter experts. Search and surface relevant expert perspectives, interview transcripts, and sector-specific insights to support diligence and market research.",
     note:"",
     tags:["research","calls","expert","dd"],
-    workflowIds:["expert-calls","cim-diligence"],
+    workflowIds:["expert-calls","cim-diligence","market-research"],
   },
   {
     id:"fellow-mcp",
@@ -204,7 +204,7 @@ const TOOLS_REGISTRY = [
     desc:"Pull live DealCloud CRM data: companies, financials, deals, interactions, and contacts. Direct access to FTV's deal pipeline and relationship management data.",
     note:"Live connection to FTV DealCloud CRM.",
     tags:["data","crm","sourcing","deals"],
-    workflowIds:["sourcing-outreach","general-admin"],
+    workflowIds:["sourcing-outreach","initial-profile","general-admin"],
   },
   {
     id:"portfolio-mcp",
@@ -213,7 +213,7 @@ const TOOLS_REGISTRY = [
     desc:"Access FTV portfolio company profiles, sectors, and capabilities. Look up portfolio company financials, ownership structure, and industry data.",
     note:"Portfolio company profiles and sector data.",
     tags:["research","data","sourcing"],
-    workflowIds:["sourcing-outreach","market-research"],
+    workflowIds:["sourcing-outreach","market-research","ic-prep"],
   },
   {
     id:"gpn-mcp",
@@ -2101,7 +2101,7 @@ const WORKFLOWS = [
     id:"market-research", icon:"🗺", label:"Market & Sector Research",
     desc:"Sector landscapes, market maps, and competitive analysis",
     accent:"#5DC994",
-    toolIds:["pitchbook","alphasense"],
+    toolIds:["pitchbook","factset","g2-connector"],
     promptIds:[2,6,7,8],
     tip:"Use Deep Research mode in Claude Opus or ChatGPT for the most comprehensive output. PitchBook connector adds live company data automatically.",
   },
@@ -2125,7 +2125,7 @@ const WORKFLOWS = [
     id:"expert-calls", icon:"📞", label:"Expert & Customer Calls",
     desc:"Surface insights from historical call transcripts and expert sessions",
     accent:"#5DC994",
-    toolIds:["expert-gpt","alphasense"],
+    toolIds:["expert-gpt","third-bridge","guidepoint-mcp"],
     promptIds:[],
     tip:"Before a management meeting or reference call, run the Expert Network Agent first to surface prior context and identify gaps to fill.",
   },
