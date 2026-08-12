@@ -135,6 +135,15 @@ const TOOLS_REGISTRY = [
     workflowIds:["expert-calls","cim-diligence","market-research"],
   },
   {
+    id:"factset",
+    type:"Connector", name:"FactSet", platform:"Claude + ChatGPT",
+    badge:"Active", link:"https://claude.ai/directory/connectors/f2da5b67-41bc-4ce9-8eb8-f18ab09bde5a",
+    desc:"Institutional financial data platform connected directly to Claude and ChatGPT. Available data includes: fundamentals, estimates/consensus, ownership, and pricing; people/leadership data and entity reference; M&A transactions and PE/VC data; unstructured content search across financial documents; and private company financial data, executive profiles, and funding insights.",
+    note:"",
+    tags:["research","data","financials","dd","valuation","market-research"],
+    workflowIds:["market-research","cim-diligence","ic-prep"],
+  },
+  {
     id:"outreach-app",
     type:"Custom App", name:"FTV Outreach Generator", platform:"Microsoft",
     badge:"Active", link:"https://launcher.myapps.microsoft.com/api/signin/5b0f18f4-6c70-48af-b13b-bbbcf1af108e?tenantId=5d499720-ad8d-4e33-bf72-ec145ee39ad6",
@@ -319,6 +328,15 @@ const SKILLS_REGISTRY = [
     note:"Auto-fires on board deck review and board meeting prep requests.",
     tags:["board","portfolio","ic","writing","dd"],
     workflowIds:["ic-prep","cim-diligence"],
+  },
+  {
+    id:"skill-ftv-operational-data",
+    type:"Skill", name:"FTV Operational Data", platform:"Claude + ChatGPT",
+    badge:"Active", link:"#",
+    desc:"Connects Claude to FTV's internal operational data systems — DealCloud CRM, portfolio databases, and Snowflake analytics. Enables direct queries on pipeline activity, portfolio company metrics, contact relationships, deal history, fund-level data, and interaction tracking. Triggers on questions about FTV portfolio companies, deal activity, pipeline status, relationship history, or firm-level analytics.",
+    note:"Auto-fires on queries about FTV pipeline, portfolio, and operational data.",
+    tags:["data","portfolio","sourcing","crm","ops"],
+    workflowIds:["sourcing-outreach","cim-diligence","general-admin"],
   },
 ];
 
