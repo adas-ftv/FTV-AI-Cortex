@@ -127,7 +127,7 @@ const TOOLS_REGISTRY = [
   },
   {
     id:"third-bridge",
-    type:"Connector", name:"Third Bridge", platform:"Claude",
+    type:"Connector", name:"Third Bridge", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
     desc:"Expert network and research platform with access to industry specialists, sector primers, and company-specific interview transcripts. Surfaces relevant expert perspectives to support diligence and market analysis.",
     note:"",
@@ -172,7 +172,7 @@ const TOOLS_REGISTRY = [
   },
   {
     id:"guidepoint-mcp",
-    type:"Connector", name:"Guidepoint", platform:"Claude",
+    type:"Connector", name:"Guidepoint", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
     desc:"Expert network platform providing access to industry specialists and subject matter experts. Search and surface relevant expert perspectives, interview transcripts, and sector-specific insights to support diligence and market research.",
     note:"",
@@ -199,7 +199,7 @@ const TOOLS_REGISTRY = [
   },
   {
     id:"dealcloud-mcp",
-    type:"Connector", name:"DealCloud MCP", platform:"Claude",
+    type:"Connector", name:"DealCloud MCP", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
     desc:"Pull live DealCloud CRM data: companies, financials, deals, interactions, and contacts. Direct access to FTV's deal pipeline and relationship management data.",
     note:"Live connection to FTV DealCloud CRM.",
@@ -208,7 +208,7 @@ const TOOLS_REGISTRY = [
   },
   {
     id:"portfolio-mcp",
-    type:"Connector", name:"Portfolio MCP", platform:"Claude",
+    type:"Connector", name:"Portfolio MCP", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
     desc:"Access FTV portfolio company profiles, sectors, and capabilities. Look up portfolio company financials, ownership structure, and industry data.",
     note:"Portfolio company profiles and sector data.",
@@ -217,7 +217,7 @@ const TOOLS_REGISTRY = [
   },
   {
     id:"gpn-mcp",
-    type:"Connector", name:"GPN MCP", platform:"Claude",
+    type:"Connector", name:"GPN MCP", platform:"Claude + ChatGPT",
     badge:"Active", link:"#",
     desc:"Global Partner Network contacts, bios, and relationship activity. Find relevant GPN members by expertise, and track engagement history.",
     note:"GPN contact database and relationship history.",
@@ -2125,7 +2125,7 @@ const WORKFLOWS = [
     id:"expert-calls", icon:"📞", label:"Expert & Customer Calls",
     desc:"Surface insights from historical call transcripts and expert sessions",
     accent:"#5DC994",
-    toolIds:["expert-gpt","third-bridge","guidepoint-mcp"],
+    toolIds:["expert-gpt","guidepoint-mcp"],
     promptIds:[],
     tip:"Before a management meeting or reference call, run the Expert Network Agent first to surface prior context and identify gaps to fill.",
   },
