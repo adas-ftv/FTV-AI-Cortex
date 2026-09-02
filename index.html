@@ -225,9 +225,9 @@ const SKILLS_REGISTRY = [
     id:"skill-sourcing",
     type:"Skill", name:"Sourcing Outreach", platform:"Claude",
     badge:"Active", link:"#",
-    desc:"Drafts personalized CEO/CRO cold outreach in FTV's voice. Auto-fires when drafting sourcing emails.",
-    note:"Auto-fires when drafting outreach.",
-    tags:["sourcing","outreach","email"],
+    desc:"Drafts complete, personalized cold outreach emails from an FTV team member to founders or management teams. Checks DealCloud CRM first to surface prior contact, timing signals, and account ownership before drafting. Generates pre-send notes alongside the full email. Supports English and French recipients. Triggers on: 'outreach email', 'cold email', 'draft an email to [founder/company]', or any company name/URL provided for outreach purposes.",
+    note:"Auto-fires when drafting founder outreach.",
+    tags:["sourcing","outreach","email","crm"],
     workflowIds:["sourcing-outreach"],
   },
   {
@@ -2264,7 +2264,7 @@ const GUIDES = [
       ]},
       { heading:"FTV skills enabled at the org level", numbered:false, steps:[
         "<strong>IC Diligence</strong> — Produces FTV-format Initial Profiles from CIMs, VDRs, and financial models. Triggers on: deal analysis, Initial Profile, IC prep.",
-        "<strong>Sourcing Outreach</strong> — Drafts personalized CEO/CRO cold outreach in FTV's voice. Triggers on: drafting sourcing or outreach emails.",
+        "<strong>Sourcing Outreach</strong> — Drafts complete, personalized cold outreach emails to founders, checking DealCloud CRM first for prior contact and timing signals. Triggers on: 'outreach email', 'cold email', or any company/URL provided for outreach.",
         "<strong>Right to Win</strong> — Structures a right-to-win competitive assessment. Triggers on: competitive positioning or right-to-win analysis.",
         "<strong>Risk Framework</strong> — Builds a structured risk and mitigant table. Triggers on: deal risks, bear case, risk analysis.",
         "<strong>IC Materials</strong> — Produces IC-ready slide content. Triggers on: creating IC slides or presentation materials.",
