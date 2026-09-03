@@ -7,6 +7,9 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <!-- Google Analytics 4 for page visit tracking -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VW1MVE100"></script>
   <script>
@@ -61,6 +64,35 @@ const TYPE_MAP = {
 
 const SP_BASE = "https://ftvcapital1.sharepoint.com/sites/AI/Shared%20Documents/Deep%20Research/Deep%20Research%20Prompts/";
 const SP_LIST  = "https://ftvcapital1.sharepoint.com/sites/AI/Lists/List/AllItems.aspx";
+// ─────────────────────────────────────────────────────────────────────────────
+// LUCIDE SVG ICONS — monochrome, single weight, one color
+// ─────────────────────────────────────────────────────────────────────────────
+const Icon = ({ d, size = 20, color = C.textSec, strokeWidth = 1.75 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+    {Array.isArray(d) ? d.map((p,i) => <path key={i} d={p}/>) : <path d={d}/>}
+  </svg>
+);
+const ICON = {
+  send:       ["M22 2L11 13","M22 2L15 22L11 13L2 9L22 2"],
+  building:   ["M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18","M2 22h20","M10 6h.01","M14 6h.01","M10 10h.01","M14 10h.01","M10 14h.01","M14 14h.01","M10 18h4"],
+  globe:      ["M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z","M2 12h20","M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10","M12 2a15 15 0 0 0-4 10 15 15 0 0 0 4 10"],
+  clipboard:  ["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2","M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z"],
+  barChart:   ["M12 20V10","M18 20V4","M6 20v-4"],
+  phone:      ["M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"],
+  settings:   ["M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z","M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"],
+  rocket:     ["M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z","M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z","M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0","M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"],
+  link:       ["M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71","M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"],
+  zap:        ["M13 2L3 14h9l-1 8 10-12h-9l1-8"],
+  brain:      ["M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z","M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"],
+  plug:       ["M12 22v-5","M9 8V2","M15 8V2","M18 8v5a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8Z"],
+  wrench:     ["M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"],
+  bookOpen:   ["M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z","M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"],
+  search:     ["M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16Z","M21 21l-4.35-4.35"],
+  tag:        ["M12 2H2v10l9.29 9.29a2 2 0 0 0 2.83 0l6.17-6.17a2 2 0 0 0 0-2.83Z","M7 7h.01"],
+  arrowRight: ["M5 12h14","M12 5l7 7-7 7"],
+  messageCircle: ["M7.9 20A9 9 0 1 0 4 16.1L2 22Z"],
+};
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COPY HELPER — works inside sandboxed iframes (no clipboard API needed)
@@ -2256,7 +2288,7 @@ Briefly cite the relevant principle or jurisdictional standard if helpful for co
 // ─────────────────────────────────────────────────────────────────────────────
 const WORKFLOWS = [
   {
-    id:"sourcing-outreach", icon:"📨", label:"Sourcing Outreach",
+    id:"sourcing-outreach", icon:"send", label:"Sourcing Outreach",
     desc:"Personalized CEO/CRO emails using GPN and portfolio context",
     accent:"#C0A0F0",
     toolIds:["skill-sourcing","outreach-app","pitchbook"],
@@ -2264,7 +2296,7 @@ const WORKFLOWS = [
     tip:"Enable GPN and Portfolio connectors first for the most personalized output. The Outreach Generator app layers in GPN relationship data automatically.",
   },
   {
-    id:"initial-profile", icon:"🏢", label:"Initial Profile Creation",
+    id:"initial-profile", icon:"building", label:"Initial Profile Creation",
     desc:"IC-ready company briefs from websites, CIMs, or VDRs",
     accent:"#7EC2F3",
     toolIds:["initial-profile-project","pitchbook"],
@@ -2272,7 +2304,7 @@ const WORKFLOWS = [
     tip:"Upload a CIM or link a SharePoint VDR alongside the prompt for grounded output. The Initial Profile Claude Project has the right context pre-loaded.",
   },
   {
-    id:"market-research", icon:"🗺", label:"Market & Sector Research",
+    id:"market-research", icon:"globe", label:"Market & Sector Research",
     desc:"Sector landscapes, market maps, and competitive analysis",
     accent:"#5DC994",
     toolIds:["pitchbook","factset","g2-connector"],
@@ -2280,7 +2312,7 @@ const WORKFLOWS = [
     tip:"Use Deep Research mode in Claude Opus or ChatGPT for the most comprehensive output. PitchBook connector adds live company data automatically.",
   },
   {
-    id:"cim-diligence", icon:"📋", label:"Diligence & Analysis",
+    id:"cim-diligence", icon:"clipboard", label:"Diligence & Analysis",
     desc:"Structured analysis from CIMs, data rooms, and financial documents",
     accent:"#E8D5A0",
     toolIds:["cimba","microsoft365","skill-risk"],
@@ -2288,7 +2320,7 @@ const WORKFLOWS = [
     tip:"Link your SharePoint VDR folder URL directly in the conversation for grounded analysis. CIMBA is best for initial CIM pass/fail screening.",
   },
   {
-    id:"ic-prep", icon:"📊", label:"IC Prep",
+    id:"ic-prep", icon:"barChart", label:"IC Prep",
     desc:"Investment thesis, risk sections, and IC presentation materials",
     accent:"#C0A0F0",
     toolIds:["skill-ic-materials","skill-rtw","skill-playbook","skill-risk"],
@@ -2296,7 +2328,7 @@ const WORKFLOWS = [
     tip:"Combine with the CIM Diligence workflow first — use those outputs as input here. Skills fire automatically; just describe your task.",
   },
   {
-    id:"expert-calls", icon:"📞", label:"Expert & Customer Calls",
+    id:"expert-calls", icon:"phone", label:"Expert & Customer Calls",
     desc:"Surface insights from historical call transcripts and expert sessions",
     accent:"#5DC994",
     toolIds:["expert-gpt","guidepoint-mcp"],
@@ -2304,7 +2336,7 @@ const WORKFLOWS = [
     tip:"Before a management meeting or reference call, run the Expert Network Agent first to surface prior context and identify gaps to fill.",
   },
   {
-    id:"general-admin", icon:"⚙️", label:"General & Admin",
+    id:"general-admin", icon:"settings", label:"General & Admin",
     desc:"HR, ops, and firm-wide resources and internal tools",
     accent:"#8AAFD4",
     toolIds:["employee-gpt","microsoft365"],
@@ -2335,7 +2367,7 @@ const workflowItems = (wf) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const GUIDES = [
   {
-    id:"getting-started", title:"Getting Started with Claude", icon:"🚀",
+    id:"getting-started", title:"Getting Started with Claude", icon:"rocket",
     desc:"Log in via MyApps, configure connectors and skills, try your first prompts.",
     sections:[
       { heading:"Step 1 — Log in", numbered:true, steps:[
@@ -2359,11 +2391,11 @@ const GUIDES = [
         "<strong>AI Cortex Hub</strong> — Prompt library, tools, connectors, and custom GPTs.",
         "<strong>SharePoint AI Site</strong> — Deep research prompts, trackers, and AI updates.",
       ]},
-      { heading:"🛠 Having issues?", numbered:false, steps:[
+      { heading:"Having issues?", numbered:false, steps:[
         "<strong>Excel / PowerPoint / Word skills not working</strong> — Contact IT to ensure Code execution is enabled at the org level.",
         "<strong>Cowork not launching</strong> — Requires a separate install. Contact IT for the download link and setup.",
       ]},
-      { heading:"💡 Tips to get better immediately", numbered:false, steps:[
+      { heading:"Tips to get better immediately", numbered:false, steps:[
         "<strong>Be specific about format.</strong> Say as a table, as a Word doc, or as a slide deck — Claude defaults to prose otherwise.",
         "<strong>Attach your sources.</strong> Upload a CIM, paste notes, or link a SharePoint VDR for grounded output.",
         "<strong>Use the Prompt Library.</strong> Pre-built prompts for CDD, CIM analysis, customer diligence, credit agreements, and more.",
@@ -2374,7 +2406,7 @@ const GUIDES = [
     ]
   },
   {
-    id:"connectors", title:"Using Connectors", icon:"🔗",
+    id:"connectors", title:"Using Connectors", icon:"link",
     desc:"Enable PitchBook, Microsoft 365, and other connectors to give Claude access to your real data.",
     sections:[
       { heading:"What is a connector?", numbered:false, steps:[
@@ -2437,7 +2469,7 @@ const GUIDES = [
         "Done — Claude can now access your Zoom meeting transcripts and summaries.",
         "Try: <em>Summarize my last Zoom call with [Company].</em> or <em>Pull the transcript from [date]'s management meeting.</em>",
       ]},
-      { heading:"💡 Best practices", numbered:false, steps:[
+      { heading:"Best practices", numbered:false, steps:[
         "<strong>Enable once, use everywhere.</strong> Connectors stay active across all conversations.",
         "<strong>Layer your connectors.</strong> Combine PitchBook and Microsoft 365 to cross-reference VDR data with live market benchmarks.",
         "<strong>Be specific with file references.</strong> Paste a SharePoint folder URL to scope Claude's search to the right deal.",
@@ -2448,7 +2480,7 @@ const GUIDES = [
     ]
   },
   {
-    id:"artifacts", title:"Using Artifacts", icon:"⚡",
+    id:"artifacts", title:"Using Artifacts", icon:"zap",
     desc:"Generate structured documents, tables, dashboards, and interactive tools directly from conversation.",
     sections:[
       { heading:"What is an Artifact?", numbered:false, steps:[
@@ -2471,7 +2503,7 @@ const GUIDES = [
         "<strong>Artifact appears in the side panel</strong> — View, scroll, and copy it independently from the chat.",
         "<strong>Iterate and refine</strong> — Ask Claude to update sections, add columns, or reformat. It edits the artifact directly.",
       ]},
-      { heading:"💡 Tips", numbered:false, steps:[
+      { heading:"Tips", numbered:false, steps:[
         "<strong>Specify format upfront.</strong> Claude defaults to prose if you do not specify.",
         "<strong>Use the Prompt Library.</strong> CDD, CIM, and Customer Analysis prompts are pre-built to generate clean artifact outputs.",
         "<strong>Pair with connectors.</strong> Artifacts grounded in live PitchBook or SharePoint data are significantly more powerful.",
@@ -2480,7 +2512,7 @@ const GUIDES = [
     ]
   },
   {
-    id:"skills", title:"Using Skills", icon:"🧠",
+    id:"skills", title:"Using Skills", icon:"brain",
     desc:"FTV-specific skills for Claude and ChatGPT — IC format, sourcing outreach, right-to-win, and more.",
     sections:[
       { heading:"What is a Skill?", numbered:false, steps:[
@@ -2515,7 +2547,7 @@ const GUIDES = [
         "To share a skill firm-wide, reach out to the AI and Data team — we will test and provision it org-wide.",
         "<strong>Shortcut:</strong> Ask Claude or ChatGPT to build the skill for you — describe the workflow and it generates a ready-to-upload SKILL.md.",
       ]},
-      { heading:"💡 Skill ideas for the investment team", numbered:false, steps:[
+      { heading:"Skill ideas for the investment team", numbered:false, steps:[
         "<strong>Reference Check Formatter</strong> — Auto-structures reference call notes into FTV's standard format with scoring.",
         "<strong>Management Meeting Prep</strong> — Generates a structured question list based on FTV's diligence priorities.",
         "<strong>Competitive Snapshot</strong> — Produces a structured competitor comparison table.",
@@ -2525,11 +2557,11 @@ const GUIDES = [
     ]
   },
   {
-    id:"plugins", title:"Using Plug-ins", icon:"🔌",
+    id:"plugins", title:"Using Plug-ins", icon:"plug",
     desc:"Install Anthropic's Claude for Financial Services plug-ins — pre-built bundles of skills, connectors, and slash commands you can run as-is or use as templates for FTV's own skills.",
     sections:[
       { heading:"What is an Anthropic plug-in?", numbered:false, steps:[
-        "A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:1px 5px;borderRadius:4px;\">/dcf</code> or <code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:1px 5px;borderRadius:4px;\">/comps</code>) into one installable unit. Think of it as a pre-built toolkit for an entire workflow rather than a single task.",
+        "A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:1px 5px;borderRadius:0;\">/dcf</code> or <code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:1px 5px;borderRadius:0;\">/comps</code>) into one installable unit. Think of it as a pre-built toolkit for an entire workflow rather than a single task.",
         "Anthropic publishes a <strong>Claude for Financial Services</strong> marketplace of battle-tested plug-ins for private equity, equity research, and financial modeling. Everything is <strong>file-based (markdown + JSON, no build step)</strong> — so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure.",
         "Install from <strong>Customize → Plug-ins</strong> in Claude. Once installed, the plug-in's skills fire automatically and its slash commands become available in any conversation.",
       ]},
@@ -2548,7 +2580,7 @@ const GUIDES = [
         "<strong>A practical recipe:</strong> (1) install the closest plug-in, (2) run its slash command on a real deal, (3) copy the skill file that did the work, (4) edit it with FTV context — sectors, mandate, format — and (5) upload it via <strong>Customize → Skills</strong> as your own. Ask Claude to do the editing for you: <em>\"Adapt this SKILL.md to FTV's Initial Profile format.\"</em>",
         "Built something the whole team should have? Reach out to the AI and Data team — we will test it and provision it org-wide.",
       ]},
-      { heading:"💡 Best practices", numbered:false, steps:[
+      { heading:"Best practices", numbered:false, steps:[
         "<strong>Start with Financial Analysis.</strong> It carries the shared connectors and core models the other plug-ins build on — enable it first.",
         "<strong>Layer with connectors.</strong> Plug-in skills are far more powerful grounded in live data — keep PitchBook and Microsoft 365 connected so commands like <code style=\"color:#8AAFD4;\">/comps</code> and <code style=\"color:#8AAFD4;\">/dd-checklist</code> pull real numbers.",
         "<strong>Slash commands beat long prompts.</strong> Once a plug-in is installed, type the command (e.g. <code style=\"color:#8AAFD4;\">/dcf</code>) instead of describing the whole workflow each time.",
@@ -2557,7 +2589,7 @@ const GUIDES = [
     ]
   },
   {
-    id:"chatgpt-to-claude", title:"Transferring your memory from ChatGPT to Claude", icon:"🧠→💬",
+    id:"chatgpt-to-claude", title:"Transferring your memory from ChatGPT to Claude", icon:"messageCircle",
     desc:"Export your ChatGPT memory using the exact prompts below and upload to Claude for seamless continuity.",
     sections:[
       { heading:"Step 1: Copy this prompt and send to ChatGPT", numbered:false, steps:[
@@ -2721,7 +2753,7 @@ const WorkflowDetail = ({ wf, onBack }) => {
         ← All workflows
       </button>
       <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:24 }}>
-        <span style={{ fontSize:32 }}>{wf.icon}</span>
+        <span><Icon d={ICON[wf.icon]} size={28} color={C.textSec}/></span>
         <div>
           <div style={{ fontSize:20, fontWeight:800 }}>{wf.label}</div>
           <div style={{ fontSize:13, color:C.textSec, marginTop:2 }}>{wf.desc}</div>
@@ -2746,7 +2778,7 @@ const WorkflowDetail = ({ wf, onBack }) => {
             </>
           )}
           <div style={{ backgroundColor:"#1E2A10", border:"2px solid #3a5a18", borderRadius:0, padding:"14px 16px" }}>
-            <div style={{ fontSize:11, fontWeight:700, color:"#a0e8b0", marginBottom:6 }}>💡 Pro tip</div>
+            <div style={{ fontSize:11, fontWeight:700, color:"#a0e8b0", marginBottom:6 }}>Pro tip</div>
             <div style={{ fontSize:12, color:"#7EC8A0", lineHeight:1.65 }}>{wf.tip}</div>
           </div>
         </div>
@@ -2950,14 +2982,14 @@ function App() {
   }, []);
 
   const tabs = [
-    { id:"start-here", label:"⚡ Start Here",       count:WORKFLOWS.length },
-    { id:"prompts",    label:"📋 Prompt Library",   count:PROMPTS_REGISTRY.length },
-    { id:"custom-tools", label:"🛠️ Custom Tools",  count:customToolsCount },
-    { id:"connectors", label:"🔗 Connectors",      count:connectorsCount },
-    { id:"skills",     label:"🧠 Skills",          count:skillsCount },
-    { id:"plugins",    label:"🔌 Plug-ins",        count:pluginsCount },
-    { id:"external",   label:"🔧 External Tools",  count:EXTERNAL_TOOLS.length },
-    { id:"guides",     label:"📖 Claude Guides",   count:GUIDES.length },
+    { id:"start-here", icon:"zap", label:"Start Here",       count:WORKFLOWS.length },
+    { id:"prompts", icon:"clipboard", label:"Prompt Library",   count:PROMPTS_REGISTRY.length },
+    { id:"custom-tools", icon:"wrench", label:"Custom Tools",  count:customToolsCount },
+    { id:"connectors", icon:"link", label:"Connectors",      count:connectorsCount },
+    { id:"skills", icon:"brain", label:"Skills",          count:skillsCount },
+    { id:"plugins", icon:"plug", label:"Plug-ins",        count:pluginsCount },
+    { id:"external", icon:"wrench", label:"External Tools",  count:EXTERNAL_TOOLS.length },
+    { id:"guides", icon:"bookOpen", label:"Claude Guides",   count:GUIDES.length },
   ];
 
   const card     = { backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0 };
@@ -2965,7 +2997,7 @@ function App() {
   const linkStyle = { fontSize:12, color:C.goldLight, textDecoration:"none" };
 
   return (
-    <div style={{ minHeight:"100vh", backgroundColor:C.bg, color:C.textPri, fontFamily:"system-ui,sans-serif" }}>
+    <div style={{ minHeight:"100vh", backgroundColor:C.bg, color:C.textPri, fontFamily:"'Archivo',system-ui,sans-serif" }}>
 
       {/* Header */}
       <div style={{ backgroundColor:C.surface, borderBottom:`2px solid ${C.border}` }}>
@@ -3009,7 +3041,7 @@ function App() {
             </div>
           </div>
           <div style={{ position:"relative" }}>
-            <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted }}>🔍</span>
+            <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted, display:"flex" }}><Icon d={ICON.search} size={14} color={C.textMuted}/></span>
             <input
               style={{ width:"100%", backgroundColor:C.surfaceHi, border:`2px solid ${C.border}`, borderRadius:0, padding:"9px 36px", fontSize:13, color:C.textPri, outline:"none", boxSizing:"border-box" }}
               placeholder="Search prompts, tools, tags..."
@@ -3027,8 +3059,8 @@ function App() {
             <button key={t.id}
               onClick={() => { setTab(t.id); setActiveWorkflow(null); setActiveGuide(null); }}
               style={{ padding:"7px 16px", borderRadius:0, fontSize:13, fontWeight:tab===t.id?700:500, border:"none", cursor:"pointer",
-                backgroundColor:tab===t.id?C.gold:"transparent", color:tab===t.id?C.bg:C.textSec }}>
-              {t.label} <span style={{ fontSize:11, opacity:0.7 }}>{t.count}</span>
+                backgroundColor:"transparent", color:tab===t.id?C.textPri:C.textSec, borderBottom:tab===t.id?`2px solid ${C.gold}`:"2px solid transparent" }}>
+              <span style={{ display:"flex", alignItems:"center", gap:6 }}>{t.icon && <Icon d={ICON[t.icon]} size={14} color={tab===t.id?C.gold:C.textMuted}/>}{t.label} <span style={{ fontSize:11, opacity:0.7 }}>{t.count}</span></span>
             </button>
           ))}
         </div>
@@ -3044,13 +3076,13 @@ function App() {
                     {WORKFLOWS.map(wf => (
                       <div key={wf.id} onClick={() => setActiveWorkflow(wf.id)}
                         style={{ ...card, padding:"20px 22px", cursor:"pointer", transition:"all 0.18s" }}
-                        onMouseOver={e=>{ e.currentTarget.style.borderColor=wf.accent; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
+                        onMouseOver={e=>{ e.currentTarget.style.borderColor=C.gold; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
                         onMouseOut={e=>{ e.currentTarget.style.borderColor=C.border; e.currentTarget.style.backgroundColor=C.surface; }}>
-                        <div style={{ fontSize:26, marginBottom:10 }}>{wf.icon}</div>
+                        <div style={{ marginBottom:10 }}><Icon d={ICON[wf.icon]} size={22} color={C.textSec}/></div>
                         <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
                         {(() => { const tc = workflowItems(wf).filter(it => it.type !== "Skill").length; const sc = skillCountByWorkflow[wf.id] || 0; return (
-                        <div style={{ marginTop:14, fontSize:11, color:wf.accent, fontWeight:600 }}>
+                        <div style={{ marginTop:14, fontSize:11, color:C.textMuted, fontWeight:600 }}>
                           {tc} tool{tc!==1?"s":""}
                           {sc>0?` · ${sc} skill${sc!==1?"s":""}`:""}
                           {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
@@ -3073,7 +3105,7 @@ function App() {
               <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                 <button onClick={() => setTagOpen(o => !o)}
                   style={{ fontSize:12, padding:"4px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${activeTag?C.gold:C.border}`, backgroundColor:activeTag?C.surfaceHi:C.surface, color:activeTag?C.goldLight:C.textSec }}>
-                  <span>🏷 {activeTag || "Filter by tag"}</span>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={activeTag?C.goldLight:C.textSec}/> {activeTag || "Filter by tag"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{tagOpen?"▲":"▼"}</span>
                 </button>
                 {activeTag && <button onClick={()=>setActiveTag(null)} style={{ fontSize:12, color:C.textSec, background:"none", border:"none", cursor:"pointer" }}>✕ Clear</button>}
@@ -3125,7 +3157,7 @@ function App() {
                     border:`2px solid ${ecoTagFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoTagFilter!=="All"?C.surfaceHi:C.surface,
                     color:ecoTagFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span>🏷 {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={ecoTagFilter!=="All"?C.goldLight:C.textSec}/> {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTagOpen?"▲":"▼"}</span>
                 </button>
                 {ecoTagFilter !== "All" && (
@@ -3156,7 +3188,7 @@ function App() {
                     border:`2px solid ${ecoTypeFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoTypeFilter!=="All"?C.surfaceHi:C.surface,
                     color:ecoTypeFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span>⚙️ {ecoTypeFilter !== "All" ? ecoTypeFilter : "Filter by type"}</span>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.settings} size={12} color={ecoTypeFilter!=="All"?C.goldLight:C.textSec}/> {ecoTypeFilter !== "All" ? ecoTypeFilter : "Filter by type"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTypeOpen?"▲":"▼"}</span>
                 </button>
                 {ecoTypeFilter !== "All" && (
@@ -3189,7 +3221,7 @@ function App() {
                     border:`2px solid ${ecoWorkflowFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoWorkflowFilter!=="All"?C.surfaceHi:C.surface,
                     color:ecoWorkflowFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span>⚡ {ecoWorkflowFilter !== "All" ? WORKFLOWS.find(w=>w.id===ecoWorkflowFilter)?.label || ecoWorkflowFilter : "Filter by workflow"}</span>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.zap} size={12} color={ecoWorkflowFilter!=="All"?C.goldLight:C.textSec}/> {ecoWorkflowFilter !== "All" ? WORKFLOWS.find(w=>w.id===ecoWorkflowFilter)?.label || ecoWorkflowFilter : "Filter by workflow"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoWorkflowOpen?"▲":"▼"}</span>
                 </button>
                 {ecoWorkflowFilter !== "All" && (
@@ -3204,8 +3236,8 @@ function App() {
                           style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:12, padding:"6px 10px", textAlign:"left",
                             fontWeight:ecoWorkflowFilter===wf.id?600:400,
                             backgroundColor:ecoWorkflowFilter===wf.id?C.surfaceHi:"transparent",
-                            color:ecoWorkflowFilter===wf.id?wf.accent:C.textSec }}>
-                          {wf.icon} {wf.label}
+                            color:ecoWorkflowFilter===wf.id?C.goldLight:C.textSec }}>
+                          <span style={{ display:"flex", alignItems:"center", gap:6 }}><Icon d={ICON[wf.icon]} size={12} color={ecoWorkflowFilter===wf.id?C.goldLight:C.textSec}/> {wf.label}</span>
                         </button>
                       ))}
                     </div>
@@ -3254,7 +3286,7 @@ function App() {
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3277,7 +3309,7 @@ function App() {
             <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, alignItems:"flex-start" }}>
               <div style={{ position:"relative" }}>
                 <button onClick={() => setCtTagFilter(ctTagFilter === "All" ? "All" : "All")} style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${ctTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ctTagFilter!=="All"?C.surfaceHi:C.surface, color:ctTagFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span>🏷 {ctTagFilter !== "All" ? ctTagFilter : "Filter by tag"}</span>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={ctTagFilter!=="All"?C.goldLight:C.textSec}/> {ctTagFilter !== "All" ? ctTagFilter : "Filter by tag"}</span>
                 </button>
               </div>
               <span style={{ fontSize:11, color:C.textMuted, alignSelf:"center", marginLeft:"auto" }}>{fCustomTools.length} tools</span>
@@ -3310,7 +3342,7 @@ function App() {
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3382,7 +3414,7 @@ function App() {
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3426,7 +3458,7 @@ function App() {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
                 {/* How to manage firm-level skills */}
                 <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
-                  <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to manage firm-level skills</div>
+                  <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>How to manage firm-level skills</div>
                   <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
                     <li>Click <strong>Customize</strong> in Claude's or ChatGPT's sidebar</li>
                     <li>Select <strong>Skills</strong></li>
@@ -3446,7 +3478,7 @@ function App() {
 
             {/* Skill Filters */}
             <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
-              <div style={{ display:"flex", gap:2, backgroundColor:C.surface, borderRadius:6, border:`1px solid ${C.border}`, overflow:"hidden" }}>
+              <div style={{ display:"flex", gap:2, backgroundColor:C.surface, borderRadius:0, border:`2px solid ${C.border}`, overflow:"hidden" }}>
                 {["All","Firm-Enabled","Downloadable"].map(opt => (
                   <button key={opt} onClick={() => setSkillTypeFilter(opt)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:skillTypeFilter === opt ? C.gold : "transparent", color:skillTypeFilter === opt ? C.bg : C.textSec, border:"none", cursor:"pointer", fontWeight:skillTypeFilter === opt ? 600 : 400, transition:"all 0.15s" }}>
                     {opt}
@@ -3479,7 +3511,7 @@ function App() {
                       const wf = WORKFLOWS.find(wk => wk.id === w);
                       return (
                         <button key={w} onClick={() => { setSkillWorkflowFilter(w); setSkillWorkflowOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:skillWorkflowFilter === w ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
-                          {wf ? `${wf.icon} ${wf.label}` : w}
+                          {wf ? wf.label : w}
                         </button>
                       );
                     })}
@@ -3494,26 +3526,26 @@ function App() {
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Downloadable Skills</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
                 {DOWNLOAD_SKILLS.map(d => (
-                  <div key={d.id} style={{ ...card, padding:20, border:`1px solid ${C.gold}44` }}>
+                  <div key={d.id} style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                       <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{d.name}</span>
-                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:4, backgroundColor:"#2a2000", color:C.gold, border:`1px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#2a2000", color:C.gold, border:`2px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
                     </div>
                     <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                       {d.desc}
                     </div>
-                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                    <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {d.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
                     <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                       {d.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
-                    <a href={d.link} target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    <a href={d.link} target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                       Download from SharePoint ↗
                     </a>
                   </div>
@@ -3576,7 +3608,7 @@ function App() {
                         <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                           {s.workflowIds.map(wid => {
                             const wf = WORKFLOWS.find(w => w.id === wid);
-                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                           })}
                         </div>
                       </div>
@@ -3600,8 +3632,8 @@ function App() {
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:16, marginBottom:32 }}>
               {/* What is a plug-in */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🔌 What is an Anthropic plug-in?</div>
+              <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>What is an Anthropic plug-in?</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
                   A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style={{ color:C.textSec }}>/dcf</code> or <code style={{ color:C.textSec }}>/comps</code>) into one installable unit — a pre-built toolkit for an entire workflow.<br/><br/>
                   Everything is <strong>file-based (markdown + JSON, no build step)</strong>, so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure. Install from <strong>Customize → Plug-ins</strong> in Claude.
@@ -3609,8 +3641,8 @@ function App() {
               </div>
 
               {/* Building blocks */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🧱 Use plug-ins + FTV skills as building blocks</div>
+              <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>Use plug-ins + FTV skills as building blocks</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
                   Plug-ins are <strong>templates, not black boxes.</strong> The fastest way to build a great FTV skill is to start from one that already works: open a plug-in's <strong>SKILL.md</strong>, study its triggers, instructions, and output format, then adapt it.<br/><br/>
                   Pair them with the <strong>FTV templatized skills</strong> in this hub (IC Diligence, Sourcing Outreach, Right to Win, FSI Comps, FTV PPT Template) — use the Anthropic plug-in for the heavy modeling and the FTV skill for firm-specific format and voice.<br/><br/>
@@ -3622,11 +3654,11 @@ function App() {
             {/* Plugin Filters */}
             <div style={{ display:"flex", gap:10, marginBottom:20, flexWrap:"wrap" }}>
               <div style={{ position:"relative" }}>
-                <button onClick={() => setPluginTagOpen(!pluginTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                <button onClick={() => setPluginTagOpen(!pluginTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`2px solid ${C.border}`, color:C.textSec, borderRadius:0, cursor:"pointer" }}>
                   Tag: {pluginTagFilter} ▼
                 </button>
                 {pluginTagOpen && (
-                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:150 }}>
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`2px solid ${C.border}`, borderRadius:0, zIndex:10, minWidth:150 }}>
                     {pluginAllTags.map(t => (
                       <button key={t} onClick={() => { setPluginTagFilter(t); setPluginTagOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:pluginTagFilter === t ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
                         {t}
@@ -3637,16 +3669,16 @@ function App() {
               </div>
 
               <div style={{ position:"relative" }}>
-                <button onClick={() => setPluginWorkflowOpen(!pluginWorkflowOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                <button onClick={() => setPluginWorkflowOpen(!pluginWorkflowOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`2px solid ${C.border}`, color:C.textSec, borderRadius:0, cursor:"pointer" }}>
                   Workflow: {pluginWorkflowFilter} ▼
                 </button>
                 {pluginWorkflowOpen && (
-                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:180 }}>
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`2px solid ${C.border}`, borderRadius:0, zIndex:10, minWidth:180 }}>
                     {pluginAllWorkflows.map(w => {
                       const wf = WORKFLOWS.find(wk => wk.id === w);
                       return (
                         <button key={w} onClick={() => { setPluginWorkflowFilter(w); setPluginWorkflowOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:pluginWorkflowFilter === w ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
-                          {wf ? `${wf.icon} ${wf.label}` : w}
+                          {wf ? wf.label : w}
                         </button>
                       );
                     })}
@@ -3673,11 +3705,11 @@ function App() {
                       {p.desc}
                     </div>
                     {p.workflowIds.length > 0 && (
-                      <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                      <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
                         <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                           {p.workflowIds.map(wid => {
                             const wf = WORKFLOWS.find(w => w.id === wid);
-                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                           })}
                         </div>
                       </div>
@@ -3686,7 +3718,7 @@ function App() {
                       {p.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
                     {p.link && p.link !== "#" &&
-                      <a href={p.link} target="_blank" rel="noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:6, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>Open in Claude ↗</a>}
+                      <a href={p.link} target="_blank" rel="noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>Open in Claude ↗</a>}
                   </div>
                 ))}
               </div>
@@ -3713,7 +3745,7 @@ function App() {
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec, border:`2px solid ${C.border}` }}><Icon d={ICON[wf.icon]} size={10} color={C.textSec}/> {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3743,7 +3775,7 @@ function App() {
                         style={{ ...card, padding:20, cursor:"pointer" }}
                         onMouseOver={e => e.currentTarget.style.borderColor=C.gold}
                         onMouseOut={e  => e.currentTarget.style.borderColor=C.border}>
-                        <div style={{ fontSize:24, marginBottom:10 }}>{g.icon}</div>
+                        <div style={{ marginBottom:10 }}><Icon d={ICON[g.icon]} size={20} color={C.textSec}/></div>
                         <div style={{ fontSize:14, fontWeight:700, color:C.textPri, marginBottom:6 }}>{g.title}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{g.desc}</div>
                         <div style={{ marginTop:12, fontSize:12, color:C.goldLight }}>Read guide →</div>

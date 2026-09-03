@@ -99,14 +99,14 @@ is the variable name (grep for it). Refresh per the
 
 | Registry | Line (approx) | Entries | Purpose |
 |---|---|---|---|
-| `TOOLS_REGISTRY` | ~83 | 17 | Custom Tools + Connectors + Apps + MCP Servers, split by `type` |
-| `SKILLS_REGISTRY` | ~242 | 13 | Firm-enabled Claude Skills (auto-fire; excludes downloadables) |
-| `DOWNLOAD_SKILLS` | ~366 | 8 | Downloadable `.skill` files (SharePoint), rendered via `.map()` in the Skills tab |
-| `PLUGINS_REGISTRY` | ~437 | 7 | Anthropic *Claude for Financial Services* plug-ins |
-| `PROMPTS_REGISTRY` | ~506 | 13 | Prompt Library (Deep Research + Due Diligence) |
-| `WORKFLOWS` | ~2225 | 7 | Start Here workflows; hold `toolIds`/`promptIds`, accent color |
-| `GUIDES` | ~2304 | 6 | Claude Guides tab content |
-| `EXTERNAL_TOOLS` | ~2552 | 3 | Third-party tools (QuikIRR, Fellow AI, Encore Compliance) |
+| `TOOLS_REGISTRY` | ~120 | 17 | Custom Tools + Connectors + Apps + MCP Servers, split by `type` |
+| `SKILLS_REGISTRY` | ~297 | 13 | Firm-enabled Claude Skills (auto-fire; excludes downloadables) |
+| `DOWNLOAD_SKILLS` | ~430 | 8 | Downloadable `.skill` files (SharePoint), rendered via `.map()` in the Skills tab |
+| `PLUGINS_REGISTRY` | ~501 | 7 | Anthropic *Claude for Financial Services* plug-ins |
+| `PROMPTS_REGISTRY` | ~570 | 13 | Prompt Library (Deep Research + Due Diligence) |
+| `WORKFLOWS` | ~2289 | 7 | Start Here workflows; hold `toolIds`/`promptIds`, accent color |
+| `GUIDES` | ~2368 | 6 | Claude Guides tab content |
+| `EXTERNAL_TOOLS` | ~2616 | 3 | Third-party tools (QuikIRR, Fellow AI, Encore Compliance) |
 
 **Item shape** (tools/skills/plugins share this):
 `id, type, name, platform, badge, link, desc, note, tags[], workflowIds[]`.
@@ -138,8 +138,16 @@ them first when the app won't render:
 - **SharePoint links** for downloadable skills/prompts use the bases `SP_BASE` (line ~57)
   and `SP_LIST` (line ~58). Reuse them rather than hardcoding full URLs; verify a link
   resolves before shipping (dead `.skill` links have shipped before).
-- **Theming:** color palette `C` (line ~32), tag styles `TAG` (line ~38), type→style map
-  `TYPE_MAP` (line ~45). Reuse these instead of inline hex where possible.
+- **Theming:** color palette `C` (line ~34), tag styles `TAG` (line ~43), type→style map
+  `TYPE_MAP` (line ~50). Reuse these instead of inline hex where possible.
+- **Modernist style helpers:** `RADIUS = 0` and `RULE(w)` (line ~40-41). All borders are
+  `2px solid`, all borderRadius are `0`. No boxShadow except on floating overlays.
+- **Icons:** `Icon` component (line ~70) + `ICON` dictionary (line ~75) provide monochrome
+  Lucide-style inline SVG icons. Use `<Icon d={ICON.keyName} size={N} color={C.textSec}/>`
+  — never emoji in UI elements. Workflow/guide/tab `icon` fields store string keys into
+  `ICON`, not emoji.
+- **Typography:** Archivo font loaded from Google Fonts. Font stack is
+  `'Archivo',system-ui,sans-serif`.
 - **Badges** signal rollout state: `Active`, `Rolling Out`, `Active Pilot`.
 - **Workflow naming:** the "Diligence & Analysis" workflow keeps the `id` `cim-diligence`
   for data integrity even though its display label was renamed — change labels, not ids.
