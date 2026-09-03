@@ -3561,40 +3561,6 @@ function App() {
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Firm-Enabled Skills</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
 
-                {/* Download tile — Prospect Scoring Analysis */}
-                <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#DCE8F5", color:"#14406A", border:"2px solid #A0BCD8", whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.navy, color:"#EAF2FF", borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
-                {/* Download tile — Sub-Sector Tagger */}
-                <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
-                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
-                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sub-Sector Tagger</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#DCE8F5", color:"#14406A", border:"2px solid #A0BCD8", whiteSpace:"nowrap" }}>Download</span>
-                  </div>
-                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
-                    Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
-                  </div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
-                    {["sourcing","classification","sub-sector","pipeline"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
-                  </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.navy, color:"#EAF2FF", borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
-                    Download from SharePoint ↗
-                  </a>
-                </div>
-
                 {fSkills.map(s => (
                   <div key={s.id} style={{ ...card, padding:20 }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
