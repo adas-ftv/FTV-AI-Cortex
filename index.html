@@ -20,12 +20,12 @@
   </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #07192E; }
+    body { background: #F5F2ED; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0C2340; }
-    ::-webkit-scrollbar-thumb { background: #1E3F6B; border-radius: 0; }
-    ::-webkit-scrollbar-thumb:hover { background: #2A5590; }
-    *:focus-visible { outline: 2px solid #C9A84C; outline-offset: 2px; }
+    ::-webkit-scrollbar-track { background: #EDE9E3; }
+    ::-webkit-scrollbar-thumb { background: #C8C2B8; border-radius: 0; }
+    ::-webkit-scrollbar-thumb:hover { background: #9C958B; }
+    *:focus-visible { outline: 2px solid #0C2340; outline-offset: 2px; }
     *:focus:not(:focus-visible) { outline: none; }
   </style>
 </head>
@@ -35,31 +35,31 @@
     const { useState, useMemo } = React;
 
 const C = {
-  bg:"#07192E", surface:"#0C2340", surfaceHi:"#112A4E",
-  border:"#1E3F6B", textPri:"#EAF2FF", textSec:"#8AAFD4",
-  textMuted:"#4A6A90", gold:"#C9A84C", goldLight:"#E8D5A0",
+  bg:"#F5F2ED", surface:"#FFFFFF", surfaceHi:"#EDE9E3",
+  border:"#C8C2B8", textPri:"#1A1A1A", textSec:"#5C5549",
+  textMuted:"#9C958B", gold:"#0C2340", goldLight:"#1E3F6B",
 };
 
 const RADIUS = 0;
 const RULE = (w = 2) => `${w}px solid ${C.border}`;
 
 const TAG = {
-  topic:  { bg:"#0E2A4A", color:"#7EC2F3", border:"#1E5080" },
-  output: { bg:"#0D2A1C", color:"#5DC994", border:"#1A5038" },
-  metric: { bg:"#2A1E08", color:"#E8D5A0", border:"#7A5A18" },
-  stage:  { bg:"#1E1030", color:"#C0A0F0", border:"#5030A0" },
+  topic:  { bg:"#E8F0F8", color:"#1A5080", border:"#B8D0E8" },
+  output: { bg:"#E6F5EE", color:"#1A6040", border:"#B0D8C4" },
+  metric: { bg:"#FDF5E6", color:"#7A5A18", border:"#E8D5A0" },
+  stage:  { bg:"#F0E8F8", color:"#5030A0", border:"#D0B8E8" },
 };
 
 const TYPE_MAP = {
-  "Custom GPT":     { bg:"#1E1030", color:"#C0A0F0" },
-  "Claude Project": { bg:"#0E2A4A", color:"#7EC2F3" },
-  "Custom Tool":    { bg:"#0D3A1C", color:"#6DD9A0" },
-  "Connector":      { bg:"#2A1E08", color:"#E8D5A0" },
-  "Custom App":     { bg:"#0D2A1C", color:"#5DC994" },
-  "Skill":          { bg:"#1a2040", color:"#93b4ff" },
-  "Plugin":         { bg:"#2A1410", color:"#F0A47A" },
-  "External":       { bg:"#243050", color:"#93b4ff" },
-  "MCP Server":     { bg:"#0A2A2A", color:"#4DD0C4" },
+  "Custom GPT":     { bg:"#F0E8F8", color:"#5030A0" },
+  "Claude Project": { bg:"#E8F0F8", color:"#1A5080" },
+  "Custom Tool":    { bg:"#E6F5EE", color:"#1A6040" },
+  "Connector":      { bg:"#FDF5E6", color:"#7A5A18" },
+  "Custom App":     { bg:"#E6F5EE", color:"#1A6040" },
+  "Skill":          { bg:"#E8EEF8", color:"#2A4070" },
+  "Plugin":         { bg:"#FDF0E8", color:"#8A4A20" },
+  "External":       { bg:"#E8EEF8", color:"#2A4070" },
+  "MCP Server":     { bg:"#E6F4F4", color:"#1A5050" },
 };
 
 const SP_BASE = "https://ftvcapital1.sharepoint.com/sites/AI/Shared%20Documents/Deep%20Research/Deep%20Research%20Prompts/";
@@ -2290,7 +2290,7 @@ const WORKFLOWS = [
   {
     id:"sourcing-outreach", icon:"send", label:"Sourcing Outreach",
     desc:"Personalized CEO/CRO emails using GPN and portfolio context",
-    accent:"#C0A0F0",
+    accent:"#6B3FA0",
     toolIds:["skill-sourcing","outreach-app","pitchbook"],
     promptIds:[4,6],
     tip:"Enable GPN and Portfolio connectors first for the most personalized output. The Outreach Generator app layers in GPN relationship data automatically.",
@@ -2298,7 +2298,7 @@ const WORKFLOWS = [
   {
     id:"initial-profile", icon:"building", label:"Initial Profile Creation",
     desc:"IC-ready company briefs from websites, CIMs, or VDRs",
-    accent:"#7EC2F3",
+    accent:"#2A6DA8",
     toolIds:["initial-profile-project","pitchbook"],
     promptIds:[4,5],
     tip:"Upload a CIM or link a SharePoint VDR alongside the prompt for grounded output. The Initial Profile Claude Project has the right context pre-loaded.",
@@ -2306,7 +2306,7 @@ const WORKFLOWS = [
   {
     id:"market-research", icon:"globe", label:"Market & Sector Research",
     desc:"Sector landscapes, market maps, and competitive analysis",
-    accent:"#5DC994",
+    accent:"#2A7A50",
     toolIds:["pitchbook","factset","g2-connector"],
     promptIds:[2,6,7,8],
     tip:"Use Deep Research mode in Claude Opus or ChatGPT for the most comprehensive output. PitchBook connector adds live company data automatically.",
@@ -2314,7 +2314,7 @@ const WORKFLOWS = [
   {
     id:"cim-diligence", icon:"clipboard", label:"Diligence & Analysis",
     desc:"Structured analysis from CIMs, data rooms, and financial documents",
-    accent:"#E8D5A0",
+    accent:"#8A6A20",
     toolIds:["cimba","microsoft365","skill-risk"],
     promptIds:[3,9,10,11,12,13,14],
     tip:"Link your SharePoint VDR folder URL directly in the conversation for grounded analysis. CIMBA is best for initial CIM pass/fail screening.",
@@ -2322,7 +2322,7 @@ const WORKFLOWS = [
   {
     id:"ic-prep", icon:"barChart", label:"IC Prep",
     desc:"Investment thesis, risk sections, and IC presentation materials",
-    accent:"#C0A0F0",
+    accent:"#6B3FA0",
     toolIds:["skill-ic-materials","skill-rtw","skill-playbook","skill-risk"],
     promptIds:[1,5,7,9,12,13],
     tip:"Combine with the CIM Diligence workflow first — use those outputs as input here. Skills fire automatically; just describe your task.",
@@ -2330,7 +2330,7 @@ const WORKFLOWS = [
   {
     id:"expert-calls", icon:"phone", label:"Expert & Customer Calls",
     desc:"Surface insights from historical call transcripts and expert sessions",
-    accent:"#5DC994",
+    accent:"#2A7A50",
     toolIds:["expert-gpt","guidepoint-mcp"],
     promptIds:[],
     tip:"Before a management meeting or reference call, run the Expert Network Agent first to surface prior context and identify gaps to fill.",
@@ -2338,7 +2338,7 @@ const WORKFLOWS = [
   {
     id:"general-admin", icon:"settings", label:"General & Admin",
     desc:"HR, ops, and firm-wide resources and internal tools",
-    accent:"#8AAFD4",
+    accent:"#2A6DA8",
     toolIds:["employee-gpt","microsoft365"],
     promptIds:[],
     tip:"The Employee Resources GPT handles most HR and policy questions. Use the Microsoft 365 connector to access Outlook, Calendar, and SharePoint directly in conversation.",
@@ -2561,29 +2561,29 @@ const GUIDES = [
     desc:"Install Anthropic's Claude for Financial Services plug-ins — pre-built bundles of skills, connectors, and slash commands you can run as-is or use as templates for FTV's own skills.",
     sections:[
       { heading:"What is an Anthropic plug-in?", numbered:false, steps:[
-        "A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:1px 5px;borderRadius:0;\">/dcf</code> or <code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:1px 5px;borderRadius:0;\">/comps</code>) into one installable unit. Think of it as a pre-built toolkit for an entire workflow rather than a single task.",
+        "A plug-in is a <strong>self-contained package</strong> that bundles several <strong>Skills</strong>, <strong>connectors</strong> (MCP data sources), <strong>subagents</strong>, and <strong>slash commands</strong> (shortcuts like <code style=\"background:#F0EDE8;border:2px solid #C8C2B8;padding:1px 5px;borderRadius:0;\">/dcf</code> or <code style=\"background:#F0EDE8;border:2px solid #C8C2B8;padding:1px 5px;borderRadius:0;\">/comps</code>) into one installable unit. Think of it as a pre-built toolkit for an entire workflow rather than a single task.",
         "Anthropic publishes a <strong>Claude for Financial Services</strong> marketplace of battle-tested plug-ins for private equity, equity research, and financial modeling. Everything is <strong>file-based (markdown + JSON, no build step)</strong> — so you can open any skill inside a plug-in, see exactly how it is written, and copy its structure.",
         "Install from <strong>Customize → Plug-ins</strong> in Claude. Once installed, the plug-in's skills fire automatically and its slash commands become available in any conversation.",
       ]},
       { heading:"Enabled FTV plug-ins", numbered:false, steps:[
-        "<strong><a href=\"https://claude.ai/customize/plugins/private-equity%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Private Equity ↗</a></strong> — Sourcing through portfolio operations: deal sourcing, inbound screening, diligence checklists by workstream, unit-economics analysis, IC memos, and portfolio KPI monitoring. Commands: <code style=\"color:#8AAFD4;\">/source</code>, <code style=\"color:#8AAFD4;\">/screen-deal</code>, <code style=\"color:#8AAFD4;\">/dd-checklist</code>, <code style=\"color:#8AAFD4;\">/dd-prep</code>, <code style=\"color:#8AAFD4;\">/unit-economics</code>, <code style=\"color:#8AAFD4;\">/ic-memo</code>, <code style=\"color:#8AAFD4;\">/portfolio</code>, <code style=\"color:#8AAFD4;\">/value-creation</code>, <code style=\"color:#8AAFD4;\">/ai-readiness</code>.",
-        "<strong><a href=\"https://claude.ai/customize/plugins/equity-research%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Equity Research ↗</a></strong> — Coverage and publishing workflows: post-earnings updates, earnings previews, initiating-coverage reports, model updates, thesis and catalyst tracking, and idea screens. Commands: <code style=\"color:#8AAFD4;\">/earnings</code>, <code style=\"color:#8AAFD4;\">/earnings-preview</code>, <code style=\"color:#8AAFD4;\">/initiate</code>, <code style=\"color:#8AAFD4;\">/model-update</code>, <code style=\"color:#8AAFD4;\">/morning-note</code>, <code style=\"color:#8AAFD4;\">/sector</code>, <code style=\"color:#8AAFD4;\">/thesis</code>, <code style=\"color:#8AAFD4;\">/catalysts</code>, <code style=\"color:#8AAFD4;\">/screen</code>.",
-        "<strong><a href=\"https://claude.ai/customize/plugins/financial-analysis%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Financial Analysis ↗</a></strong> — The core modeling plug-in. Carries the shared modeling skills and all financial-data connectors: comparable-company analysis, DCF and LBO models, 3-statement modeling, Excel model audits, deck QC, and competitive analysis. Commands: <code style=\"color:#8AAFD4;\">/comps</code>, <code style=\"color:#8AAFD4;\">/dcf</code>, <code style=\"color:#8AAFD4;\">/lbo</code>, <code style=\"color:#8AAFD4;\">/3-statement-model</code>, <code style=\"color:#8AAFD4;\">/debug-model</code>, <code style=\"color:#8AAFD4;\">/competitive-analysis</code>.",
-        "<strong><a href=\"https://claude.ai/customize/plugins/earnings-reviewer%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Earnings Reviewer ↗</a></strong> — A packaged agent that ingests earnings calls and SEC filings, updates the financial model with new guidance, flags thesis-relevant changes, and stages a note draft for human review.",
-        "<strong><a href=\"https://claude.ai/customize/plugins/market-researcher%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Market Researcher ↗</a></strong> — Takes a sector or theme and produces an industry overview, competitive landscape, peer comps, and a shortlist of ideas — synthesizing news, filings, and broker research.",
-        "<strong><a href=\"https://claude.ai/customize/plugins/valuation-reviewer%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Valuation Reviewer ↗</a></strong> — Quality control for valuations: ingests GP packages, runs valuation templates, checks marks against comparables, methodology, and firm review standards, and stages LP-reporting outputs.",
-        "<strong><a href=\"https://claude.ai/customize/plugins/statement-auditor%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#E8D5A0;fontWeight:700;textDecoration:none;\">Statement Auditor ↗</a></strong> — Reviews financial and LP statements for consistency, completeness, and accuracy before distribution — catching errors and verifying audit-readiness.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/private-equity%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Private Equity ↗</a></strong> — Sourcing through portfolio operations: deal sourcing, inbound screening, diligence checklists by workstream, unit-economics analysis, IC memos, and portfolio KPI monitoring. Commands: <code style=\"color:#2A6DA8;\">/source</code>, <code style=\"color:#2A6DA8;\">/screen-deal</code>, <code style=\"color:#2A6DA8;\">/dd-checklist</code>, <code style=\"color:#2A6DA8;\">/dd-prep</code>, <code style=\"color:#2A6DA8;\">/unit-economics</code>, <code style=\"color:#2A6DA8;\">/ic-memo</code>, <code style=\"color:#2A6DA8;\">/portfolio</code>, <code style=\"color:#2A6DA8;\">/value-creation</code>, <code style=\"color:#2A6DA8;\">/ai-readiness</code>.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/equity-research%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Equity Research ↗</a></strong> — Coverage and publishing workflows: post-earnings updates, earnings previews, initiating-coverage reports, model updates, thesis and catalyst tracking, and idea screens. Commands: <code style=\"color:#2A6DA8;\">/earnings</code>, <code style=\"color:#2A6DA8;\">/earnings-preview</code>, <code style=\"color:#2A6DA8;\">/initiate</code>, <code style=\"color:#2A6DA8;\">/model-update</code>, <code style=\"color:#2A6DA8;\">/morning-note</code>, <code style=\"color:#2A6DA8;\">/sector</code>, <code style=\"color:#2A6DA8;\">/thesis</code>, <code style=\"color:#2A6DA8;\">/catalysts</code>, <code style=\"color:#2A6DA8;\">/screen</code>.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/financial-analysis%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Financial Analysis ↗</a></strong> — The core modeling plug-in. Carries the shared modeling skills and all financial-data connectors: comparable-company analysis, DCF and LBO models, 3-statement modeling, Excel model audits, deck QC, and competitive analysis. Commands: <code style=\"color:#2A6DA8;\">/comps</code>, <code style=\"color:#2A6DA8;\">/dcf</code>, <code style=\"color:#2A6DA8;\">/lbo</code>, <code style=\"color:#2A6DA8;\">/3-statement-model</code>, <code style=\"color:#2A6DA8;\">/debug-model</code>, <code style=\"color:#2A6DA8;\">/competitive-analysis</code>.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/earnings-reviewer%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Earnings Reviewer ↗</a></strong> — A packaged agent that ingests earnings calls and SEC filings, updates the financial model with new guidance, flags thesis-relevant changes, and stages a note draft for human review.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/market-researcher%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Market Researcher ↗</a></strong> — Takes a sector or theme and produces an industry overview, competitive landscape, peer comps, and a shortlist of ideas — synthesizing news, filings, and broker research.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/valuation-reviewer%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Valuation Reviewer ↗</a></strong> — Quality control for valuations: ingests GP packages, runs valuation templates, checks marks against comparables, methodology, and firm review standards, and stages LP-reporting outputs.",
+        "<strong><a href=\"https://claude.ai/customize/plugins/statement-auditor%40claude-for-financial-services\" target=\"_blank\" rel=\"noreferrer\" style=\"color:#0C2340;fontWeight:700;textDecoration:none;\">Statement Auditor ↗</a></strong> — Reviews financial and LP statements for consistency, completeness, and accuracy before distribution — catching errors and verifying audit-readiness.",
       ]},
       { heading:"Use plug-ins + FTV skills as building blocks", numbered:false, steps:[
         "Plug-ins are <strong>templates, not black boxes.</strong> Because every skill is plain markdown, the fastest way to build a great FTV skill is to start from one that already works — open a plug-in's <strong>SKILL.md</strong>, study how it structures its triggers, instructions, and output format, then adapt it to FTV's conventions.",
-        "Pair them with the <strong>FTV templatized skills</strong> in this hub (IC Diligence, Sourcing Outreach, Right to Win, Risk Framework, FSI Comps, FTV PPT Template). Use the Anthropic plug-in for the heavy modeling logic and the FTV skill for firm-specific format and voice — e.g. run <code style=\"color:#8AAFD4;\">/comps</code> from Financial Analysis, then let the FSI Comps and IC Materials skills shape the output into FTV's IC format.",
+        "Pair them with the <strong>FTV templatized skills</strong> in this hub (IC Diligence, Sourcing Outreach, Right to Win, Risk Framework, FSI Comps, FTV PPT Template). Use the Anthropic plug-in for the heavy modeling logic and the FTV skill for firm-specific format and voice — e.g. run <code style=\"color:#2A6DA8;\">/comps</code> from Financial Analysis, then let the FSI Comps and IC Materials skills shape the output into FTV's IC format.",
         "<strong>A practical recipe:</strong> (1) install the closest plug-in, (2) run its slash command on a real deal, (3) copy the skill file that did the work, (4) edit it with FTV context — sectors, mandate, format — and (5) upload it via <strong>Customize → Skills</strong> as your own. Ask Claude to do the editing for you: <em>\"Adapt this SKILL.md to FTV's Initial Profile format.\"</em>",
         "Built something the whole team should have? Reach out to the AI and Data team — we will test it and provision it org-wide.",
       ]},
       { heading:"Best practices", numbered:false, steps:[
         "<strong>Start with Financial Analysis.</strong> It carries the shared connectors and core models the other plug-ins build on — enable it first.",
-        "<strong>Layer with connectors.</strong> Plug-in skills are far more powerful grounded in live data — keep PitchBook and Microsoft 365 connected so commands like <code style=\"color:#8AAFD4;\">/comps</code> and <code style=\"color:#8AAFD4;\">/dd-checklist</code> pull real numbers.",
-        "<strong>Slash commands beat long prompts.</strong> Once a plug-in is installed, type the command (e.g. <code style=\"color:#8AAFD4;\">/dcf</code>) instead of describing the whole workflow each time.",
+        "<strong>Layer with connectors.</strong> Plug-in skills are far more powerful grounded in live data — keep PitchBook and Microsoft 365 connected so commands like <code style=\"color:#2A6DA8;\">/comps</code> and <code style=\"color:#2A6DA8;\">/dd-checklist</code> pull real numbers.",
+        "<strong>Slash commands beat long prompts.</strong> Once a plug-in is installed, type the command (e.g. <code style=\"color:#2A6DA8;\">/dcf</code>) instead of describing the whole workflow each time.",
         "<strong>Customize before you scale.</strong> Plug-in defaults are generic — edit the system prompt and skill files with FTV context so output lands in the right format the first time.",
       ]},
     ]
@@ -2593,13 +2593,13 @@ const GUIDES = [
     desc:"Export your ChatGPT memory using the exact prompts below and upload to Claude for seamless continuity.",
     sections:[
       { heading:"Step 1: Copy this prompt and send to ChatGPT", numbered:false, steps:[
-        "<strong style=\"color:#E8D5A0;\">Copy the prompt below and paste it into ChatGPT:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.</code>",
+        "<strong style=\"color:#0C2340;\">Copy the prompt below and paste it into ChatGPT:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.</code>",
       ]},
       { heading:"Step 2: ChatGPT will ask for the format. Copy this format specification", numbered:false, steps:[
-        "<strong style=\"color:#E8D5A0;\">When ChatGPT asks how to format the export, copy and send this:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">## Categories (Output in this order):\n1. \"Instructions\": Rules I've explicitly set—tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections. Only include rules stored in memory, not temporary chat context.\n2. \"Memory\": Name, age, location, education, family, relationships, languages spoken, and personal interests.\n3. \"Career\": Current and past roles, companies, and general technical skills.\n4. \"Projects\": Meaningful projects I've worked on or am currently building. Ideally one entry per project. Include what it is, its current status, and any key decisions made. Make the first word of the entry the project name or a brief description.\n5. \"Preferences\": General opinions, tastes, and working style preferences.\n\n## Format:\nUse section headers for each category. Within each category, list one item per line, sorted from oldest to newest. Format each line like this:\n[YYYY-MM-DD] — item content goes here.\nIf the date is unknown, use [Unknown] instead.\n\n## Output:\n– Wrap the entire export in a single code block so I can copy it easily.\n– After the code block, explicitly state whether this is the complete dataset or if there is more data remaining.</code>",
+        "<strong style=\"color:#0C2340;\">When ChatGPT asks how to format the export, copy and send this:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">## Categories (Output in this order):\n1. \"Instructions\": Rules I've explicitly set—tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections. Only include rules stored in memory, not temporary chat context.\n2. \"Memory\": Name, age, location, education, family, relationships, languages spoken, and personal interests.\n3. \"Career\": Current and past roles, companies, and general technical skills.\n4. \"Projects\": Meaningful projects I've worked on or am currently building. Ideally one entry per project. Include what it is, its current status, and any key decisions made. Make the first word of the entry the project name or a brief description.\n5. \"Preferences\": General opinions, tastes, and working style preferences.\n\n## Format:\nUse section headers for each category. Within each category, list one item per line, sorted from oldest to newest. Format each line like this:\n[YYYY-MM-DD] — item content goes here.\nIf the date is unknown, use [Unknown] instead.\n\n## Output:\n– Wrap the entire export in a single code block so I can copy it easily.\n– After the code block, explicitly state whether this is the complete dataset or if there is more data remaining.</code>",
       ]},
       { heading:"Step 3: If ChatGPT says 'more data remaining', use this follow-up", numbered:false, steps:[
-        "<strong style=\"color:#E8D5A0;\">ChatGPT will tell you if there's more data. Copy and send this to get the next batch:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Continue — give me the next batch. Keep doing this until it confirms the export is complete.</code>",
+        "<strong style=\"color:#0C2340;\">ChatGPT will tell you if there's more data. Copy and send this to get the next batch:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Continue — give me the next batch. Keep doing this until it confirms the export is complete.</code>",
       ]},
       { heading:"Step 4: Upload to Claude's memory", numbered:true, steps:[
         "Copy the complete export from ChatGPT (including any additional batches)",
@@ -2632,8 +2632,8 @@ const TypeBadge = ({ type }) => {
 };
 
 const StatusBadge = ({ label }) => {
-  const m = { "Core Tool":{ bg:"#0E2A4A", color:"#7EC2F3" }, "Active Pilot":{ bg:"#0D2A1C", color:"#5DC994" }, "Active":{ bg:"#0D2A1C", color:"#5DC994" } };
-  const s = m[label] || { bg:"#1A1A2E", color:"#8888CC" };
+  const m = { "Core Tool":{ bg:"#E8F0F8", color:"#1A5080" }, "Active Pilot":{ bg:"#E6F5EE", color:"#1A6040" }, "Active":{ bg:"#E6F5EE", color:"#1A6040" }, "Rolling Out":{ bg:"#FDF5E6", color:"#7A5A18" } };
+  const s = m[label] || { bg:"#F0F0F0", color:"#5C5549" };
   return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, fontWeight:500, backgroundColor:s.bg, color:s.color, whiteSpace:"nowrap" }}>{label}</span>;
 };
 
@@ -2646,8 +2646,8 @@ const CopyBtn = ({ text, small }) => {
     setState(ok ? "ok" : "err");
     setTimeout(() => setState("idle"), 2000);
   };
-  const bg   = state === "ok" ? "#0D2A1C" : state === "err" ? "#3a1010" : "#1E3F6B";
-  const col  = state === "ok" ? "#4CAF82" : state === "err" ? "#f87171" : C.textPri;
+  const bg   = state === "ok" ? "#E6F5EE" : state === "err" ? "#FDE8E8" : C.gold;
+  const col  = state === "ok" ? "#1A6040" : state === "err" ? "#B02020" : "#FFFFFF";
   const label = state === "ok" ? "✓ Copied" : state === "err" ? "✗ Failed" : "Copy";
   return (
     <button onClick={handleClick}
@@ -2679,7 +2679,7 @@ const PromptRow = ({ p, expanded, onToggle }) => (
     </div>
     {expanded && (
       <div style={{ borderTop:`2px solid ${C.border}`, padding:"12px 16px 16px" }}>
-        <pre style={{ margin:0, fontSize:11, color:"#C8D8F0", backgroundColor:C.bg, borderRadius:0, padding:14, whiteSpace:"pre-wrap", lineHeight:1.65, fontFamily:"'Consolas','Monaco',monospace", maxHeight:320, overflowY:"auto" }}>{p.text}</pre>
+        <pre style={{ margin:0, fontSize:11, color:"#EAF2FF", backgroundColor:"#0C2340", borderRadius:0, padding:14, whiteSpace:"pre-wrap", lineHeight:1.65, fontFamily:"'Consolas','Monaco',monospace", maxHeight:320, overflowY:"auto" }}>{p.text}</pre>
       </div>
     )}
   </div>
@@ -2753,7 +2753,7 @@ const WorkflowDetail = ({ wf, onBack }) => {
         ← All workflows
       </button>
       <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:24 }}>
-        <span><Icon d={ICON[wf.icon]} size={28} color={C.textSec}/></span>
+        <span><Icon d={ICON[wf.icon]} size={28} color={wf.accent}/></span>
         <div>
           <div style={{ fontSize:20, fontWeight:800 }}>{wf.label}</div>
           <div style={{ fontSize:13, color:C.textSec, marginTop:2 }}>{wf.desc}</div>
@@ -2777,9 +2777,9 @@ const WorkflowDetail = ({ wf, onBack }) => {
               </div>
             </>
           )}
-          <div style={{ backgroundColor:"#1E2A10", border:"2px solid #3a5a18", borderRadius:0, padding:"14px 16px" }}>
-            <div style={{ fontSize:11, fontWeight:700, color:"#a0e8b0", marginBottom:6 }}>Pro tip</div>
-            <div style={{ fontSize:12, color:"#7EC8A0", lineHeight:1.65 }}>{wf.tip}</div>
+          <div style={{ backgroundColor:"#E6F5EE", border:"2px solid #B0D8C4", borderRadius:0, padding:"14px 16px" }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"#1A6040", marginBottom:6 }}>Pro tip</div>
+            <div style={{ fontSize:12, color:"#2A7A50", lineHeight:1.65 }}>{wf.tip}</div>
           </div>
         </div>
       </div>
@@ -3006,7 +3006,7 @@ function App() {
             <div>
               <div style={{ display:"flex", alignItems:"center", gap:12 }}>
                 <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-                  <defs><radialGradient id="bgG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#1B3D6F"/><stop offset="100%" stopColor="#0C2340"/></radialGradient></defs>
+                  <defs><radialGradient id="bgG" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#0C2340"/><stop offset="100%" stopColor="#07192E"/></radialGradient></defs>
                   <rect width="38" height="38" rx="9" fill="url(#bgG)"/>
                   <path d="M19 10 C14 10 10 13 10 17 C9 19 9 21 10 23 C10 26 12 28 15 29 L19 30" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
                   <path d="M19 10 C24 10 28 13 28 17 C29 19 29 21 28 23 C28 26 26 28 23 29 L19 30" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
@@ -3076,13 +3076,13 @@ function App() {
                     {WORKFLOWS.map(wf => (
                       <div key={wf.id} onClick={() => setActiveWorkflow(wf.id)}
                         style={{ ...card, padding:"20px 22px", cursor:"pointer", transition:"all 0.18s" }}
-                        onMouseOver={e=>{ e.currentTarget.style.borderColor=C.gold; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
+                        onMouseOver={e=>{ e.currentTarget.style.borderColor=wf.accent; e.currentTarget.style.backgroundColor=C.surfaceHi; }}
                         onMouseOut={e=>{ e.currentTarget.style.borderColor=C.border; e.currentTarget.style.backgroundColor=C.surface; }}>
-                        <div style={{ marginBottom:10 }}><Icon d={ICON[wf.icon]} size={22} color={C.textSec}/></div>
+                        <div style={{ marginBottom:10 }}><Icon d={ICON[wf.icon]} size={22} color={wf.accent}/></div>
                         <div style={{ fontSize:14, fontWeight:700, marginBottom:5 }}>{wf.label}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{wf.desc}</div>
                         {(() => { const tc = workflowItems(wf).filter(it => it.type !== "Skill").length; const sc = skillCountByWorkflow[wf.id] || 0; return (
-                        <div style={{ marginTop:14, fontSize:11, color:C.textMuted, fontWeight:600 }}>
+                        <div style={{ marginTop:14, fontSize:11, color:C.textSec, fontWeight:600 }}>
                           {tc} tool{tc!==1?"s":""}
                           {sc>0?` · ${sc} skill${sc!==1?"s":""}`:""}
                           {wf.promptIds.length>0?` · ${wf.promptIds.length} prompt${wf.promptIds.length!==1?"s":""}`:""} →
@@ -3444,7 +3444,7 @@ function App() {
               </div>
 
               {/* How to download & upload skills — HIGHLIGHTED */}
-              <div style={{ backgroundColor:"#2a2000", border:`2px solid ${C.gold}`, borderRadius:0, padding:20 }}>
+              <div style={{ backgroundColor:"#FDF5E6", border:"2px solid #E8D5A0", borderRadius:0, padding:20 }}>
                 <div style={{ fontSize:14, fontWeight:800, color:C.goldLight, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
                   <span style={{ fontSize:18 }}>⬇️</span> How to download &amp; upload a skill
                 </div>
@@ -3529,7 +3529,7 @@ function App() {
                   <div key={d.id} style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                       <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{d.name}</span>
-                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#2a2000", color:C.gold, border:`2px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#FDF5E6", color:"#7A5A18", border:"2px solid #E8D5A0", whiteSpace:"nowrap" }}>Download</span>
                     </div>
                     <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                       {d.desc}
@@ -3564,7 +3564,7 @@ function App() {
                 <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                   <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                     <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#2a2000", color:C.gold, border:`2px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#FDF5E6", color:"#7A5A18", border:"2px solid #E8D5A0", whiteSpace:"nowrap" }}>Download</span>
                   </div>
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
@@ -3581,7 +3581,7 @@ function App() {
                 <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                   <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                     <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sub-Sector Tagger</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#2a2000", color:C.gold, border:`2px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#FDF5E6", color:"#7A5A18", border:"2px solid #E8D5A0", whiteSpace:"nowrap" }}>Download</span>
                   </div>
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
@@ -3775,7 +3775,7 @@ function App() {
                         style={{ ...card, padding:20, cursor:"pointer" }}
                         onMouseOver={e => e.currentTarget.style.borderColor=C.gold}
                         onMouseOut={e  => e.currentTarget.style.borderColor=C.border}>
-                        <div style={{ marginBottom:10 }}><Icon d={ICON[g.icon]} size={20} color={C.textSec}/></div>
+                        <div style={{ marginBottom:10 }}><Icon d={ICON[g.icon]} size={20} color={C.gold}/></div>
                         <div style={{ fontSize:14, fontWeight:700, color:C.textPri, marginBottom:6 }}>{g.title}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{g.desc}</div>
                         <div style={{ marginTop:12, fontSize:12, color:C.goldLight }}>Read guide →</div>
