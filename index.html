@@ -20,12 +20,12 @@
   </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #F5F2ED; }
+    body { background: #F0F2F5; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #EDE9E3; }
-    ::-webkit-scrollbar-thumb { background: #C8C2B8; border-radius: 0; }
-    ::-webkit-scrollbar-thumb:hover { background: #9C958B; }
-    *:focus-visible { outline: 2px solid #0C2340; outline-offset: 2px; }
+    ::-webkit-scrollbar-track { background: #E8ECF2; }
+    ::-webkit-scrollbar-thumb { background: #B8C4D4; border-radius: 0; }
+    ::-webkit-scrollbar-thumb:hover { background: #7A8EA4; }
+    *:focus-visible { outline: 2px solid #C9A84C; outline-offset: 2px; }
     *:focus:not(:focus-visible) { outline: none; }
   </style>
 </head>
@@ -35,31 +35,32 @@
     const { useState, useMemo } = React;
 
 const C = {
-  bg:"#F5F2ED", surface:"#FFFFFF", surfaceHi:"#EDE9E3",
-  border:"#C8C2B8", textPri:"#1A1A1A", textSec:"#5C5549",
-  textMuted:"#9C958B", gold:"#0C2340", goldLight:"#1E3F6B",
+  bg:"#F0F2F5", surface:"#FFFFFF", surfaceHi:"#E8ECF2",
+  border:"#B8C4D4", textPri:"#0C2340", textSec:"#3A5068",
+  textMuted:"#7A8EA4", gold:"#C9A84C",
+  navy:"#0C2340", navyLight:"#1E3F6B", accent:"#2A6DA8",
 };
 
 const RADIUS = 0;
 const RULE = (w = 2) => `${w}px solid ${C.border}`;
 
 const TAG = {
-  topic:  { bg:"#E8F0F8", color:"#1A5080", border:"#B8D0E8" },
-  output: { bg:"#E6F5EE", color:"#1A6040", border:"#B0D8C4" },
-  metric: { bg:"#FDF5E6", color:"#7A5A18", border:"#E8D5A0" },
-  stage:  { bg:"#F0E8F8", color:"#5030A0", border:"#D0B8E8" },
+  topic:  { bg:"#DCE8F5", color:"#14406A", border:"#A0BCD8" },
+  output: { bg:"#D8F0E4", color:"#145838", border:"#90C8AA" },
+  metric: { bg:"#FAF0D8", color:"#6A4E10", border:"#D4B870" },
+  stage:  { bg:"#E8DCF5", color:"#442890", border:"#BEA0DC" },
 };
 
 const TYPE_MAP = {
-  "Custom GPT":     { bg:"#F0E8F8", color:"#5030A0" },
-  "Claude Project": { bg:"#E8F0F8", color:"#1A5080" },
-  "Custom Tool":    { bg:"#E6F5EE", color:"#1A6040" },
-  "Connector":      { bg:"#FDF5E6", color:"#7A5A18" },
-  "Custom App":     { bg:"#E6F5EE", color:"#1A6040" },
-  "Skill":          { bg:"#E8EEF8", color:"#2A4070" },
-  "Plugin":         { bg:"#FDF0E8", color:"#8A4A20" },
-  "External":       { bg:"#E8EEF8", color:"#2A4070" },
-  "MCP Server":     { bg:"#E6F4F4", color:"#1A5050" },
+  "Custom GPT":     { bg:"#E8DCF5", color:"#442890" },
+  "Claude Project": { bg:"#DCE8F5", color:"#14406A" },
+  "Custom Tool":    { bg:"#D8F0E4", color:"#145838" },
+  "Connector":      { bg:"#FAF0D8", color:"#6A4E10" },
+  "Custom App":     { bg:"#D8F0E4", color:"#145838" },
+  "Skill":          { bg:"#DCE8F5", color:"#14406A" },
+  "Plugin":         { bg:"#F5E4D4", color:"#7A3A10" },
+  "External":       { bg:"#DCE8F5", color:"#14406A" },
+  "MCP Server":     { bg:"#D4EEF0", color:"#0A4848" },
 };
 
 const SP_BASE = "https://ftvcapital1.sharepoint.com/sites/AI/Shared%20Documents/Deep%20Research/Deep%20Research%20Prompts/";
@@ -2632,8 +2633,8 @@ const TypeBadge = ({ type }) => {
 };
 
 const StatusBadge = ({ label }) => {
-  const m = { "Core Tool":{ bg:"#E8F0F8", color:"#1A5080" }, "Active Pilot":{ bg:"#E6F5EE", color:"#1A6040" }, "Active":{ bg:"#E6F5EE", color:"#1A6040" }, "Rolling Out":{ bg:"#FDF5E6", color:"#7A5A18" } };
-  const s = m[label] || { bg:"#F0F0F0", color:"#5C5549" };
+  const m = { "Core Tool":{ bg:"#DCE8F5", color:"#14406A" }, "Active Pilot":{ bg:"#D8F0E4", color:"#145838" }, "Active":{ bg:"#D8F0E4", color:"#145838" }, "Rolling Out":{ bg:"#FAF0D8", color:"#6A4E10" } };
+  const s = m[label] || { bg:"#E8ECF2", color:"#3A5068" };
   return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, fontWeight:500, backgroundColor:s.bg, color:s.color, whiteSpace:"nowrap" }}>{label}</span>;
 };
 
@@ -2646,8 +2647,8 @@ const CopyBtn = ({ text, small }) => {
     setState(ok ? "ok" : "err");
     setTimeout(() => setState("idle"), 2000);
   };
-  const bg   = state === "ok" ? "#E6F5EE" : state === "err" ? "#FDE8E8" : C.gold;
-  const col  = state === "ok" ? "#1A6040" : state === "err" ? "#B02020" : "#FFFFFF";
+  const bg   = state === "ok" ? "#D8F0E4" : state === "err" ? "#FDE8E8" : C.navy;
+  const col  = state === "ok" ? "#145838" : state === "err" ? "#B02020" : "#EAF2FF";
   const label = state === "ok" ? "✓ Copied" : state === "err" ? "✗ Failed" : "Copy";
   return (
     <button onClick={handleClick}
@@ -2696,7 +2697,7 @@ const ToolCard = ({ tool, compact }) => (
         {!compact && <StatusBadge label={tool.badge}/>}
         {tool.link && tool.link !== "#" &&
           <a href={tool.link} target="_blank" rel="noreferrer"
-            style={{ fontSize:11, color:C.goldLight, textDecoration:"none", whiteSpace:"nowrap" }}>Open ↗</a>}
+            style={{ fontSize:11, color:C.accent, textDecoration:"none", whiteSpace:"nowrap" }}>Open ↗</a>}
       </div>
     </div>
     {!compact && <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Platform: <span style={{ color:C.textSec }}>{tool.platform}</span></div>}
@@ -2721,7 +2722,7 @@ const GuideDetail = ({ guide, onBack }) => (
     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
       {guide.sections.map((sec, si) => (
         <div key={si} style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:18 }}>
-          <div style={{ fontSize:12, fontWeight:700, color:C.goldLight, marginBottom:10 }}>{sec.heading}</div>
+          <div style={{ fontSize:12, fontWeight:700, color:C.navy, marginBottom:10 }}>{sec.heading}</div>
           <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
             {sec.steps.map((step, i) => (
               <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
@@ -2777,9 +2778,9 @@ const WorkflowDetail = ({ wf, onBack }) => {
               </div>
             </>
           )}
-          <div style={{ backgroundColor:"#E6F5EE", border:"2px solid #B0D8C4", borderRadius:0, padding:"14px 16px" }}>
-            <div style={{ fontSize:11, fontWeight:700, color:"#1A6040", marginBottom:6 }}>Pro tip</div>
-            <div style={{ fontSize:12, color:"#2A7A50", lineHeight:1.65 }}>{wf.tip}</div>
+          <div style={{ backgroundColor:"#E8EEF8", border:"2px solid #A0BCD8", borderRadius:0, padding:"14px 16px" }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"#14406A", marginBottom:6 }}>Pro tip</div>
+            <div style={{ fontSize:12, color:"#1E3F6B", lineHeight:1.65 }}>{wf.tip}</div>
           </div>
         </div>
       </div>
@@ -2994,13 +2995,13 @@ function App() {
 
   const card     = { backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0 };
   const hashTag  = { fontSize:11, padding:"2px 7px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textMuted };
-  const linkStyle = { fontSize:12, color:C.goldLight, textDecoration:"none" };
+  const linkStyle = { fontSize:12, color:C.accent, textDecoration:"none" };
 
   return (
     <div style={{ minHeight:"100vh", backgroundColor:C.bg, color:C.textPri, fontFamily:"'Archivo',system-ui,sans-serif" }}>
 
       {/* Header */}
-      <div style={{ backgroundColor:C.surface, borderBottom:`2px solid ${C.border}` }}>
+      <div style={{ backgroundColor:C.navy, borderBottom:`2px solid ${C.navy}` }}>
         <div style={{ maxWidth:1280, margin:"0 auto", padding:"20px 24px" }}>
           <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16 }}>
             <div>
@@ -3018,35 +3019,35 @@ function App() {
                   <line x1="19" y1="30" x2="19" y2="33" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round"/>
                   <line x1="16" y1="33" x2="22" y2="33" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round"/>
                 </svg>
-                <span style={{ fontSize:20, fontWeight:700 }}>FTV AI Cortex</span>
-                <span style={{ fontSize:11, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec }}>Internal</span>
+                <span style={{ fontSize:20, fontWeight:700, color:"#EAF2FF" }}>FTV AI Cortex</span>
+                <span style={{ fontSize:11, padding:"2px 8px", borderRadius:0, backgroundColor:"#1E3F6B", color:"#8AAFD4" }}>Internal</span>
               </div>
-              <p style={{ fontSize:13, color:C.textSec, marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for FTV</p>
+              <p style={{ fontSize:13, color:"#8AAFD4", marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for FTV</p>
             </div>
 
             {/* Key Links */}
             <div style={{ display:"flex", flexDirection:"column", gap:5, alignItems:"flex-end", flexShrink:0, marginLeft:24 }}>
               <a href="https://adas-ftv.github.io/Claude-Usage-Tracker/" target="_blank" rel="noreferrer"
-                style={{ fontSize:11, color:C.textSec, textDecoration:"none" }}>
+                style={{ fontSize:11, color:"#8AAFD4", textDecoration:"none" }}>
                 Claude Usage Tracker ↗
               </a>
               <a href="https://ftvcapital1.sharepoint.com/sites/AI" target="_blank" rel="noreferrer"
-                style={{ fontSize:11, color:C.textSec, textDecoration:"none" }}>
+                style={{ fontSize:11, color:"#8AAFD4", textDecoration:"none" }}>
                 SharePoint AI Site ↗
               </a>
               <a href="https://anthropic.skilljar.com/claude-101" target="_blank" rel="noreferrer"
-                style={{ fontSize:11, color:C.textSec, textDecoration:"none" }}>
+                style={{ fontSize:11, color:"#8AAFD4", textDecoration:"none" }}>
                 Claude 101 ↗
               </a>
             </div>
           </div>
           <div style={{ position:"relative" }}>
-            <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted, display:"flex" }}><Icon d={ICON.search} size={14} color={C.textMuted}/></span>
+            <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:"#4A6A90", display:"flex" }}><Icon d={ICON.search} size={14} color={"#4A6A90"}/></span>
             <input
-              style={{ width:"100%", backgroundColor:C.surfaceHi, border:`2px solid ${C.border}`, borderRadius:0, padding:"9px 36px", fontSize:13, color:C.textPri, outline:"none", boxSizing:"border-box" }}
+              style={{ width:"100%", backgroundColor:"#112A4E", border:`2px solid #1E3F6B`, borderRadius:0, padding:"9px 36px", fontSize:13, color:"#EAF2FF", outline:"none", boxSizing:"border-box" }}
               placeholder="Search prompts, tools, tags..."
               value={search} onChange={e => setSearch(e.target.value)}/>
-            {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:C.textMuted, cursor:"pointer" }}>✕</button>}
+            {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#4A6A90", cursor:"pointer" }}>✕</button>}
           </div>
         </div>
       </div>
@@ -3059,8 +3060,8 @@ function App() {
             <button key={t.id}
               onClick={() => { setTab(t.id); setActiveWorkflow(null); setActiveGuide(null); }}
               style={{ padding:"7px 16px", borderRadius:0, fontSize:13, fontWeight:tab===t.id?700:500, border:"none", cursor:"pointer",
-                backgroundColor:"transparent", color:tab===t.id?C.textPri:C.textSec, borderBottom:tab===t.id?`2px solid ${C.gold}`:"2px solid transparent" }}>
-              <span style={{ display:"flex", alignItems:"center", gap:6 }}>{t.icon && <Icon d={ICON[t.icon]} size={14} color={tab===t.id?C.gold:C.textMuted}/>}{t.label} <span style={{ fontSize:11, opacity:0.7 }}>{t.count}</span></span>
+                backgroundColor:"transparent", color:tab===t.id?C.navy:C.textMuted, borderBottom:tab===t.id?`2px solid ${C.gold}`:"2px solid transparent" }}>
+              <span style={{ display:"flex", alignItems:"center", gap:6 }}>{t.icon && <Icon d={ICON[t.icon]} size={14} color={tab===t.id?C.accent:C.textMuted}/>}{t.label} <span style={{ fontSize:11, opacity:0.7 }}>{t.count}</span></span>
             </button>
           ))}
         </div>
@@ -3104,8 +3105,8 @@ function App() {
             <div style={{ marginBottom:20, position:"relative" }}>
               <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                 <button onClick={() => setTagOpen(o => !o)}
-                  style={{ fontSize:12, padding:"4px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${activeTag?C.gold:C.border}`, backgroundColor:activeTag?C.surfaceHi:C.surface, color:activeTag?C.goldLight:C.textSec }}>
-                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={activeTag?C.goldLight:C.textSec}/> {activeTag || "Filter by tag"}</span>
+                  style={{ fontSize:12, padding:"4px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${activeTag?C.gold:C.border}`, backgroundColor:activeTag?C.surfaceHi:C.surface, color:activeTag?C.accent:C.textSec }}>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={activeTag?C.accent:C.textSec}/> {activeTag || "Filter by tag"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{tagOpen?"▲":"▼"}</span>
                 </button>
                 {activeTag && <button onClick={()=>setActiveTag(null)} style={{ fontSize:12, color:C.textSec, background:"none", border:"none", cursor:"pointer" }}>✕ Clear</button>}
@@ -3156,8 +3157,8 @@ function App() {
                   style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
                     border:`2px solid ${ecoTagFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoTagFilter!=="All"?C.surfaceHi:C.surface,
-                    color:ecoTagFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={ecoTagFilter!=="All"?C.goldLight:C.textSec}/> {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
+                    color:ecoTagFilter!=="All"?C.accent:C.textSec }}>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={ecoTagFilter!=="All"?C.accent:C.textSec}/> {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTagOpen?"▲":"▼"}</span>
                 </button>
                 {ecoTagFilter !== "All" && (
@@ -3187,8 +3188,8 @@ function App() {
                   style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
                     border:`2px solid ${ecoTypeFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoTypeFilter!=="All"?C.surfaceHi:C.surface,
-                    color:ecoTypeFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.settings} size={12} color={ecoTypeFilter!=="All"?C.goldLight:C.textSec}/> {ecoTypeFilter !== "All" ? ecoTypeFilter : "Filter by type"}</span>
+                    color:ecoTypeFilter!=="All"?C.accent:C.textSec }}>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.settings} size={12} color={ecoTypeFilter!=="All"?C.accent:C.textSec}/> {ecoTypeFilter !== "All" ? ecoTypeFilter : "Filter by type"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoTypeOpen?"▲":"▼"}</span>
                 </button>
                 {ecoTypeFilter !== "All" && (
@@ -3203,7 +3204,7 @@ function App() {
                           style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:12, padding:"6px 10px", textAlign:"left",
                             fontWeight:ecoTypeFilter===type?600:400,
                             backgroundColor:ecoTypeFilter===type?C.surfaceHi:"transparent",
-                            color:ecoTypeFilter===type?C.goldLight:C.textSec }}>
+                            color:ecoTypeFilter===type?C.accent:C.textSec }}>
                           <span style={{ display:"inline-block", width:10, height:10, borderRadius:0, marginRight:8,
                             backgroundColor:TYPE_MAP[type]?.color||C.textMuted }}/>
                           {type}
@@ -3220,8 +3221,8 @@ function App() {
                   style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
                     border:`2px solid ${ecoWorkflowFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoWorkflowFilter!=="All"?C.surfaceHi:C.surface,
-                    color:ecoWorkflowFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.zap} size={12} color={ecoWorkflowFilter!=="All"?C.goldLight:C.textSec}/> {ecoWorkflowFilter !== "All" ? WORKFLOWS.find(w=>w.id===ecoWorkflowFilter)?.label || ecoWorkflowFilter : "Filter by workflow"}</span>
+                    color:ecoWorkflowFilter!=="All"?C.accent:C.textSec }}>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.zap} size={12} color={ecoWorkflowFilter!=="All"?C.accent:C.textSec}/> {ecoWorkflowFilter !== "All" ? WORKFLOWS.find(w=>w.id===ecoWorkflowFilter)?.label || ecoWorkflowFilter : "Filter by workflow"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{ecoWorkflowOpen?"▲":"▼"}</span>
                 </button>
                 {ecoWorkflowFilter !== "All" && (
@@ -3236,8 +3237,8 @@ function App() {
                           style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:12, padding:"6px 10px", textAlign:"left",
                             fontWeight:ecoWorkflowFilter===wf.id?600:400,
                             backgroundColor:ecoWorkflowFilter===wf.id?C.surfaceHi:"transparent",
-                            color:ecoWorkflowFilter===wf.id?C.goldLight:C.textSec }}>
-                          <span style={{ display:"flex", alignItems:"center", gap:6 }}><Icon d={ICON[wf.icon]} size={12} color={ecoWorkflowFilter===wf.id?C.goldLight:C.textSec}/> {wf.label}</span>
+                            color:ecoWorkflowFilter===wf.id?C.accent:C.textSec }}>
+                          <span style={{ display:"flex", alignItems:"center", gap:6 }}><Icon d={ICON[wf.icon]} size={12} color={ecoWorkflowFilter===wf.id?C.accent:C.textSec}/> {wf.label}</span>
                         </button>
                       ))}
                     </div>
@@ -3276,7 +3277,7 @@ function App() {
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65, marginBottom:10 }}>
                     {t.desc.split("\n").map((line,li) =>
                       line.startsWith("Enable in") || line.startsWith("How to")
-                        ? <p key={li} style={{ color:C.goldLight, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
+                        ? <p key={li} style={{ color:C.accent, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
                         : <p key={li} style={{ margin:0 }}>{line}</p>
                     )}
                   </div>
@@ -3308,8 +3309,8 @@ function App() {
             {/* Filters */}
             <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, alignItems:"flex-start" }}>
               <div style={{ position:"relative" }}>
-                <button onClick={() => setCtTagFilter(ctTagFilter === "All" ? "All" : "All")} style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${ctTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ctTagFilter!=="All"?C.surfaceHi:C.surface, color:ctTagFilter!=="All"?C.goldLight:C.textSec }}>
-                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={ctTagFilter!=="All"?C.goldLight:C.textSec}/> {ctTagFilter !== "All" ? ctTagFilter : "Filter by tag"}</span>
+                <button onClick={() => setCtTagFilter(ctTagFilter === "All" ? "All" : "All")} style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${ctTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ctTagFilter!=="All"?C.surfaceHi:C.surface, color:ctTagFilter!=="All"?C.accent:C.textSec }}>
+                  <span style={{ display:"flex", alignItems:"center", gap:4 }}><Icon d={ICON.tag} size={12} color={ctTagFilter!=="All"?C.accent:C.textSec}/> {ctTagFilter !== "All" ? ctTagFilter : "Filter by tag"}</span>
                 </button>
               </div>
               <span style={{ fontSize:11, color:C.textMuted, alignSelf:"center", marginLeft:"auto" }}>{fCustomTools.length} tools</span>
@@ -3332,7 +3333,7 @@ function App() {
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65, marginBottom:10 }}>
                     {t.desc.split("\n").map((line,li) =>
                       line.startsWith("Enable in") || line.startsWith("How to")
-                        ? <p key={li} style={{ color:C.goldLight, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
+                        ? <p key={li} style={{ color:C.accent, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
                         : <p key={li} style={{ margin:0 }}>{line}</p>
                     )}
                   </div>
@@ -3404,7 +3405,7 @@ function App() {
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65, marginBottom:10 }}>
                     {t.desc.split("\n").map((line,li) =>
                       line.startsWith("Enable in") || line.startsWith("How to")
-                        ? <p key={li} style={{ color:C.goldLight, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
+                        ? <p key={li} style={{ color:C.accent, fontWeight:600, margin:"8px 0 2px", fontSize:11 }}>{line}</p>
                         : <p key={li} style={{ margin:0 }}>{line}</p>
                     )}
                   </div>
@@ -3444,13 +3445,13 @@ function App() {
               </div>
 
               {/* How to download & upload skills — HIGHLIGHTED */}
-              <div style={{ backgroundColor:"#FDF5E6", border:"2px solid #E8D5A0", borderRadius:0, padding:20 }}>
-                <div style={{ fontSize:14, fontWeight:800, color:C.goldLight, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+              <div style={{ backgroundColor:"#DCE8F5", border:"2px solid #A0BCD8", borderRadius:0, padding:20 }}>
+                <div style={{ fontSize:14, fontWeight:800, color:C.navy, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
                   <span style={{ fontSize:18 }}>⬇️</span> How to download &amp; upload a skill
                 </div>
                 <ol style={{ fontSize:13, color:C.textPri, lineHeight:2, paddingLeft:20, margin:0, fontWeight:500 }}>
-                  <li>Click <strong style={{ color:C.goldLight }}>Download from SharePoint</strong> on any downloadable skill tile below</li>
-                  <li>In Claude or ChatGPT, go to <strong style={{ color:C.goldLight }}>Customize → Skills → Upload skill</strong></li>
+                  <li>Click <strong style={{ color:C.navy }}>Download from SharePoint</strong> on any downloadable skill tile below</li>
+                  <li>In Claude or ChatGPT, go to <strong style={{ color:C.navy }}>Customize → Skills → Upload skill</strong></li>
                   <li>Upload the .skill file (or zip folder) — it's now available in all your conversations</li>
                 </ol>
               </div>
@@ -3529,7 +3530,7 @@ function App() {
                   <div key={d.id} style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                       <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>{d.name}</span>
-                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#FDF5E6", color:"#7A5A18", border:"2px solid #E8D5A0", whiteSpace:"nowrap" }}>Download</span>
+                      <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#DCE8F5", color:"#14406A", border:"2px solid #A0BCD8", whiteSpace:"nowrap" }}>Download</span>
                     </div>
                     <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                       {d.desc}
@@ -3545,7 +3546,7 @@ function App() {
                     <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                       {d.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
-                    <a href={d.link} target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    <a href={d.link} target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.navy, color:"#EAF2FF", borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                       Download from SharePoint ↗
                     </a>
                   </div>
@@ -3564,7 +3565,7 @@ function App() {
                 <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                   <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                     <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#FDF5E6", color:"#7A5A18", border:"2px solid #E8D5A0", whiteSpace:"nowrap" }}>Download</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#DCE8F5", color:"#14406A", border:"2px solid #A0BCD8", whiteSpace:"nowrap" }}>Download</span>
                   </div>
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
@@ -3572,7 +3573,7 @@ function App() {
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.navy, color:"#EAF2FF", borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                     Download from SharePoint ↗
                   </a>
                 </div>
@@ -3581,7 +3582,7 @@ function App() {
                 <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
                   <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
                     <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sub-Sector Tagger</span>
-                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#FDF5E6", color:"#7A5A18", border:"2px solid #E8D5A0", whiteSpace:"nowrap" }}>Download</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#DCE8F5", color:"#14406A", border:"2px solid #A0BCD8", whiteSpace:"nowrap" }}>Download</span>
                   </div>
                   <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
                     Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
@@ -3589,7 +3590,7 @@ function App() {
                   <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
                     {["sourcing","classification","sub-sector","pipeline"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                   </div>
-                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.navy, color:"#EAF2FF", borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
                     Download from SharePoint ↗
                   </a>
                 </div>
@@ -3718,7 +3719,7 @@ function App() {
                       {p.tags.map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
                     </div>
                     {p.link && p.link !== "#" &&
-                      <a href={p.link} target="_blank" rel="noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>Open in Claude ↗</a>}
+                      <a href={p.link} target="_blank" rel="noreferrer" style={{ display:"inline-block", fontSize:12, padding:"8px 16px", backgroundColor:C.navy, color:"#EAF2FF", borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>Open in Claude ↗</a>}
                   </div>
                 ))}
               </div>
@@ -3775,10 +3776,10 @@ function App() {
                         style={{ ...card, padding:20, cursor:"pointer" }}
                         onMouseOver={e => e.currentTarget.style.borderColor=C.gold}
                         onMouseOut={e  => e.currentTarget.style.borderColor=C.border}>
-                        <div style={{ marginBottom:10 }}><Icon d={ICON[g.icon]} size={20} color={C.gold}/></div>
+                        <div style={{ marginBottom:10 }}><Icon d={ICON[g.icon]} size={20} color={C.accent}/></div>
                         <div style={{ fontSize:14, fontWeight:700, color:C.textPri, marginBottom:6 }}>{g.title}</div>
                         <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6 }}>{g.desc}</div>
-                        <div style={{ marginTop:12, fontSize:12, color:C.goldLight }}>Read guide →</div>
+                        <div style={{ marginTop:12, fontSize:12, color:C.accent }}>Read guide →</div>
                       </div>
                     ))}
                   </div>
@@ -3789,10 +3790,10 @@ function App() {
 
       </div>
 
-      <div style={{ borderTop:`2px solid ${C.border}`, marginTop:32 }}>
+      <div style={{ backgroundColor:C.navy, borderTop:`2px solid ${C.navy}`, marginTop:32 }}>
         <div style={{ maxWidth:1280, margin:"0 auto", padding:"14px 24px", display:"flex", justifyContent:"space-between" }}>
-          <span style={{ fontSize:11, color:C.textMuted }}>FTV Capital · Data, Technology and Operations · Internal Use Only</span>
-          <span style={{ fontSize:11, color:C.textMuted }}>v4.0 · 2026</span>
+          <span style={{ fontSize:11, color:"#4A6A90" }}>FTV Capital · Data, Technology and Operations · Internal Use Only</span>
+          <span style={{ fontSize:11, color:"#4A6A90" }}>v4.0 · 2026</span>
         </div>
       </div>
     </div>
