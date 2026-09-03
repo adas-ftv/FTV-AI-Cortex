@@ -20,8 +20,10 @@
     body { background: #07192E; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #0C2340; }
-    ::-webkit-scrollbar-thumb { background: #1E3F6B; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: #1E3F6B; border-radius: 0; }
     ::-webkit-scrollbar-thumb:hover { background: #2A5590; }
+    *:focus-visible { outline: 2px solid #C9A84C; outline-offset: 2px; }
+    *:focus:not(:focus-visible) { outline: none; }
   </style>
 </head>
 <body>
@@ -34,6 +36,9 @@ const C = {
   border:"#1E3F6B", textPri:"#EAF2FF", textSec:"#8AAFD4",
   textMuted:"#4A6A90", gold:"#C9A84C", goldLight:"#E8D5A0",
 };
+
+const RADIUS = 0;
+const RULE = (w = 2) => `${w}px solid ${C.border}`;
 
 const TAG = {
   topic:  { bg:"#0E2A4A", color:"#7EC2F3", border:"#1E5080" },
@@ -2556,13 +2561,13 @@ const GUIDES = [
     desc:"Export your ChatGPT memory using the exact prompts below and upload to Claude for seamless continuity.",
     sections:[
       { heading:"Step 1: Copy this prompt and send to ChatGPT", numbered:false, steps:[
-        "<strong style=\"color:#E8D5A0;\">Copy the prompt below and paste it into ChatGPT:</strong><br/><br/><code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:12px;borderRadius:6px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.</code>",
+        "<strong style=\"color:#E8D5A0;\">Copy the prompt below and paste it into ChatGPT:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Please export all saved memories and everything you know about me from our past conversations. For my instructions and preferences, please preserve my exact phrasing as much as possible.</code>",
       ]},
       { heading:"Step 2: ChatGPT will ask for the format. Copy this format specification", numbered:false, steps:[
-        "<strong style=\"color:#E8D5A0;\">When ChatGPT asks how to format the export, copy and send this:</strong><br/><br/><code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:12px;borderRadius:6px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">## Categories (Output in this order):\n1. \"Instructions\": Rules I've explicitly set—tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections. Only include rules stored in memory, not temporary chat context.\n2. \"Memory\": Name, age, location, education, family, relationships, languages spoken, and personal interests.\n3. \"Career\": Current and past roles, companies, and general technical skills.\n4. \"Projects\": Meaningful projects I've worked on or am currently building. Ideally one entry per project. Include what it is, its current status, and any key decisions made. Make the first word of the entry the project name or a brief description.\n5. \"Preferences\": General opinions, tastes, and working style preferences.\n\n## Format:\nUse section headers for each category. Within each category, list one item per line, sorted from oldest to newest. Format each line like this:\n[YYYY-MM-DD] — item content goes here.\nIf the date is unknown, use [Unknown] instead.\n\n## Output:\n– Wrap the entire export in a single code block so I can copy it easily.\n– After the code block, explicitly state whether this is the complete dataset or if there is more data remaining.</code>",
+        "<strong style=\"color:#E8D5A0;\">When ChatGPT asks how to format the export, copy and send this:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">## Categories (Output in this order):\n1. \"Instructions\": Rules I've explicitly set—tone, formatting, style, \"always do X\", \"never do Y\", and behavioral corrections. Only include rules stored in memory, not temporary chat context.\n2. \"Memory\": Name, age, location, education, family, relationships, languages spoken, and personal interests.\n3. \"Career\": Current and past roles, companies, and general technical skills.\n4. \"Projects\": Meaningful projects I've worked on or am currently building. Ideally one entry per project. Include what it is, its current status, and any key decisions made. Make the first word of the entry the project name or a brief description.\n5. \"Preferences\": General opinions, tastes, and working style preferences.\n\n## Format:\nUse section headers for each category. Within each category, list one item per line, sorted from oldest to newest. Format each line like this:\n[YYYY-MM-DD] — item content goes here.\nIf the date is unknown, use [Unknown] instead.\n\n## Output:\n– Wrap the entire export in a single code block so I can copy it easily.\n– After the code block, explicitly state whether this is the complete dataset or if there is more data remaining.</code>",
       ]},
       { heading:"Step 3: If ChatGPT says 'more data remaining', use this follow-up", numbered:false, steps:[
-        "<strong style=\"color:#E8D5A0;\">ChatGPT will tell you if there's more data. Copy and send this to get the next batch:</strong><br/><br/><code style=\"background:#0C2340;border:1px solid #1E3F6B;padding:12px;borderRadius:6px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Continue — give me the next batch. Keep doing this until it confirms the export is complete.</code>",
+        "<strong style=\"color:#E8D5A0;\">ChatGPT will tell you if there's more data. Copy and send this to get the next batch:</strong><br/><br/><code style=\"background:#0C2340;border:2px solid #1E3F6B;padding:12px;borderRadius:0px;display:block;fontSize:11px;lineHeight:1.6;color:#EAF2FF;marginTop:8px;marginBottom:8px;whiteSpace:pre-wrap;wordBreak:break-word;\">Continue — give me the next batch. Keep doing this until it confirms the export is complete.</code>",
       ]},
       { heading:"Step 4: Upload to Claude's memory", numbered:true, steps:[
         "Copy the complete export from ChatGPT (including any additional batches)",
@@ -2586,18 +2591,18 @@ const EXTERNAL_TOOLS = [
 // COMPONENTS
 // ─────────────────────────────────────────────────────────────────────────────
 const TagEl = ({ type, text }) => (
-  <span style={{ backgroundColor:TAG[type].bg, color:TAG[type].color, border:`1px solid ${TAG[type].border}`, borderRadius:999, fontSize:11, padding:"2px 8px", fontWeight:500 }}>{text}</span>
+  <span style={{ backgroundColor:TAG[type].bg, color:TAG[type].color, border:`2px solid ${TAG[type].border}`, borderRadius:0, fontSize:11, padding:"2px 8px", fontWeight:500 }}>{text}</span>
 );
 
 const TypeBadge = ({ type }) => {
   const s = TYPE_MAP[type] || { bg:C.surface, color:C.textSec };
-  return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:999, fontWeight:600, backgroundColor:s.bg, color:s.color }}>{type}</span>;
+  return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, fontWeight:600, backgroundColor:s.bg, color:s.color }}>{type}</span>;
 };
 
 const StatusBadge = ({ label }) => {
   const m = { "Core Tool":{ bg:"#0E2A4A", color:"#7EC2F3" }, "Active Pilot":{ bg:"#0D2A1C", color:"#5DC994" }, "Active":{ bg:"#0D2A1C", color:"#5DC994" } };
   const s = m[label] || { bg:"#1A1A2E", color:"#8888CC" };
-  return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:999, fontWeight:500, backgroundColor:s.bg, color:s.color, whiteSpace:"nowrap" }}>{label}</span>;
+  return <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, fontWeight:500, backgroundColor:s.bg, color:s.color, whiteSpace:"nowrap" }}>{label}</span>;
 };
 
 // CopyBtn uses textarea execCommand fallback — works in sandboxed iframes
@@ -2614,14 +2619,14 @@ const CopyBtn = ({ text, small }) => {
   const label = state === "ok" ? "✓ Copied" : state === "err" ? "✗ Failed" : "Copy";
   return (
     <button onClick={handleClick}
-      style={{ fontSize:small?10:11, padding:small?"2px 9px":"4px 12px", borderRadius:6, border:"none", cursor:"pointer", whiteSpace:"nowrap", flexShrink:0, backgroundColor:bg, color:col, transition:"all 0.15s", fontWeight:500 }}>
+      style={{ fontSize:small?10:11, padding:small?"2px 9px":"4px 12px", borderRadius:0, border:"none", cursor:"pointer", whiteSpace:"nowrap", flexShrink:0, backgroundColor:bg, color:col, transition:"all 0.15s", fontWeight:500 }}>
       {label}
     </button>
   );
 };
 
 const PromptRow = ({ p, expanded, onToggle }) => (
-  <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+  <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, overflow:"hidden" }}>
     <div style={{ padding:"13px 16px", cursor:"pointer" }}
       onMouseOver={e=>e.currentTarget.style.backgroundColor=C.surfaceHi}
       onMouseOut={e=>e.currentTarget.style.backgroundColor=""}
@@ -2641,15 +2646,15 @@ const PromptRow = ({ p, expanded, onToggle }) => (
       </div>
     </div>
     {expanded && (
-      <div style={{ borderTop:`1px solid ${C.border}`, padding:"12px 16px 16px" }}>
-        <pre style={{ margin:0, fontSize:11, color:"#C8D8F0", backgroundColor:C.bg, borderRadius:8, padding:14, whiteSpace:"pre-wrap", lineHeight:1.65, fontFamily:"'Consolas','Monaco',monospace", maxHeight:320, overflowY:"auto" }}>{p.text}</pre>
+      <div style={{ borderTop:`2px solid ${C.border}`, padding:"12px 16px 16px" }}>
+        <pre style={{ margin:0, fontSize:11, color:"#C8D8F0", backgroundColor:C.bg, borderRadius:0, padding:14, whiteSpace:"pre-wrap", lineHeight:1.65, fontFamily:"'Consolas','Monaco',monospace", maxHeight:320, overflowY:"auto" }}>{p.text}</pre>
       </div>
     )}
   </div>
 );
 
 const ToolCard = ({ tool, compact }) => (
-  <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:compact?"11px 14px":"16px 18px" }}>
+  <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:compact?"11px 14px":"16px 18px" }}>
     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:5 }}>
       <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
         <TypeBadge type={tool.type}/>
@@ -2683,14 +2688,14 @@ const GuideDetail = ({ guide, onBack }) => (
     </div>
     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
       {guide.sections.map((sec, si) => (
-        <div key={si} style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:18 }}>
+        <div key={si} style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:18 }}>
           <div style={{ fontSize:12, fontWeight:700, color:C.goldLight, marginBottom:10 }}>{sec.heading}</div>
           <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
             {sec.steps.map((step, i) => (
               <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
                 {sec.numbered
-                  ? <div style={{ width:18, height:18, borderRadius:"50%", background:C.gold, color:C.bg, fontSize:10, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>{i+1}</div>
-                  : <div style={{ width:5, height:5, borderRadius:"50%", background:C.gold, flexShrink:0, marginTop:6 }}/>
+                  ? <div style={{ width:18, height:18, borderRadius:0, background:C.gold, color:C.bg, fontSize:10, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>{i+1}</div>
+                  : <div style={{ width:5, height:5, borderRadius:0, background:C.gold, flexShrink:0, marginTop:6 }}/>
                 }
                 <div style={{ fontSize:12, color:C.textSec, lineHeight:1.65 }} dangerouslySetInnerHTML={{ __html:step }}/>
               </div>
@@ -2740,7 +2745,7 @@ const WorkflowDetail = ({ wf, onBack }) => {
               </div>
             </>
           )}
-          <div style={{ backgroundColor:"#1E2A10", border:"1px solid #3a5a18", borderRadius:10, padding:"14px 16px" }}>
+          <div style={{ backgroundColor:"#1E2A10", border:"2px solid #3a5a18", borderRadius:0, padding:"14px 16px" }}>
             <div style={{ fontSize:11, fontWeight:700, color:"#a0e8b0", marginBottom:6 }}>💡 Pro tip</div>
             <div style={{ fontSize:12, color:"#7EC8A0", lineHeight:1.65 }}>{wf.tip}</div>
           </div>
@@ -2955,15 +2960,15 @@ function App() {
     { id:"guides",     label:"📖 Claude Guides",   count:GUIDES.length },
   ];
 
-  const card     = { backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:12 };
-  const hashTag  = { fontSize:11, padding:"2px 7px", borderRadius:4, backgroundColor:C.surfaceHi, color:C.textMuted };
+  const card     = { backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0 };
+  const hashTag  = { fontSize:11, padding:"2px 7px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textMuted };
   const linkStyle = { fontSize:12, color:C.goldLight, textDecoration:"none" };
 
   return (
     <div style={{ minHeight:"100vh", backgroundColor:C.bg, color:C.textPri, fontFamily:"system-ui,sans-serif" }}>
 
       {/* Header */}
-      <div style={{ backgroundColor:C.surface, borderBottom:`1px solid ${C.border}` }}>
+      <div style={{ backgroundColor:C.surface, borderBottom:`2px solid ${C.border}` }}>
         <div style={{ maxWidth:1280, margin:"0 auto", padding:"20px 24px" }}>
           <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16 }}>
             <div>
@@ -2982,7 +2987,7 @@ function App() {
                   <line x1="16" y1="33" x2="22" y2="33" stroke="#C9A84C" strokeWidth="1.6" strokeLinecap="round"/>
                 </svg>
                 <span style={{ fontSize:20, fontWeight:700 }}>FTV AI Cortex</span>
-                <span style={{ fontSize:11, padding:"2px 8px", borderRadius:999, backgroundColor:C.surfaceHi, color:C.textSec }}>Internal</span>
+                <span style={{ fontSize:11, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:C.textSec }}>Internal</span>
               </div>
               <p style={{ fontSize:13, color:C.textSec, marginTop:4, marginLeft:50 }}>Prompts, tools, and templates for FTV</p>
             </div>
@@ -3006,7 +3011,7 @@ function App() {
           <div style={{ position:"relative" }}>
             <span style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:C.textMuted }}>🔍</span>
             <input
-              style={{ width:"100%", backgroundColor:C.surfaceHi, border:`1px solid ${C.border}`, borderRadius:8, padding:"9px 36px", fontSize:13, color:C.textPri, outline:"none", boxSizing:"border-box" }}
+              style={{ width:"100%", backgroundColor:C.surfaceHi, border:`2px solid ${C.border}`, borderRadius:0, padding:"9px 36px", fontSize:13, color:C.textPri, outline:"none", boxSizing:"border-box" }}
               placeholder="Search prompts, tools, tags..."
               value={search} onChange={e => setSearch(e.target.value)}/>
             {search && <button onClick={()=>setSearch("")} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:C.textMuted, cursor:"pointer" }}>✕</button>}
@@ -3017,11 +3022,11 @@ function App() {
       <div style={{ maxWidth:1280, margin:"0 auto", padding:"24px 24px" }}>
 
         {/* Tabs */}
-        <div style={{ display:"flex", gap:4, marginBottom:24, backgroundColor:C.surface, padding:4, borderRadius:10, width:"fit-content", border:`1px solid ${C.border}`, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:4, marginBottom:24, backgroundColor:C.surface, padding:4, borderRadius:0, width:"fit-content", border:`2px solid ${C.border}`, flexWrap:"wrap" }}>
           {tabs.map(t => (
             <button key={t.id}
               onClick={() => { setTab(t.id); setActiveWorkflow(null); setActiveGuide(null); }}
-              style={{ padding:"7px 16px", borderRadius:7, fontSize:13, fontWeight:tab===t.id?700:500, border:"none", cursor:"pointer",
+              style={{ padding:"7px 16px", borderRadius:0, fontSize:13, fontWeight:tab===t.id?700:500, border:"none", cursor:"pointer",
                 backgroundColor:tab===t.id?C.gold:"transparent", color:tab===t.id?C.bg:C.textSec }}>
               {t.label} <span style={{ fontSize:11, opacity:0.7 }}>{t.count}</span>
             </button>
@@ -3067,20 +3072,20 @@ function App() {
             <div style={{ marginBottom:20, position:"relative" }}>
               <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                 <button onClick={() => setTagOpen(o => !o)}
-                  style={{ fontSize:12, padding:"4px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`1px solid ${activeTag?C.gold:C.border}`, backgroundColor:activeTag?C.surfaceHi:C.surface, color:activeTag?C.goldLight:C.textSec }}>
+                  style={{ fontSize:12, padding:"4px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${activeTag?C.gold:C.border}`, backgroundColor:activeTag?C.surfaceHi:C.surface, color:activeTag?C.goldLight:C.textSec }}>
                   <span>🏷 {activeTag || "Filter by tag"}</span>
                   <span style={{ color:C.textMuted, fontSize:10 }}>{tagOpen?"▲":"▼"}</span>
                 </button>
                 {activeTag && <button onClick={()=>setActiveTag(null)} style={{ fontSize:12, color:C.textSec, background:"none", border:"none", cursor:"pointer" }}>✕ Clear</button>}
               </div>
               {tagOpen && (
-                <div style={{ position:"absolute", top:"110%", left:0, zIndex:20, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:340, boxShadow:"0 8px 24px rgba(0,0,0,0.4)" }}>
+                <div style={{ position:"absolute", top:"110%", left:0, zIndex:20, backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:12, width:340, boxShadow:"0 2px 8px rgba(0,0,0,0.3)" }}>
                   <div style={{ display:"flex", flexWrap:"wrap", gap:6, maxHeight:200, overflowY:"auto" }}>
                     {allTags.map(([text,type]) => (
                       <button key={text} onClick={() => { setActiveTag(activeTag===text?null:text); setTagOpen(false); }}
-                        style={{ border:"none", cursor:"pointer", borderRadius:999, fontSize:11, padding:"3px 9px",
+                        style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:11, padding:"3px 9px",
                           fontWeight:activeTag===text?600:400, backgroundColor:activeTag===text?TAG[type].bg:C.surfaceHi,
-                          color:activeTag===text?TAG[type].color:C.textSec, outline:activeTag===text?`1px solid ${TAG[type].border}`:"none" }}>
+                          color:activeTag===text?TAG[type].color:C.textSec, outline:activeTag===text?`2px solid ${TAG[type].border}`:"none" }}>
                         {text}
                       </button>
                     ))}
@@ -3116,8 +3121,8 @@ function App() {
               {/* Filter by Tag */}
               <div style={{ position:"relative" }}>
                 <button onClick={() => { setEcoTagOpen(o=>!o); setEcoTypeOpen(false); setEcoWorkflowOpen(false); }}
-                  style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
-                    border:`1px solid ${ecoTagFilter!=="All"?C.gold:C.border}`,
+                  style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
+                    border:`2px solid ${ecoTagFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoTagFilter!=="All"?C.surfaceHi:C.surface,
                     color:ecoTagFilter!=="All"?C.goldLight:C.textSec }}>
                   <span>🏷 {ecoTagFilter !== "All" ? ecoTagFilter : "Filter by tag"}</span>
@@ -3128,11 +3133,11 @@ function App() {
                     style={{ position:"absolute", right:-20, top:5, fontSize:11, color:C.textMuted, background:"none", border:"none", cursor:"pointer" }}>✕</button>
                 )}
                 {ecoTagOpen && (
-                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:300, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
+                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:12, width:300, boxShadow:"0 2px 8px rgba(0,0,0,0.3)" }}>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6, maxHeight:180, overflowY:"auto" }}>
                       {ecoAllTags.filter(t=>t!=="All").map(t => (
                         <button key={t} onClick={() => { setEcoTagFilter(ecoTagFilter===t?"All":t); setEcoTagOpen(false); }}
-                          style={{ border:"none", cursor:"pointer", borderRadius:999, fontSize:11, padding:"3px 10px",
+                          style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:11, padding:"3px 10px",
                             fontWeight:ecoTagFilter===t?600:400,
                             backgroundColor:ecoTagFilter===t?C.gold:C.surfaceHi,
                             color:ecoTagFilter===t?C.bg:C.textSec }}>
@@ -3147,8 +3152,8 @@ function App() {
               {/* Filter by Tool Type */}
               <div style={{ position:"relative" }}>
                 <button onClick={() => { setEcoTypeOpen(o=>!o); setEcoTagOpen(false); setEcoWorkflowOpen(false); }}
-                  style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
-                    border:`1px solid ${ecoTypeFilter!=="All"?C.gold:C.border}`,
+                  style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
+                    border:`2px solid ${ecoTypeFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoTypeFilter!=="All"?C.surfaceHi:C.surface,
                     color:ecoTypeFilter!=="All"?C.goldLight:C.textSec }}>
                   <span>⚙️ {ecoTypeFilter !== "All" ? ecoTypeFilter : "Filter by type"}</span>
@@ -3159,15 +3164,15 @@ function App() {
                     style={{ position:"absolute", right:-20, top:5, fontSize:11, color:C.textMuted, background:"none", border:"none", cursor:"pointer" }}>✕</button>
                 )}
                 {ecoTypeOpen && (
-                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:240, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
+                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:12, width:240, boxShadow:"0 2px 8px rgba(0,0,0,0.3)" }}>
                     <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
                       {["Custom GPT","Claude Project","Connector","Custom App","Skill","External","MCP Server"].map(type => (
                         <button key={type} onClick={() => { setEcoTypeFilter(ecoTypeFilter===type?"All":type); setEcoTypeOpen(false); }}
-                          style={{ border:"none", cursor:"pointer", borderRadius:6, fontSize:12, padding:"6px 10px", textAlign:"left",
+                          style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:12, padding:"6px 10px", textAlign:"left",
                             fontWeight:ecoTypeFilter===type?600:400,
                             backgroundColor:ecoTypeFilter===type?C.surfaceHi:"transparent",
                             color:ecoTypeFilter===type?C.goldLight:C.textSec }}>
-                          <span style={{ display:"inline-block", width:10, height:10, borderRadius:3, marginRight:8,
+                          <span style={{ display:"inline-block", width:10, height:10, borderRadius:0, marginRight:8,
                             backgroundColor:TYPE_MAP[type]?.color||C.textMuted }}/>
                           {type}
                         </button>
@@ -3180,8 +3185,8 @@ function App() {
               {/* Filter by Workflow */}
               <div style={{ position:"relative" }}>
                 <button onClick={() => { setEcoWorkflowOpen(o=>!o); setEcoTagOpen(false); setEcoTypeOpen(false); }}
-                  style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
-                    border:`1px solid ${ecoWorkflowFilter!=="All"?C.gold:C.border}`,
+                  style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6,
+                    border:`2px solid ${ecoWorkflowFilter!=="All"?C.gold:C.border}`,
                     backgroundColor:ecoWorkflowFilter!=="All"?C.surfaceHi:C.surface,
                     color:ecoWorkflowFilter!=="All"?C.goldLight:C.textSec }}>
                   <span>⚡ {ecoWorkflowFilter !== "All" ? WORKFLOWS.find(w=>w.id===ecoWorkflowFilter)?.label || ecoWorkflowFilter : "Filter by workflow"}</span>
@@ -3192,11 +3197,11 @@ function App() {
                     style={{ position:"absolute", right:-20, top:5, fontSize:11, color:C.textMuted, background:"none", border:"none", cursor:"pointer" }}>✕</button>
                 )}
                 {ecoWorkflowOpen && (
-                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:12, width:260, boxShadow:"0 8px 24px rgba(0,0,0,0.5)" }}>
+                  <div style={{ position:"absolute", top:"110%", left:0, zIndex:30, backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:12, width:260, boxShadow:"0 2px 8px rgba(0,0,0,0.3)" }}>
                     <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
                       {WORKFLOWS.map(wf => (
                         <button key={wf.id} onClick={() => { setEcoWorkflowFilter(ecoWorkflowFilter===wf.id?"All":wf.id); setEcoWorkflowOpen(false); }}
-                          style={{ border:"none", cursor:"pointer", borderRadius:6, fontSize:12, padding:"6px 10px", textAlign:"left",
+                          style={{ border:"none", cursor:"pointer", borderRadius:0, fontSize:12, padding:"6px 10px", textAlign:"left",
                             fontWeight:ecoWorkflowFilter===wf.id?600:400,
                             backgroundColor:ecoWorkflowFilter===wf.id?C.surfaceHi:"transparent",
                             color:ecoWorkflowFilter===wf.id?wf.accent:C.textSec }}>
@@ -3211,7 +3216,7 @@ function App() {
               {/* Active filter count badge */}
               {[ecoTagFilter, ecoTypeFilter, ecoWorkflowFilter].filter(f=>f!=="All").length > 0 && (
                 <button onClick={() => { setEcoTagFilter("All"); setEcoTypeFilter("All"); setEcoWorkflowFilter("All"); }}
-                  style={{ fontSize:11, color:C.textSec, background:"none", border:`1px solid ${C.border}`, borderRadius:6, cursor:"pointer", padding:"5px 10px" }}>
+                  style={{ fontSize:11, color:C.textSec, background:"none", border:`2px solid ${C.border}`, borderRadius:0, cursor:"pointer", padding:"5px 10px" }}>
                   Clear all filters
                 </button>
               )}
@@ -3244,12 +3249,12 @@ function App() {
                     )}
                   </div>
                   {t.workflowIds.length > 0 && (
-                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
+                    <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
                       <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3271,7 +3276,7 @@ function App() {
             {/* Filters */}
             <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:20, alignItems:"flex-start" }}>
               <div style={{ position:"relative" }}>
-                <button onClick={() => setCtTagFilter(ctTagFilter === "All" ? "All" : "All")} style={{ fontSize:12, padding:"5px 12px", borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`1px solid ${ctTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ctTagFilter!=="All"?C.surfaceHi:C.surface, color:ctTagFilter!=="All"?C.goldLight:C.textSec }}>
+                <button onClick={() => setCtTagFilter(ctTagFilter === "All" ? "All" : "All")} style={{ fontSize:12, padding:"5px 12px", borderRadius:0, cursor:"pointer", display:"flex", alignItems:"center", gap:6, border:`2px solid ${ctTagFilter!=="All"?C.gold:C.border}`, backgroundColor:ctTagFilter!=="All"?C.surfaceHi:C.surface, color:ctTagFilter!=="All"?C.goldLight:C.textSec }}>
                   <span>🏷 {ctTagFilter !== "All" ? ctTagFilter : "Filter by tag"}</span>
                 </button>
               </div>
@@ -3300,12 +3305,12 @@ function App() {
                     )}
                   </div>
                   {t.workflowIds.length > 0 && (
-                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
+                    <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
                       <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3326,7 +3331,7 @@ function App() {
 
             {/* Enablement steps */}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:24 }}>
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+              <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:8, textTransform:"uppercase", letterSpacing:"0.5px" }}>Enable in Claude</div>
                 <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:18, margin:0 }}>
                   <li>Click <strong>Customize</strong> in the Claude sidebar</li>
@@ -3335,7 +3340,7 @@ function App() {
                   <li>Sign in with your FTV credentials when prompted</li>
                 </ol>
               </div>
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+              <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:8, textTransform:"uppercase", letterSpacing:"0.5px" }}>Enable in ChatGPT</div>
                 <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:18, margin:0 }}>
                   <li>Click <strong>Apps</strong> in the ChatGPT sidebar</li>
@@ -3372,12 +3377,12 @@ function App() {
                     )}
                   </div>
                   {t.workflowIds.length > 0 && (
-                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
+                    <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginTop:6 }}>
                       <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3398,7 +3403,7 @@ function App() {
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:20, marginBottom:32 }}>
               {/* Create new skills */}
-              <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+              <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
                 <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>📝 Create new personal skills</div>
                 <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
                   <strong>Chat with any AI:</strong> Ask Claude or ChatGPT to help you build a skill and it will generate the SKILL.md file structure for you.<br/>
@@ -3407,7 +3412,7 @@ function App() {
               </div>
 
               {/* How to download & upload skills — HIGHLIGHTED */}
-              <div style={{ backgroundColor:"#2a2000", border:`2px solid ${C.gold}`, borderRadius:10, padding:20, boxShadow:`0 0 0 1px ${C.gold}33` }}>
+              <div style={{ backgroundColor:"#2a2000", border:`2px solid ${C.gold}`, borderRadius:0, padding:20 }}>
                 <div style={{ fontSize:14, fontWeight:800, color:C.goldLight, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
                   <span style={{ fontSize:18 }}>⬇️</span> How to download &amp; upload a skill
                 </div>
@@ -3420,7 +3425,7 @@ function App() {
 
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
                 {/* How to manage firm-level skills */}
-                <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
                   <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>💡 How to manage firm-level skills</div>
                   <ol style={{ fontSize:12, color:C.textSec, lineHeight:1.8, paddingLeft:20, margin:0 }}>
                     <li>Click <strong>Customize</strong> in Claude's or ChatGPT's sidebar</li>
@@ -3430,7 +3435,7 @@ function App() {
                 </div>
 
                 {/* Share skills */}
-                <div style={{ backgroundColor:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:16 }}>
+                <div style={{ backgroundColor:C.surface, border:`2px solid ${C.border}`, borderRadius:0, padding:16 }}>
                   <div style={{ fontSize:12, fontWeight:700, color:C.gold, marginBottom:10, textTransform:"uppercase", letterSpacing:"0.5px" }}>🤝 Share skills with your team</div>
                   <p style={{ fontSize:12, color:C.textSec, lineHeight:1.8, margin:0 }}>
                     Built something useful? Send the SKILL.md file directly to teammates or a specific deal team — they upload it once and it works immediately. To share a skill across the entire firm, reach out to the <strong>AI & Data team</strong> and we'll test, package, and provision it org-wide.
@@ -3450,11 +3455,11 @@ function App() {
               </div>
 
               <div style={{ position:"relative" }}>
-                <button onClick={() => setSkillTagOpen(!skillTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                <button onClick={() => setSkillTagOpen(!skillTagOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`2px solid ${C.border}`, color:C.textSec, borderRadius:0, cursor:"pointer" }}>
                   Tag: {skillTagFilter} ▼
                 </button>
                 {skillTagOpen && (
-                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:150 }}>
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`2px solid ${C.border}`, borderRadius:0, zIndex:10, minWidth:150 }}>
                     {skillAllTags.map(t => (
                       <button key={t} onClick={() => { setSkillTagFilter(t); setSkillTagOpen(false); }} style={{ display:"block", width:"100%", padding:"8px 12px", backgroundColor:skillTagFilter === t ? C.surface : "transparent", border:"none", color:C.textSec, fontSize:12, textAlign:"left", cursor:"pointer" }}>
                         {t}
@@ -3465,11 +3470,11 @@ function App() {
               </div>
 
               <div style={{ position:"relative" }}>
-                <button onClick={() => setSkillWorkflowOpen(!skillWorkflowOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`1px solid ${C.border}`, color:C.textSec, borderRadius:6, cursor:"pointer" }}>
+                <button onClick={() => setSkillWorkflowOpen(!skillWorkflowOpen)} style={{ fontSize:12, padding:"6px 12px", backgroundColor:C.surface, border:`2px solid ${C.border}`, color:C.textSec, borderRadius:0, cursor:"pointer" }}>
                   Workflow: {skillWorkflowFilter} ▼
                 </button>
                 {skillWorkflowOpen && (
-                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`1px solid ${C.border}`, borderRadius:6, zIndex:10, minWidth:180 }}>
+                  <div style={{ position:"absolute", top:"100%", left:0, marginTop:4, backgroundColor:C.bg, border:`2px solid ${C.border}`, borderRadius:0, zIndex:10, minWidth:180 }}>
                     {skillAllWorkflows.map(w => {
                       const wf = WORKFLOWS.find(wk => wk.id === w);
                       return (
@@ -3522,6 +3527,41 @@ function App() {
             <div style={{ marginBottom:32 }}>
               <div style={{ fontSize:11, fontWeight:700, letterSpacing:"1.2px", textTransform:"uppercase", color:C.gold, marginBottom:16 }}>Firm-Enabled Skills</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:12 }}>
+
+                {/* Download tile — Prospect Scoring Analysis */}
+                <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Prospect Scoring Analysis</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#2a2000", color:C.gold, border:`2px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Scores and ranks software companies for sourcing outreach across FTE, growth, capital efficiency, and account coverage. Outputs multi-tab Excel.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["prospect-scoring","sourcing","sales","analytics"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/prospect-scoring-analysis.skill?csf=1&web=1&e=Avz1sH" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
+                {/* Download tile — Sub-Sector Tagger */}
+                <div style={{ ...card, padding:20, border:`2px solid ${C.gold}44` }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
+                    <span style={{ fontSize:14, fontWeight:700, color:C.textPri }}>Sub-Sector Tagger</span>
+                    <span style={{ fontSize:10, padding:"2px 7px", borderRadius:0, backgroundColor:"#2a2000", color:C.gold, border:`2px solid ${C.gold}66`, whiteSpace:"nowrap" }}>Download</span>
+                  </div>
+                  <div style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:10 }}>
+                    Tags new companies to FTV sub-sectors based on predetermined descriptions, ensuring consistent classification across sourcing and pipeline workflows.
+                  </div>
+                  <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginBottom:12 }}>
+                    {["sourcing","classification","sub-sector","pipeline"].map(tg => <span key={tg} style={hashTag}>#{tg}</span>)}
+                  </div>
+                  <a href="https://ftvcapital1.sharepoint.com/:u:/r/sites/AI/Shared%20Documents/FTV%20Skills/subsector-tagger.skill?csf=1&web=1&e=D4dOLU" target="_blank" rel="noopener noreferrer" style={{ display:"inline-block", fontSize:11, padding:"6px 12px", backgroundColor:C.gold, color:C.bg, borderRadius:0, textDecoration:"none", fontWeight:600, cursor:"pointer" }}>
+                    Download from SharePoint ↗
+                  </a>
+                </div>
+
                 {fSkills.map(s => (
                   <div key={s.id} style={{ ...card, padding:20 }}>
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:8 }}>
@@ -3532,11 +3572,11 @@ function App() {
                       {s.desc}
                     </div>
                     {s.workflowIds.length > 0 && (
-                      <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
+                      <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginTop:6, marginBottom:10 }}>
                         <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                           {s.workflowIds.map(wid => {
                             const wf = WORKFLOWS.find(w => w.id === wid);
-                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                            return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
                           })}
                         </div>
                       </div>
@@ -3668,12 +3708,12 @@ function App() {
                   </div>
                   <p style={{ fontSize:12, color:C.textSec, lineHeight:1.6, marginBottom:12 }}>{t.desc}</p>
                   {t.workflowIds && t.workflowIds.length > 0 && (
-                    <div style={{ borderTop:`1px solid ${C.border}`, paddingTop:10, marginBottom:10 }}>
+                    <div style={{ borderTop:`2px solid ${C.border}`, paddingTop:10, marginBottom:10 }}>
                       <div style={{ fontSize:10, color:C.textMuted, marginBottom:5 }}>Used in workflows:</div>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
                         {t.workflowIds.map(wid => {
                           const wf = WORKFLOWS.find(w => w.id === wid);
-                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:4, backgroundColor:C.surfaceHi, color:wf.accent, border:`1px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
+                          return wf ? <span key={wid} style={{ fontSize:10, padding:"2px 8px", borderRadius:0, backgroundColor:C.surfaceHi, color:wf.accent, border:`2px solid ${C.border}` }}>{wf.icon} {wf.label}</span> : null;
                         })}
                       </div>
                     </div>
@@ -3717,7 +3757,7 @@ function App() {
 
       </div>
 
-      <div style={{ borderTop:`1px solid ${C.border}`, marginTop:32 }}>
+      <div style={{ borderTop:`2px solid ${C.border}`, marginTop:32 }}>
         <div style={{ maxWidth:1280, margin:"0 auto", padding:"14px 24px", display:"flex", justifyContent:"space-between" }}>
           <span style={{ fontSize:11, color:C.textMuted }}>FTV Capital · Data, Technology and Operations · Internal Use Only</span>
           <span style={{ fontSize:11, color:C.textMuted }}>v4.0 · 2026</span>
